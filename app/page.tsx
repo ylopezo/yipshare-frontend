@@ -67,7 +67,7 @@ export default function Home() {
                 <nav className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 md:px-6">
 
                     <div className="flex items-center gap-6 md:gap-8">
-                        <Link href="/" aria-label="YipShare - inicio">
+                        <Link href="/public" aria-label="YipShare - inicio">
                             <img
                                 src="/img/logo_yipshare_icono.png"
                                 alt="Logo de YipShare"
