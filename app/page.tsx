@@ -67,22 +67,20 @@ export default function Home() {
                 <nav className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 md:px-6">
 
                     <div className="flex items-center gap-6 md:gap-8">
-                        <Link href="/public" aria-label="YipShare - inicio">
                             <img
                                 src="/img/logo_yipshare_icono.png"
                                 alt="Logo de YipShare"
                                 className="h-9 w-auto"
                             />
-                        </Link>
 
                         <ul className="hidden md:flex items-center gap-8 text-sm font-semibold list-none m-0 p-0">
                             <li>
-                                <Link href="/contacto" className="text-white no-underline hover:underline">
+                                <Link href="/contact_us" className="text-white no-underline hover:underline">
                                     Contáctanos
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/terminos" className="text-white no-underline hover:underline">
+                                <Link href="/terms_conditions" className="text-white no-underline hover:underline">
                                     Términos y Condiciones
                                 </Link>
                             </li>
@@ -97,7 +95,7 @@ export default function Home() {
                             Iniciar Sesión
                         </Link>
                         <Link
-                            href="/registro"
+                            href="/register_account"
                             className="w-32 rounded-full bg-white py-1 text-center text-sm font-bold text-[#1e4a73] transition hover:bg-sky-200"
                         >
                             Registrarse

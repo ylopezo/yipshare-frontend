@@ -55,7 +55,6 @@ export default function LoginPage() {
                     Iniciar Sesión
                 </h1>
 
-                {/* Usuario */}
                 <div className="mt-6">
                     <label htmlFor="usuario" className="sr-only">Usuario</label>
                     <div className="relative">
@@ -129,7 +128,6 @@ export default function LoginPage() {
                             className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-slate-500 hover:text-[#2a6aa8]"
                         >
                             {mostrarContrasena ? (
-                                // Ojo tachado (contraseña visible)
                                 <svg
                                     className="h-5 w-5"
                                     xmlns="http://www.w3.org/2000/svg"
@@ -184,13 +182,13 @@ export default function LoginPage() {
 
                 <p className="mt-4 text-center text-xs text-slate-600">
                     ¿No tienes cuenta?
-                    <Link href="/registro" className="ml-1 font-bold text-[#2a6aa8] hover:underline">
+                    <Link href="/register_account" className="ml-1 font-bold text-[#2a6aa8] hover:underline">
                         Regístrate
                     </Link>
                 </p>
 
                 <div className="mt-6">
-                    <a href="#" className="text-[10px] text-slate-500 hover:underline">Admin</a>
+                    <a href="/admin_yipshare/principal_page" className="text-[10px] text-slate-500 hover:underline">Admin</a>
                 </div>
             </form>
         </div>
