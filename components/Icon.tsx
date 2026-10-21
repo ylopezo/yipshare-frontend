@@ -1,4 +1,4 @@
-export type IconName = "house" | "bell" | "logout" | "search" | "user" | "close" | "file";
+export type IconName = "house" | "bell" | "logout" | "search" | "user" | "close" | "file" | "plus";
 
 export function Icon({ name, size = 24 }: { name: IconName; size?: number }) {
     const paths: Record<IconName, React.ReactNode> = {
@@ -8,6 +8,7 @@ export function Icon({ name, size = 24 }: { name: IconName; size?: number }) {
         search: <><circle cx="10.8" cy="10.8" r="6.8" /><path d="m16 16 5 5" /></>,
         user: <><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" /></>,
         close: <path d="M6 6l12 12M18 6 6 18" />,
+        plus: <path d="M12 5v14M5 12h14" />,
         file: <><path d="M6 3h8l4 4v14H6z" /><path d="M14 3v4h4M9 12h6M9 16h6" /></>,
     };
 

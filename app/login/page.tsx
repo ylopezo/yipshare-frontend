@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
 export default function LoginPage() {
+    const router = useRouter();
     const [usuario, setUsuario] = useState("");
     const [contrasena, setContrasena] = useState("");
     const [mostrarContrasena, setMostrarContrasena] = useState(false);
@@ -27,6 +29,7 @@ export default function LoginPage() {
         }
 
         setMensajeExito("Datos correctos.");
+        router.push("/habitante_yipshare/principal_page");
     }
 
     return (

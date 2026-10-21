@@ -50,8 +50,7 @@ export default function Home() {
 
             <div
                 aria-hidden="true"
-                className="pointer-events-none fixed inset-0 overflow-hidden"
-            >
+                className="pointer-events-none fixed inset-0 overflow-hidden">
                 {casas.map((casa) => (
                     <div key={casa.id} className="casa" style={casa.style}>
                         <img
