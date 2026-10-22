@@ -19,14 +19,20 @@ export default function SolicitudesPage() {
     const filtradas = useMemo(() => {
         const texto = busqueda.trim().toLowerCase();
         if (!texto) return solicitudes;
-        return solicitudes.filter(({ nombre, direccion, aspirante }) =>
-            `${nombre} ${direccion} ${aspirante}`.toLowerCase().includes(texto),
-        );
+
+        return solicitudes.filter(({ nombre, direccion, aspirante }) => {
+            const nom = nombre.toLowerCase();
+            const dir = direccion.toLowerCase();
+            const asp = aspirante.toLowerCase();
+            return nom.includes(texto) || dir.includes(texto) || asp.includes(texto);
+        });
     }, [busqueda, solicitudes]);
 
     return (
         <>
-            <h2 className="m-0 text-lg font-bold">Solicitudes de Condominios</h2>
+            <h2 className="m-0 text-lg font-bold">
+                Solicitudes de Condominios
+            </h2>
 
             <div className="mt-4 min-h-0 flex-1 overflow-y-auto pr-1">
                 <div className="sticky top-0 z-10 bg-[#e9eef3] px-4 pb-3">
@@ -54,6 +60,7 @@ export default function SolicitudesPage() {
                                 <div className={`${GRID} items-center text-center text-[11px] md:text-xs`}>
                                     <span className="wrap-break-word">{solicitud.nombre}</span>
                                     <span className="wrap-break-word">{solicitud.direccion}</span>
+
                                     <button
                                         type="button"
                                         onClick={() => setVerDocumentos(solicitud)}
@@ -61,7 +68,8 @@ export default function SolicitudesPage() {
                                     >
                                         Ver documentos
                                     </button>
-                                    <span className="wrap-break-word">{solicitud.aspirante}</span>
+
+                                    <span className="break-words">{solicitud.aspirante}</span>
 
                                     <div className="flex flex-col gap-1">
                                         <button
@@ -87,7 +95,10 @@ export default function SolicitudesPage() {
             </div>
 
             {verDocumentos && (
-                <DocumentosModal solicitud={verDocumentos} onClose={() => setVerDocumentos(null)} />
+                <DocumentosModal
+                    solicitud={verDocumentos}
+                    onClose={() => setVerDocumentos(null)}
+                />
             )}
 
             {confirmacion && (

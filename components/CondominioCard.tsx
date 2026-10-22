@@ -28,8 +28,14 @@ export function CondominioCard({
                 <span className="inline-block rounded-full bg-[#dbe7f5] px-2 py-0.5 text-[9px] font-bold text-[#1e4a73]">
                     {ETIQUETA[rol]}
                 </span>
-                <p className="m-0 mt-1 text-lg font-bold text-[#2a5a88]">{condominio.nombre}</p>
-                <p className="m-0 text-[10px] font-semibold text-[#78b0ea]">Admin: {condominio.admin}</p>
+
+                <p className="m-0 mt-1 text-lg font-bold text-[#2a5a88]">
+                    {condominio.nombre}
+                </p>
+
+                <p className="m-0 text-[10px] font-semibold text-[#78b0ea]">
+                    Admin: {condominio.admin}
+                </p>
             </div>
         </button>
     );

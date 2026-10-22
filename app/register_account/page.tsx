@@ -32,6 +32,7 @@ export default function RegistroPage() {
         usuario: "",
         contrasena: "",
     });
+
     const [errores, setErrores] = useState<Errores>({});
     const [mostrarContrasena, setMostrarContrasena] = useState(false);
     const [mensajeExito, setMensajeExito] = useState("");
@@ -45,6 +46,7 @@ export default function RegistroPage() {
         e.preventDefault();
 
         const nuevosErrores: Errores = {};
+
         (Object.keys(datos) as Campo[]).forEach((campo) => {
             if (!datos[campo].trim()) {
                 nuevosErrores[campo] = MENSAJES_ERROR[campo];
@@ -63,7 +65,6 @@ export default function RegistroPage() {
 
     return (
         <div className="grid min-h-screen font-sans text-[#1e2b45] md:grid-cols-2">
-
             <aside
                 aria-hidden="true"
                 className="hidden items-center justify-center bg-cover bg-center md:flex"
@@ -82,8 +83,11 @@ export default function RegistroPage() {
             </aside>
 
             <main className="relative flex flex-col items-center justify-center bg-white px-6 py-10">
-
-                <Link href="/" aria-label="YipShare - inicio" className="mb-4 md:hidden">
+                <Link
+                    href="/"
+                    aria-label="YipShare - inicio"
+                    className="mb-4 md:hidden"
+                >
                     <img
                         src="/img/logo_yipshare_icono.png"
                         alt="Logo de YipShare"
@@ -103,8 +107,17 @@ export default function RegistroPage() {
 
                     <div className="mt-8">
                         {CAMPOS_NOMBRE.map(({ name, placeholder, autoComplete }) => (
-                            <div key={name} className="mb-1">
-                                <label htmlFor={name} className="sr-only">{placeholder}</label>
+                            <div
+                                key={name}
+                                className="mb-1"
+                            >
+                                <label
+                                    htmlFor={name}
+                                    className="sr-only"
+                                >
+                                    {placeholder}
+                                </label>
+
                                 <input
                                     type="text"
                                     id={name}
@@ -116,6 +129,7 @@ export default function RegistroPage() {
                                     onChange={handleChange}
                                     className={`${CLASE_INPUT} pl-5`}
                                 />
+
                                 <span className="mt-1 block min-h-5 text-sm text-red-600">
                                     {errores[name]}
                                 </span>
@@ -125,7 +139,13 @@ export default function RegistroPage() {
 
                     {/* Usuario */}
                     <div className="mt-6">
-                        <label htmlFor="usuario" className="sr-only">Usuario</label>
+                        <label
+                            htmlFor="usuario"
+                            className="sr-only"
+                        >
+                            Usuario
+                        </label>
+
                         <div className="relative">
                             <svg
                                 className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500"
@@ -141,6 +161,7 @@ export default function RegistroPage() {
                                 <circle cx="12" cy="8" r="4" />
                                 <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
                             </svg>
+
                             <input
                                 type="text"
                                 id="usuario"
@@ -153,6 +174,7 @@ export default function RegistroPage() {
                                 className={`${CLASE_INPUT} pl-11`}
                             />
                         </div>
+
                         <span className="mt-1 block min-h-5 text-sm text-red-600">
                             {errores.usuario}
                         </span>
@@ -160,7 +182,13 @@ export default function RegistroPage() {
 
                     {/* Contraseña */}
                     <div className="mt-2">
-                        <label htmlFor="contrasena" className="sr-only">Contraseña</label>
+                        <label
+                            htmlFor="contrasena"
+                            className="sr-only"
+                        >
+                            Contraseña
+                        </label>
+
                         <div className="relative">
                             <svg
                                 className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500"
@@ -230,6 +258,7 @@ export default function RegistroPage() {
                                 )}
                             </button>
                         </div>
+
                         <span className="mt-1 block min-h-5 text-sm text-red-600">
                             {errores.contrasena}
                         </span>
@@ -250,7 +279,10 @@ export default function RegistroPage() {
 
                     <p className="mt-6 text-center text-xs text-slate-600">
                         ¿Ya tienes cuenta?
-                        <Link href="/login" className="ml-1 font-bold text-[#2a6aa8] hover:underline">
+                        <Link
+                            href="/login"
+                            className="ml-1 font-bold text-[#2a6aa8] hover:underline"
+                        >
                             Iniciar Sesión
                         </Link>
                     </p>

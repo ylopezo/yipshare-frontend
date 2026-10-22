@@ -6,6 +6,7 @@ import { useState, type FormEvent } from "react";
 
 export default function LoginPage() {
     const router = useRouter();
+
     const [usuario, setUsuario] = useState("");
     const [contrasena, setContrasena] = useState("");
     const [mostrarContrasena, setMostrarContrasena] = useState(false);
@@ -34,13 +35,17 @@ export default function LoginPage() {
 
     return (
         <div
-            className="m-0 min-h-screen flex flex-col items-center justify-center bg-cover bg-center px-4 py-10 font-sans text-[#1e2b45]"
+            className="m-0 flex min-h-screen flex-col items-center justify-center bg-cover bg-center px-4 py-10 font-sans text-[#1e2b45]"
             style={{
                 backgroundImage:
                     "url('/img/img.png'), linear-gradient(to bottom, #1e4a73, #2f78b8)",
             }}
         >
-            <Link href="/" aria-label="YipShare - inicio" className="mb-4">
+            <Link
+                href="/"
+                aria-label="YipShare - inicio"
+                className="mb-4"
+            >
                 <img
                     src="/img/logo_yipshare_icono.png"
                     alt="Logo de YipShare"
@@ -52,14 +57,20 @@ export default function LoginPage() {
                 id="form-login"
                 noValidate
                 onSubmit={handleSubmit}
-                className="w-full max-w-md rounded-3xl bg-white px-8 pt-6 pb-4 shadow-xl"
+                className="w-full max-w-md rounded-3xl bg-white px-8 pb-4 pt-6 shadow-xl"
             >
                 <h1 className="m-0 text-center text-3xl font-black uppercase tracking-wide">
                     Iniciar Sesión
                 </h1>
 
                 <div className="mt-6">
-                    <label htmlFor="usuario" className="sr-only">Usuario</label>
+                    <label
+                        htmlFor="usuario"
+                        className="sr-only"
+                    >
+                        Usuario
+                    </label>
+
                     <div className="relative">
                         <svg
                             className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500"
@@ -75,6 +86,7 @@ export default function LoginPage() {
                             <circle cx="12" cy="8" r="4" />
                             <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
                         </svg>
+
                         <input
                             type="text"
                             id="usuario"
@@ -87,13 +99,23 @@ export default function LoginPage() {
                             className="w-full rounded-lg border border-slate-600 bg-[#eeeeee] py-2 pl-11 pr-3 text-lg placeholder:text-slate-500 focus:outline-2 focus:outline-[#2a6aa8]"
                         />
                     </div>
-                    <span id="error-usuario" className="mt-1 block min-h-5 text-sm text-red-600">
+
+                    <span
+                        id="error-usuario"
+                        className="mt-1 block min-h-5 text-sm text-red-600"
+                    >
                         {errorUsuario}
                     </span>
                 </div>
 
                 <div className="mt-2">
-                    <label htmlFor="contrasena" className="sr-only">Contraseña</label>
+                    <label
+                        htmlFor="contrasena"
+                        className="sr-only"
+                    >
+                        Contraseña
+                    </label>
+
                     <div className="relative">
                         <svg
                             className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500"
@@ -164,7 +186,11 @@ export default function LoginPage() {
                             )}
                         </button>
                     </div>
-                    <span id="error-contrasena" className="mt-1 block min-h-5 text-sm text-red-600">
+
+                    <span
+                        id="error-contrasena"
+                        className="mt-1 block min-h-5 text-sm text-red-600"
+                    >
                         {errorContrasena}
                     </span>
                 </div>
@@ -179,19 +205,30 @@ export default function LoginPage() {
                     </button>
                 </div>
 
-                <p id="mensaje-exito" className="mt-2 min-h-5 text-center text-sm font-semibold text-green-700">
+                <p
+                    id="mensaje-exito"
+                    className="mt-2 min-h-5 text-center text-sm font-semibold text-green-700"
+                >
                     {mensajeExito}
                 </p>
 
                 <p className="mt-4 text-center text-xs text-slate-600">
                     ¿No tienes cuenta?
-                    <Link href="/register_account" className="ml-1 font-bold text-[#2a6aa8] hover:underline">
+                    <Link
+                        href="/register_account"
+                        className="ml-1 font-bold text-[#2a6aa8] hover:underline"
+                    >
                         Regístrate
                     </Link>
                 </p>
 
                 <div className="mt-6">
-                    <a href="/admin_yipshare/principal_page" className="text-[10px] text-slate-500 hover:underline">Admin</a>
+                    <a
+                        href="/admin_yipshare/principal_page"
+                        className="text-[10px] text-slate-500 hover:underline"
+                    >
+                        Admin
+                    </a>
                 </div>
             </form>
         </div>

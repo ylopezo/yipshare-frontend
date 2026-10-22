@@ -74,11 +74,6 @@ export default function Home() {
 
                         <ul className="hidden md:flex items-center gap-8 text-sm font-semibold list-none m-0 p-0">
                             <li>
-                                <Link href="/contact_us" className="text-white no-underline hover:underline">
-                                    Contáctanos
-                                </Link>
-                            </li>
-                            <li>
                                 <Link href="/terms_conditions" className="text-white no-underline hover:underline">
                                     Términos y Condiciones
                                 </Link>

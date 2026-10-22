@@ -20,16 +20,45 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     const [condominios, setCondominios] = useState(CONDOMINIOS_INICIALES);
     const [solicitudes, setSolicitudes] = useState(SOLICITUDES_INICIALES);
     const [busqueda, setBusqueda] = useState("");
+
     const value: AdminContextValue = {
-        condominios, solicitudes, busqueda, setBusqueda,
-        editarCondominio: (actualizado) => setCondominios((prev) => prev.map((c) => c.id === actualizado.id ? actualizado : c)),
-        eliminarCondominio: (id) => setCondominios((prev) => prev.filter((c) => c.id !== id)),
+        condominios,
+        solicitudes,
+        busqueda,
+        setBusqueda,
+
+        editarCondominio: (actualizado) =>
+            setCondominios((prev) =>
+                prev.map((c) => (c.id === actualizado.id ? actualizado : c))
+            ),
+
+        eliminarCondominio: (id) =>
+            setCondominios((prev) =>
+                prev.filter((c) => c.id !== id)
+            ),
+
         aceptarSolicitud: (solicitud) => {
-            setCondominios((prev) => [...prev, { id: Date.now(), nombre: solicitud.nombre, direccion: solicitud.direccion, cantidad: solicitud.cantidad, admin: solicitud.aspirante }]);
-            setSolicitudes((prev) => prev.filter((s) => s.id !== solicitud.id));
+            setCondominios((prev) => [
+                ...prev,
+                {
+                    id: crypto.getRandomValues(new Uint32Array(1))[0], // ID numérico aleatorio y robusto
+                    nombre: solicitud.nombre,
+                    direccion: solicitud.direccion,
+                    cantidad: solicitud.cantidad,
+                    admin: solicitud.aspirante
+                }
+            ]);
+            setSolicitudes((prev) =>
+                prev.filter((s) => s.id !== solicitud.id)
+            );
         },
-        denegarSolicitud: (id) => setSolicitudes((prev) => prev.filter((s) => s.id !== id)),
+
+        denegarSolicitud: (id) =>
+            setSolicitudes((prev) =>
+                prev.filter((s) => s.id !== id)
+            ),
     };
+
     return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>;
 }
 
