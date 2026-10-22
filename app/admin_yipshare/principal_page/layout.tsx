@@ -124,18 +124,18 @@ function AdminShell({ children }: { children: React.ReactNode }) {
             </div>
 
             {perfilAbierto && (
-                <PerfilModal onClose={() => setPerfilAbierto(false)} />
+                <PerfilModal onCloseAction={() => setPerfilAbierto(false)} />
             )}
 
             {cerrarSesionAbierto && (
                 <ConfirmDialog
                     titulo="¿Estás seguro?"
                     mensaje="Se cerrará tu sesión de administrador."
-                    onConfirmar={() => {
+                    onConfirmarAction={() => {
                         setCerrarSesionAbierto(false);
                         router.push("/login");
                     }}
-                    onCancelar={() => setCerrarSesionAbierto(false)}
+                    onCancelarAction={() => setCerrarSesionAbierto(false)}
                 />
             )}
         </div>

@@ -10,11 +10,11 @@ export type DatosUnirse = {
 };
 
 export function UnirseCondominioModal({
-                                          onEntrar,
-                                          onCancelar,
+                                          onEntrarAction,
+                                          onCancelarAction,
                                       }: {
-    onEntrar: (datos: DatosUnirse) => void;
-    onCancelar: () => void;
+    onEntrarAction: (datos: DatosUnirse) => void;
+    onCancelarAction: () => void;
 }) {
     const [codigo, setCodigo] = useState("");
     const [edificio, setEdificio] = useState("");
@@ -32,7 +32,7 @@ export function UnirseCondominioModal({
         e.preventDefault();
 
         if (valido) {
-            onEntrar({
+            onEntrarAction({
                 codigo: codigo.trim(),
                 edificio: edificio.trim(),
                 departamento: departamento.trim(),
@@ -43,7 +43,7 @@ export function UnirseCondominioModal({
     return (
         <Modal
             label="Unirse a condominio"
-            onClose={onCancelar}
+            onCloseAction={onCancelarAction}
         >
             <form
                 onSubmit={handleSubmit}
@@ -94,7 +94,7 @@ export function UnirseCondominioModal({
 
                 <button
                     type="button"
-                    onClick={onCancelar}
+                    onClick={onCancelarAction}
                     className="mx-auto mt-3 block cursor-pointer text-sm font-bold text-[#2a5a88] hover:underline"
                 >
                     Cancelar

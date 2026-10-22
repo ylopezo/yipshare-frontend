@@ -4,17 +4,17 @@ import { CONTRASENA_OCULTA, USUARIO_ADMIN } from "@/lib/datos";
 import { Icon } from "./Icon";
 import { Modal } from "./Modal";
 
-export function PerfilModal({ onClose }: { onClose: () => void }) {
+export function PerfilModal({ onCloseAction }: { onCloseAction: () => void }) {
     return (
         <Modal
             label="Perfil"
-            onClose={onClose}
+            onCloseAction={onCloseAction}
         >
             <div className="relative w-[min(90vw,320px)] rounded-[2rem] border border-slate-400 bg-white px-7 py-8 shadow-xl">
                 <button
                     type="button"
                     aria-label="Cerrar perfil"
-                    onClick={onClose}
+                    onClick={onCloseAction}
                     className="absolute right-4 top-4 cursor-pointer rounded-full p-1 text-slate-500 transition hover:bg-slate-100"
                 >
                     <Icon name="close" size={18} />

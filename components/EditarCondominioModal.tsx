@@ -7,12 +7,12 @@ import { Modal } from "./Modal";
 
 export function EditarCondominioModal({
                                           condominio,
-                                          onGuardar,
-                                          onCancelar,
+                                          onGuardarAction,
+                                          onCancelarAction,
                                       }: {
     condominio: Condominio;
-    onGuardar: (actualizado: Condominio) => void;
-    onCancelar: () => void;
+    onGuardarAction: (actualizado: Condominio) => void;
+    onCancelarAction: () => void;
 }) {
     const [nombre, setNombre] = useState(condominio.nombre);
     const [direccion, setDireccion] = useState(condominio.direccion);
@@ -35,7 +35,7 @@ export function EditarCondominioModal({
             return;
         }
 
-        onGuardar({
+        onGuardarAction({
             ...condominio,
             nombre: nombre.trim(),
             direccion: direccion.trim(),
@@ -51,7 +51,7 @@ export function EditarCondominioModal({
     return (
         <Modal
             label="Editar condominio"
-            onClose={onCancelar}
+            onCloseAction={onCancelarAction}
         >
             <form
                 onSubmit={handleSubmit}
@@ -60,7 +60,7 @@ export function EditarCondominioModal({
                 <button
                     type="button"
                     aria-label="Cerrar"
-                    onClick={onCancelar}
+                    onClick={onCancelarAction}
                     className="absolute right-4 top-4 cursor-pointer rounded-full p-1 text-slate-500 transition hover:bg-slate-100"
                 >
                     <Icon name="close" size={18} />
@@ -142,7 +142,7 @@ export function EditarCondominioModal({
                 <div className="mt-6 flex gap-3">
                     <button
                         type="button"
-                        onClick={onCancelar}
+                        onClick={onCancelarAction}
                         className="flex-1 cursor-pointer rounded-full border border-[#1e4a73] bg-white py-2 text-sm font-semibold text-[#1e4a73] transition hover:bg-slate-100"
                     >
                         Cancelar

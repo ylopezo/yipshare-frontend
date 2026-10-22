@@ -97,7 +97,7 @@ export default function SolicitudesPage() {
             {verDocumentos && (
                 <DocumentosModal
                     solicitud={verDocumentos}
-                    onClose={() => setVerDocumentos(null)}
+                    onCloseAction={() => setVerDocumentos(null)}
                 />
             )}
 
@@ -109,7 +109,7 @@ export default function SolicitudesPage() {
                             ? `Se aceptará el condominio «${confirmacion.solicitud.nombre}» y ${confirmacion.solicitud.aspirante} será su administrador.`
                             : `Se denegará la solicitud del condominio «${confirmacion.solicitud.nombre}».`
                     }
-                    onConfirmar={() => {
+                    onConfirmarAction={() => {
                         if (confirmacion.accion === "aceptar") {
                             aceptarSolicitud(confirmacion.solicitud);
                         } else {
@@ -117,7 +117,7 @@ export default function SolicitudesPage() {
                         }
                         setConfirmacion(null);
                     }}
-                    onCancelar={() => setConfirmacion(null)}
+                    onCancelarAction={() => setConfirmacion(null)}
                 />
             )}
         </>

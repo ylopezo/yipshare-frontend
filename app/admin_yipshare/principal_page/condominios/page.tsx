@@ -85,22 +85,22 @@ export default function CondominiosPage() {
                 <ConfirmDialog
                     titulo="¿Estás seguro?"
                     mensaje={`Se eliminará el condominio «${dialogo.condominio.nombre}». Esta acción no se puede deshacer.`}
-                    onConfirmar={() => {
+                    onConfirmarAction={() => {
                         eliminarCondominio(dialogo.condominio.id);
                         setDialogo(null);
                     }}
-                    onCancelar={() => setDialogo(null)}
+                    onCancelarAction={() => setDialogo(null)}
                 />
             )}
 
             {dialogo?.tipo === "editar" && (
                 <EditarCondominioModal
                     condominio={dialogo.condominio}
-                    onGuardar={(actualizado) => {
+                    onGuardarAction={(actualizado) => {
                         editarCondominio(actualizado);
                         setDialogo(null);
                     }}
-                    onCancelar={() => setDialogo(null)}
+                    onCancelarAction={() => setDialogo(null)}
                 />
             )}
         </>

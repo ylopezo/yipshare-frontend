@@ -81,8 +81,8 @@ export function LogoMenuSesion() {
                 <ConfirmDialog
                     titulo="¿Estás seguro?"
                     mensaje="Se cerrará tu sesión."
-                    onConfirmar={handleConfirmar}
-                    onCancelar={() => setConfirmando(false)}
+                    onConfirmarAction={handleConfirmar}
+                    onCancelarAction={() => setConfirmando(false)}
                 />
             )}
         </>

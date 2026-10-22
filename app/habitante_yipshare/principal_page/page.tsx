@@ -297,17 +297,19 @@ export default function HabitantePrincipalPage() {
 
             {modal === "unirse" && (
                 <UnirseCondominioModal
-                    onEntrar={handleUnirse}
-                    onCancelar={() => setModal(null)}
+                    onEntrarAction={handleUnirse}
+                    onCancelarAction={() => setModal(null)}
                 />
             )}
 
             {modal === "crear" && (
                 <CrearCondominioModal
-                    onCrear={handleCrear}
-                    onCancelar={() => setModal(null)}
+                    onCrearAction={handleCrear}
+                    onCancelarAction={() => setModal(null)}
                 />
             )}
+
+
         </div>
     );
 }

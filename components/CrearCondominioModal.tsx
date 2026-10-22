@@ -10,11 +10,11 @@ export type DatosCrear = {
 };
 
 export function CrearCondominioModal({
-                                         onCrear,
-                                         onCancelar,
+                                         onCrearAction,
+                                         onCancelarAction,
                                      }: {
-    onCrear: (datos: DatosCrear) => void;
-    onCancelar: () => void;
+    onCrearAction: (datos: DatosCrear) => void;
+    onCancelarAction: () => void;
 }) {
     const [nombre, setNombre] = useState("");
     const [direccion, setDireccion] = useState("");
@@ -35,7 +35,7 @@ export function CrearCondominioModal({
         e.preventDefault();
 
         if (valido) {
-            onCrear({
+            onCrearAction({
                 nombre: nombre.trim(),
                 direccion: direccion.trim(),
                 cantidad: cantidadNum,
@@ -46,7 +46,7 @@ export function CrearCondominioModal({
     return (
         <Modal
             label="Crear condominio"
-            onClose={onCancelar}
+            onCloseAction={onCancelarAction}
         >
             <form
                 onSubmit={handleSubmit}
@@ -94,7 +94,7 @@ export function CrearCondominioModal({
 
                 <button
                     type="button"
-                    onClick={onCancelar}
+                    onClick={onCancelarAction}
                     className="mx-auto mt-3 block cursor-pointer text-sm font-bold text-[#2a5a88] hover:underline"
                 >
                     Cancelar

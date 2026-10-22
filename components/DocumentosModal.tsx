@@ -6,21 +6,21 @@ import { Modal } from "./Modal";
 
 export function DocumentosModal({
                                     solicitud,
-                                    onClose,
+                                    onCloseAction,
                                 }: {
     solicitud: Solicitud;
-    onClose: () => void;
+    onCloseAction: () => void;
 }) {
     return (
         <Modal
             label="Documentos de la solicitud"
-            onClose={onClose}
+            onCloseAction={onCloseAction}
         >
             <div className="relative w-[min(90vw,380px)] rounded-[2rem] border border-slate-400 bg-white px-7 py-8 shadow-xl">
                 <button
                     type="button"
                     aria-label="Cerrar documentos"
-                    onClick={onClose}
+                    onClick={onCloseAction}
                     className="absolute right-4 top-4 cursor-pointer rounded-full p-1 text-slate-500 transition hover:bg-slate-100"
                 >
                     <Icon name="close" size={18} />
@@ -60,7 +60,7 @@ export function DocumentosModal({
 
                 <button
                     type="button"
-                    onClick={onClose}
+                    onClick={onCloseAction}
                     className="mt-6 w-full cursor-pointer rounded-full bg-[#1e4a73] py-2 text-sm font-semibold text-white transition hover:bg-[#2a6aa8]"
                 >
                     Cerrar
