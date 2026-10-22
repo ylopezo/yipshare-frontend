@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 
 type Campo = "apellidoPaterno" | "apellidoMaterno" | "nombres" | "usuario" | "contrasena";
@@ -21,10 +22,14 @@ const CAMPOS_NOMBRE: { name: Campo; placeholder: string; autoComplete: string }[
     { name: "nombres", placeholder: "Nombre(s)", autoComplete: "given-name" },
 ];
 
+const RUTA_DESPUES_DE_REGISTRO = "/login";
+
 const CLASE_INPUT =
     "w-full rounded-lg border border-slate-600 bg-[#eeeeee] py-2 pr-3 text-lg text-slate-700 placeholder:text-slate-500 focus:outline-2 focus:outline-[#2a6aa8]";
 
 export default function RegistroPage() {
+    const router = useRouter();
+
     const [datos, setDatos] = useState<Datos>({
         apellidoPaterno: "",
         apellidoMaterno: "",
@@ -35,7 +40,6 @@ export default function RegistroPage() {
 
     const [errores, setErrores] = useState<Errores>({});
     const [mostrarContrasena, setMostrarContrasena] = useState(false);
-    const [mensajeExito, setMensajeExito] = useState("");
 
     function handleChange(e: ChangeEvent<HTMLInputElement>) {
         const { name, value } = e.target;
@@ -56,11 +60,10 @@ export default function RegistroPage() {
         setErrores(nuevosErrores);
 
         if (Object.keys(nuevosErrores).length > 0) {
-            setMensajeExito("");
             return;
         }
 
-        setMensajeExito("Registro correcto.");
+        router.push(RUTA_DESPUES_DE_REGISTRO);
     }
 
     return (
@@ -137,7 +140,6 @@ export default function RegistroPage() {
                         ))}
                     </div>
 
-                    {/* Usuario */}
                     <div className="mt-6">
                         <label
                             htmlFor="usuario"
@@ -180,7 +182,6 @@ export default function RegistroPage() {
                         </span>
                     </div>
 
-                    {/* Contraseña */}
                     <div className="mt-2">
                         <label
                             htmlFor="contrasena"
@@ -273,10 +274,6 @@ export default function RegistroPage() {
                         </button>
                     </div>
 
-                    <p className="mt-2 min-h-5 text-center text-sm font-semibold text-green-700">
-                        {mensajeExito}
-                    </p>
-
                     <p className="mt-6 text-center text-xs text-slate-600">
                         ¿Ya tienes cuenta?
                         <Link
@@ -287,13 +284,6 @@ export default function RegistroPage() {
                         </Link>
                     </p>
                 </form>
-
-                <a
-                    href="#"
-                    className="absolute bottom-2 right-3 text-[10px] text-slate-500 hover:underline"
-                >
-                    Admin
-                </a>
             </main>
         </div>
     );
