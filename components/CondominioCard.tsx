@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { CondominioUsuario } from "@/lib/datosHabitante";
 
 export type RolEnCondominio = "admin" | "habitante";
@@ -7,19 +8,19 @@ const ETIQUETA: Record<RolEnCondominio, string> = {
     habitante: "Usted es miembro",
 };
 
-export function CondominioCard({
-                                   condominio,
-                                   rol,
-                                   onClick,
-                               }: {
+// Cada rol entra a su propia sección. Cambia las rutas por las tuyas.
+const RUTA_BASE: Record<RolEnCondominio, string> = {
+    admin: "/habitante_yipshare/condominio_admin",
+    habitante: "/habitante_yipshare/condominio",
+};
+
+export function CondominioCard({condominio, rol,}: {
     condominio: CondominioUsuario;
     rol: RolEnCondominio;
-    onClick?: () => void;
 }) {
     return (
-        <button
-            type="button"
-            onClick={onClick}
+        <Link
+            href={`${RUTA_BASE[rol]}/${condominio.id}`}
             className="flex w-48 cursor-pointer flex-col overflow-hidden rounded-lg bg-white text-left shadow-sm transition hover:shadow-md"
         >
             <div className="h-24 shrink-0 bg-[#e4e4e4]" />
@@ -37,6 +38,6 @@ export function CondominioCard({
                     Admin: {condominio.admin}
                 </p>
             </div>
-        </button>
+        </Link>
     );
 }

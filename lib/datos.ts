@@ -41,4 +41,4 @@ export const DOCUMENTOS_EJEMPLO = [
 ];
 
 export const USUARIO_ADMIN = "admin";
-export const CONTRASENA_OCULTA = "••••••••••";
+export const CONTRASENA_OCULTA = "••••••••";
