@@ -7,10 +7,20 @@ import { useState } from "react";
 import { ESTADOS, ArticuloModal, type Articulo, type Datos, type Estado } from "@/components/ArticuloModal";
 import { Icon, type IconName } from "@/components/Icon";
 import { ConfirmDialog } from "@/components/Modal";
-import { PerfilModal } from "@/components/PerfilModal";
+import { PerfilHabitanteModal, type DatosPerfil, type PerfilUsuario } from "@/components/PerfilHabitanteModal";
 import { NOMBRE_USUARIO, REGISTRADOS_INICIALES, UNIDOS_INICIALES } from "@/lib/datosHabitante";
 
 const YO = "mi_usuario";
+
+// Datos de ejemplo del perfil: reemplázalos por los del backend.
+const PERFIL_EJEMPLO: PerfilUsuario = {
+    apellidoPaterno: "Pérez",
+    apellidoMaterno: "López",
+    nombres: "Juan Carlos",
+    edificio: "Edificio 2",
+    departamento: "Departamento 14",
+    calificacion: 4.2,
+};
 
 const COLOR: Record<Estado, string> = {
     disponible: "bg-[#b9f0c8] text-green-900",
@@ -32,6 +42,7 @@ function Tarjeta({
         <div className="flex w-48 flex-col overflow-hidden rounded-lg bg-white shadow-sm">
             <div className="h-28 shrink-0 bg-[#e4e4e4]">
                 {a.imagen && (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                         src={a.imagen}
                         alt={a.nombre}
@@ -75,6 +86,7 @@ export default function InicioPage() {
     const [busqueda, setBusqueda] = useState("");
     const [perfil, setPerfil] = useState(false);
     const [salir, setSalir] = useState(false);
+    const [datosPerfil, setDatosPerfil] = useState(PERFIL_EJEMPLO);
     const [modal, setModal] = useState<Articulo | "nuevo" | null>(null);
 
     const condominio = [...REGISTRADOS_INICIALES, ...UNIDOS_INICIALES].find(
@@ -132,8 +144,10 @@ export default function InicioPage() {
     ];
 
     return (
-        <div className="flex h-screen flex-col overflow-hidden bg-[#e9eef3] font-sans text-black">
-            <header className="flex h-25 shrink-0 items-center gap-4 bg-[#1e4a73] px-4 text-white md:px-6">
+        <div className="flex h-screen flex-col overflow-hidden bg-[#e9eef3] font-sans
+        text-black">
+            <header className="flex h-[100px] shrink-0 items-center gap-4 bg-[#1e4a73]
+            px-4 text-white md:px-6">
                 <Link
                     href="/habitante_yipshare/principal_page"
                     aria-label="Volver a mis condominios"
@@ -294,9 +308,15 @@ export default function InicioPage() {
             </div>
 
             {perfil && (
-                <PerfilModal
-                    titulo="Habitante"
-                    usuario={YO}
+                <PerfilHabitanteModal
+                    perfil={datosPerfil}
+                    onActualizarAction={(datos: DatosPerfil) => {
+                        setDatosPerfil({ ...datosPerfil, ...datos });
+                        setPerfil(false);
+                    }}
+                    onEliminarAction={() => {
+                        router.replace("/login");
+                    }}
                     onCloseAction={() => setPerfil(false)}
                 />
             )}

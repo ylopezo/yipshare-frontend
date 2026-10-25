@@ -42,3 +42,14 @@ export const DOCUMENTOS_EJEMPLO = [
 
 export const USUARIO_ADMIN = "admin";
 export const CONTRASENA_OCULTA = "••••••••";
+
+export const DATOS_PERFIL_PRUEBA = {
+    nombres: "Juan",
+    apellidoPaterno: "Pérez",
+    apellidoMaterno: "Gómez",
+    direccion: "Av. Insurgentes Sur 123, CDMX",
+    calificacion: 5.0,
+    totalCalificaciones: 0,
+    username: "mi_usuario",
+    rol: "habitante" as const,
+};
