@@ -18,7 +18,6 @@ const INDICE = [
     { id: "suspension", label: "Suspensión y cancelación" },
     { id: "cambios", label: "Cambios a estos términos" },
     { id: "ley", label: "Ley aplicable" },
-    { id: "contacto", label: "Contacto" },
 ];
 
 const IMAGENES_CASAS = [

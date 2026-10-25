@@ -233,6 +233,7 @@ export default function InicioPage() {
     }
 
     function solicitar(idArticulo: number) {
+        // TODO: enviar la solicitud al backend. Mientras el dueño responde, queda "Pendiente".
         setArticulos((prev) =>
             prev.map((a) => (a.id === idArticulo ? { ...a, estado: "pendiente" } : a))
         );
@@ -433,10 +434,12 @@ export default function InicioPage() {
                 <PerfilHabitanteModal
                     perfil={datosPerfil}
                     onActualizarAction={(datos: DatosPerfil) => {
+                        // TODO: guardar `datos` en el backend
                         setDatosPerfil({ ...datosPerfil, ...datos });
                         setPerfil(false);
                     }}
                     onEliminarAction={() => {
+                        // TODO: borrar la cuenta en el backend
                         router.replace("/login");
                     }}
                     onCloseAction={() => setPerfil(false)}
