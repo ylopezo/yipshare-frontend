@@ -12,7 +12,7 @@ import { NOMBRE_USUARIO, REGISTRADOS_INICIALES, UNIDOS_INICIALES } from "@/lib/d
 
 const YO = "mi_usuario";
 
-// Datos de ejemplo del perfil: reemplázalos por los del backend.
+
 const PERFIL_EJEMPLO: PerfilUsuario = {
     apellidoPaterno: "Pérez",
     apellidoMaterno: "López",
