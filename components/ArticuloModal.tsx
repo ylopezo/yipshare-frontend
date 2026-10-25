@@ -38,12 +38,14 @@ export type Articulo = {
     descripcion: string;
     condicion: Condicion;
     tiempos: Tiempo[];
-    estado: Estado; //(la cambian los préstamos, no se podrá desde el propio formulario, lógica de backend
+    estado: Estado;
     imagen: string | null;
     duenio: string;
+    direccion: string;
+    calificacion: number;
 };
 
-export type Datos = Omit<Articulo, "id" | "duenio">;
+export type Datos = Omit<Articulo, "id" | "duenio" | "direccion" | "calificacion">;
 
 const INPUT =
     "w-full rounded-xl border border-slate-600 bg-[#eeeeee] px-4 py-2 text-sm text-slate-700 outline-none focus:border-[#1e4a73]";
@@ -70,6 +72,7 @@ export function ArticuloModal({
     const titulo = articulo ? "Editar artículo" : "Agregar artículo";
     const valido = nombre.trim() !== "" && descripcion.trim() !== "" && categoria && condicion && tiempos.length > 0;
 
+    // Agrega o quita un tiempo y conserva el orden de TIEMPOS
     const alternarTiempo = (t: Tiempo) =>
         setTiempos((prev) => TIEMPOS.filter((x) => (x === t ? !prev.includes(x) : prev.includes(x))));
 
@@ -89,12 +92,11 @@ export function ArticuloModal({
                         imagen,
                     });
                 }}
-                className="max-h-[90vh] w-[min(94vw,760px)] overflow-y-auto rounded-4xl bg-white px-8 py-8 shadow-xl"
+                className="max-h-[90vh] w-[min(94vw,760px)] overflow-y-auto rounded-[2rem] bg-white px-8 py-8 shadow-xl"
             >
                 <h2 className="m-0 text-center text-xl font-extrabold uppercase">{titulo}</h2>
 
                 <div className="mt-6 grid gap-6 md:grid-cols-[240px_1fr]">
-                    {/* Imagen a la izquierda */}
                     <div>
                         <button
                             type="button"
@@ -103,6 +105,7 @@ export function ArticuloModal({
                             className="flex aspect-square w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#e4e4e4] text-slate-500 hover:bg-[#d8d8d8]"
                         >
                             {imagen ? (
+                                // eslint-disable-next-line @next/next/no-img-element
                                 <img src={imagen} alt="" className="h-full w-full object-cover" />
                             ) : (
                                 <span className="flex flex-col items-center gap-1 text-xs font-semibold">
@@ -122,7 +125,6 @@ export function ArticuloModal({
                             }}
                         />
                     </div>
-
 
                     <div>
                         <input

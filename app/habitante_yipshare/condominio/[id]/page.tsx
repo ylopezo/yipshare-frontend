@@ -12,7 +12,6 @@ import { NOMBRE_USUARIO, REGISTRADOS_INICIALES, UNIDOS_INICIALES } from "@/lib/d
 
 const YO = "mi_usuario";
 
-
 const PERFIL_EJEMPLO: PerfilUsuario = {
     apellidoPaterno: "Pérez",
     apellidoMaterno: "López",
@@ -33,48 +32,147 @@ const ICONO_HEADER = "cursor-pointer rounded-full p-1 text-white hover:bg-white/
 
 function Tarjeta({
                      a,
+                     onVer,
                      onEditar,
                  }: {
     a: Articulo;
+    onVer: () => void;
     onEditar?: () => void;
 }) {
     return (
         <div className="flex w-48 flex-col overflow-hidden rounded-lg bg-white shadow-sm">
-            <div className="h-28 shrink-0 bg-[#e4e4e4]">
-                {a.imagen && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                        src={a.imagen}
-                        alt={a.nombre}
-                        className="h-full w-full object-cover"
-                    />
-                )}
-            </div>
+            <button
+                type="button"
+                onClick={onVer}
+                className="flex flex-1 cursor-pointer flex-col text-left hover:bg-slate-50"
+            >
+                <div className="h-28 w-full shrink-0 bg-[#e4e4e4]">
+                    {a.imagen && (
+                        <img
+                            src={a.imagen}
+                            alt={a.nombre}
+                            className="h-full w-full object-cover"
+                        />
+                    )}
+                </div>
 
-            <div className="flex flex-1 flex-col px-3 pb-3 pt-2">
-                <span className={`self-start rounded-full px-2 py-0.5 text-[9px] font-bold uppercase ${COLOR[a.estado]}`}>
+                <div className="flex flex-col px-3 pb-3 pt-2">
+                    <span className={`self-start rounded-full px-2 py-0.5 text-[9px] font-bold uppercase ${COLOR[a.estado]}`}>
+                        {ESTADOS[a.estado]}
+                    </span>
+
+                    <p className="m-0 mt-1 break-words text-lg font-bold text-[#1e4a73]">
+                        {a.nombre}
+                    </p>
+
+                    <p className="m-0 text-[10px] text-slate-500">
+                        {a.duenio}
+                    </p>
+                </div>
+            </button>
+
+            {onEditar && (
+                <button
+                    type="button"
+                    onClick={onEditar}
+                    className="cursor-pointer self-center pb-3 pt-1 text-[11px] font-semibold text-[#5aa0e8] hover:underline"
+                >
+                    Editar Artículo
+                </button>
+            )}
+        </div>
+    );
+}
+
+function Ficha({
+                   a,
+                   onVolver,
+                   onSolicitar,
+               }: {
+    a: Articulo;
+    onVolver: () => void;
+    onSolicitar?: () => void;
+}) {
+    return (
+        <>
+            <button
+                type="button"
+                aria-label="Volver"
+                onClick={onVolver}
+                className="cursor-pointer rounded-full p-2 text-[#1e4a73] transition hover:bg-white"
+            >
+                <Icon name="arrow" size={28} />
+            </button>
+
+            <div className="mx-auto mt-2 w-full max-w-2xl rounded-[2.5rem] bg-white px-8 py-6 shadow-sm">
+                <div className="h-64 overflow-hidden rounded-2xl bg-[#e4e4e4]">
+                    {a.imagen && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                            src={a.imagen}
+                            alt={a.nombre}
+                            className="h-full w-full object-cover"
+                        />
+                    )}
+                </div>
+
+                <span className={`mt-4 inline-block rounded-full px-4 py-1 text-sm font-semibold ${COLOR[a.estado]}`}>
                     {ESTADOS[a.estado]}
                 </span>
 
-                <p className="m-0 mt-1 break-words text-lg font-bold text-[#1e4a73]">
+                <h2 className="m-0 mt-2 break-words text-lg font-bold uppercase text-[#1e4a73]">
                     {a.nombre}
+                </h2>
+                <p className="m-0 text-xs font-bold">{a.categoria}</p>
+
+                <p className="mb-0 mt-3 break-words text-xs font-semibold">{a.descripcion}</p>
+                <p className="mb-0 mt-2 text-xs text-slate-500">
+                    {a.condicion} · Préstamo: {a.tiempos.join(", ")}
                 </p>
 
-                <p className="m-0 text-[10px] text-slate-500">
-                    {a.duenio}
-                </p>
+                <hr className="my-4 border-slate-300" />
 
-                {onEditar && (
-                    <button
-                        type="button"
-                        onClick={onEditar}
-                        className="mt-auto cursor-pointer self-center pt-3 text-[11px] font-semibold text-[#5aa0e8] hover:underline"
-                    >
-                        Editar Artículo
-                    </button>
-                )}
+                <div className="flex items-center gap-4">
+                    <span className="text-slate-500">
+                        <Icon name="user" size={44} />
+                    </span>
+
+                    <div className="min-w-0">
+                        <p className="m-0 break-words text-base font-bold text-[#1e4a73]">
+                            {a.duenio} - {a.direccion}
+                        </p>
+
+                        <div
+                            role="img"
+                            aria-label={`Calificación ${a.calificacion.toFixed(1)} de 5`}
+                            className="flex items-center gap-1"
+                        >
+                            {[1, 2, 3, 4, 5].map((n) => (
+                                <span
+                                    key={n}
+                                    aria-hidden="true"
+                                    className={`text-xl ${n <= Math.round(a.calificacion) ? "text-amber-400" : "text-slate-700"}`}
+                                >
+                                    {n <= Math.round(a.calificacion) ? "★" : "☆"}
+                                </span>
+                            ))}
+                            <span className="ml-1 text-xs font-bold">{a.calificacion.toFixed(1)}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+
+            {onSolicitar && (
+                <button
+                    type="button"
+                    disabled={a.estado !== "disponible"}
+                    onClick={onSolicitar}
+                    className="mx-auto mt-6 block w-full max-w-xs cursor-pointer rounded-full bg-[#1e4a73] py-2 text-base font-bold text-white hover:bg-[#2a6aa8] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                    Solicitar Artículo
+                </button>
+            )}
+        </>
     );
 }
 
@@ -88,6 +186,7 @@ export default function InicioPage() {
     const [salir, setSalir] = useState(false);
     const [datosPerfil, setDatosPerfil] = useState(PERFIL_EJEMPLO);
     const [modal, setModal] = useState<Articulo | "nuevo" | null>(null);
+    const [detalleId, setDetalleId] = useState<number | null>(null);
 
     const condominio = [...REGISTRADOS_INICIALES, ...UNIDOS_INICIALES].find(
         (c) => String(c.id) === id
@@ -118,6 +217,8 @@ export default function InicioPage() {
                     ...datos,
                     id: randomId,
                     duenio: YO,
+                    direccion: `${datosPerfil.edificio}, ${datosPerfil.departamento}`,
+                    calificacion: datosPerfil.calificacion,
                 },
             ]);
         } else if (modal) {
@@ -130,6 +231,14 @@ export default function InicioPage() {
 
         setModal(null);
     }
+
+    function solicitar(idArticulo: number) {
+        setArticulos((prev) =>
+            prev.map((a) => (a.id === idArticulo ? { ...a, estado: "pendiente" } : a))
+        );
+    }
+
+    const detalle = articulos.find((a) => a.id === detalleId);
 
     const visibles = articulos.filter((a) =>
         a.nombre.toLowerCase().includes(busqueda.toLowerCase())
@@ -144,10 +253,8 @@ export default function InicioPage() {
     ];
 
     return (
-        <div className="flex h-screen flex-col overflow-hidden bg-[#e9eef3] font-sans
-        text-black">
-            <header className="flex h-[100px] shrink-0 items-center gap-4 bg-[#1e4a73]
-            px-4 text-white md:px-6">
+        <div className="flex h-screen flex-col overflow-hidden bg-[#e9eef3] font-sans text-black">
+            <header className="flex h-[100px] shrink-0 items-center gap-4 bg-[#1e4a73] px-4 text-white md:px-6">
                 <Link
                     href="/habitante_yipshare/principal_page"
                     aria-label="Volver a mis condominios"
@@ -205,7 +312,10 @@ export default function InicioPage() {
                         <input
                             aria-label="Buscar artículo"
                             value={busqueda}
-                            onChange={(e) => setBusqueda(e.target.value)}
+                            onChange={(e) => {
+                                setBusqueda(e.target.value);
+                                setDetalleId(null);
+                            }}
                             placeholder="Buscar artículo..."
                             className="w-72 rounded-full bg-white/10 py-1.5 pl-4 pr-10 text-sm text-white outline-none placeholder:text-white/70 focus:bg-white/20 lg:w-80"
                         />
@@ -259,51 +369,63 @@ export default function InicioPage() {
                 </aside>
 
                 <main className="min-w-0 flex-1 overflow-y-auto px-4 pb-8 pt-6 md:px-10">
-                    <h2 className="m-0 text-base font-bold">Mis Artículos</h2>
+                    {detalle ? (
+                        <Ficha
+                            a={detalle}
+                            onVolver={() => setDetalleId(null)}
+                            onSolicitar={detalle.duenio !== YO ? () => solicitar(detalle.id) : undefined}
+                        />
+                    ) : (
+                        <>
+                            <h2 className="m-0 text-base font-bold">Mis Artículos</h2>
 
-                    {mios.length === 0 && (
-                        <p className="mb-0 mt-3 text-sm text-slate-500">
-                            No hay artículos.
-                        </p>
+                            {mios.length === 0 && (
+                                <p className="mb-0 mt-3 text-sm text-slate-500">
+                                    No hay artículos.
+                                </p>
+                            )}
+
+                            <div className="mt-4 flex flex-wrap items-center gap-4">
+                                {mios.map((a) => (
+                                    <Tarjeta
+                                        key={a.id}
+                                        a={a}
+                                        onVer={() => setDetalleId(a.id)}
+                                        onEditar={() => setModal(a)}
+                                    />
+                                ))}
+
+                                <button
+                                    type="button"
+                                    aria-label="Agregar artículo"
+                                    onClick={() => setModal("nuevo")}
+                                    className="ml-4 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-[#1e4a73] text-white shadow-md hover:bg-[#2a6aa8]"
+                                >
+                                    <Icon name="plus" size={26} />
+                                </button>
+                            </div>
+
+                            <h2 className="m-0 mt-10 text-base font-bold">
+                                Artículos Disponibles
+                            </h2>
+
+                            {deOtros.length === 0 && (
+                                <p className="mb-0 mt-3 text-sm text-slate-500">
+                                    No hay artículos.
+                                </p>
+                            )}
+
+                            <div className="mt-4 flex flex-wrap gap-4">
+                                {deOtros.map((a) => (
+                                    <Tarjeta
+                                        key={a.id}
+                                        a={a}
+                                        onVer={() => setDetalleId(a.id)}
+                                    />
+                                ))}
+                            </div>
+                        </>
                     )}
-
-                    <div className="mt-4 flex flex-wrap items-center gap-4">
-                        {mios.map((a) => (
-                            <Tarjeta
-                                key={a.id}
-                                a={a}
-                                onEditar={() => setModal(a)}
-                            />
-                        ))}
-
-                        <button
-                            type="button"
-                            aria-label="Agregar artículo"
-                            onClick={() => setModal("nuevo")}
-                            className="ml-4 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-[#1e4a73] text-white shadow-md hover:bg-[#2a6aa8]"
-                        >
-                            <Icon name="plus" size={26} />
-                        </button>
-                    </div>
-
-                    <h2 className="m-0 mt-10 text-base font-bold">
-                        Artículos Disponibles
-                    </h2>
-
-                    {deOtros.length === 0 && (
-                        <p className="mb-0 mt-3 text-sm text-slate-500">
-                            No hay artículos.
-                        </p>
-                    )}
-
-                    <div className="mt-4 flex flex-wrap gap-4">
-                        {deOtros.map((a) => (
-                            <Tarjeta
-                                key={a.id}
-                                a={a}
-                            />
-                        ))}
-                    </div>
                 </main>
             </div>
 
