@@ -4,13 +4,24 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { ESTADOS, ArticuloModal, type Articulo, type Datos, type Estado } from "@/components/ArticuloModal";
-import { Icon, type IconName } from "@/components/Icon";
+import {
+    ESTADOS,
+    ArticuloModal,
+    type Articulo,
+    type Datos,
+    type Estado,
+    type Tiempo,
+} from "@/components/ArticuloModal";
+import { Icon } from "@/components/Icon";
 import { ConfirmDialog } from "@/components/Modal";
 import { PerfilHabitanteModal, type DatosPerfil, type PerfilUsuario } from "@/components/PerfilHabitanteModal";
+import { PrestamosVista } from "@/components/PrestamoVista";
 import { NOMBRE_USUARIO, REGISTRADOS_INICIALES, UNIDOS_INICIALES } from "@/lib/datosHabitante";
+import { avanzar, type EstadoPrestamo, type Prestamo } from "@/lib/prestamos";
 
 const YO = "mi_usuario";
+
+type Seccion = "inicio" | "prestamos";
 
 const PERFIL_EJEMPLO: PerfilUsuario = {
     apellidoPaterno: "Pérez",
@@ -20,6 +31,14 @@ const PERFIL_EJEMPLO: PerfilUsuario = {
     departamento: "Departamento 14",
     calificacion: 4.2,
 };
+
+
+const PRESTAMOS_EJEMPLO: Prestamo[] = [
+    { id: 1, articuloId: -1, nombre: "Taladro", imagen: null, duenio: "vecino_ana", prestatario: YO, tiempo: "2 días", estado: "pendiente", fin: null },
+    { id: 2, articuloId: -2, nombre: "Escalera", imagen: null, duenio: YO, prestatario: "vecino_luis", tiempo: "1 día", estado: "pendiente", fin: null },
+    { id: 3, articuloId: -3, nombre: "Bocina", imagen: null, duenio: "vecino_marta", prestatario: YO, tiempo: "3 días", estado: "aceptado", fin: null },
+    { id: 4, articuloId: -4, nombre: "Podadora", imagen: null, duenio: YO, prestatario: "vecino_pedro", tiempo: "1 semana", estado: "aceptado", fin: null },
+];
 
 const COLOR: Record<Estado, string> = {
     disponible: "bg-[#b9f0c8] text-green-900",
@@ -91,8 +110,11 @@ function Ficha({
                }: {
     a: Articulo;
     onVolver: () => void;
-    onSolicitar?: () => void;
+    onSolicitar?: (tiempo: Tiempo) => void;
 }) {
+    // El prestatario elige entre los tiempos que permite el dueño
+    const [tiempo, setTiempo] = useState<Tiempo>(a.tiempos[0]);
+
     return (
         <>
             <button
@@ -107,7 +129,6 @@ function Ficha({
             <div className="mx-auto mt-2 w-full max-w-2xl rounded-[2.5rem] bg-white px-8 py-6 shadow-sm">
                 <div className="h-64 overflow-hidden rounded-2xl bg-[#e4e4e4]">
                     {a.imagen && (
-                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                             src={a.imagen}
                             alt={a.nombre}
@@ -163,14 +184,37 @@ function Ficha({
             </div>
 
             {onSolicitar && (
-                <button
-                    type="button"
-                    disabled={a.estado !== "disponible"}
-                    onClick={onSolicitar}
-                    className="mx-auto mt-6 block w-full max-w-xs cursor-pointer rounded-full bg-[#1e4a73] py-2 text-base font-bold text-white hover:bg-[#2a6aa8] disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                    Solicitar Artículo
-                </button>
+                <>
+                    <div className="mx-auto mt-6 w-full max-w-xs text-center">
+                        <p className="m-0 text-xs font-bold text-[#1e4a73]">Tiempo de préstamo</p>
+                        <div className="mt-2 flex flex-wrap justify-center gap-2">
+                            {a.tiempos.map((t) => (
+                                <button
+                                    key={t}
+                                    type="button"
+                                    aria-pressed={tiempo === t}
+                                    onClick={() => setTiempo(t)}
+                                    className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-semibold transition ${
+                                        tiempo === t
+                                            ? "border-[#1e4a73] bg-[#1e4a73] text-white"
+                                            : "border-slate-500 bg-white text-slate-700 hover:bg-slate-100"
+                                    }`}
+                                >
+                                    {t}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        disabled={a.estado !== "disponible"}
+                        onClick={() => onSolicitar(tiempo)}
+                        className="mx-auto mt-4 block w-full max-w-xs cursor-pointer rounded-full bg-[#1e4a73] py-2 text-base font-bold text-white hover:bg-[#2a6aa8] disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        Solicitar Artículo
+                    </button>
+                </>
             )}
         </>
     );
@@ -181,6 +225,8 @@ export default function InicioPage() {
     const router = useRouter();
 
     const [articulos, setArticulos] = useState<Articulo[]>([]);
+    const [prestamos, setPrestamos] = useState<Prestamo[]>(PRESTAMOS_EJEMPLO);
+    const [seccion, setSeccion] = useState<Seccion>("inicio");
     const [busqueda, setBusqueda] = useState("");
     const [perfil, setPerfil] = useState(false);
     const [salir, setSalir] = useState(false);
@@ -205,6 +251,11 @@ export default function InicioPage() {
                 </Link>
             </main>
         );
+    }
+
+    function irA(destino: Seccion) {
+        setSeccion(destino);
+        setDetalleId(null);
     }
 
     function guardar(datos: Datos) {
@@ -232,11 +283,45 @@ export default function InicioPage() {
         setModal(null);
     }
 
-    function solicitar(idArticulo: number) {
+
+    function cambiarEstadoArticulo(idArticulo: number, estado: Estado) {
+        setArticulos((prev) => prev.map((a) => (a.id === idArticulo ? { ...a, estado } : a)));
+    }
+
+    function solicitar(a: Articulo, tiempo: Tiempo) {
         // TODO: enviar la solicitud al backend. Mientras el dueño responde, queda "Pendiente".
-        setArticulos((prev) =>
-            prev.map((a) => (a.id === idArticulo ? { ...a, estado: "pendiente" } : a))
-        );
+        const nuevo: Prestamo = {
+            id: crypto.getRandomValues(new Uint32Array(1))[0],
+            articuloId: a.id,
+            nombre: a.nombre,
+            imagen: a.imagen,
+            duenio: a.duenio,
+            prestatario: YO,
+            tiempo,
+            estado: "pendiente",
+            fin: null,
+        };
+
+        setPrestamos((prev) => [...prev, nuevo]);
+        cambiarEstadoArticulo(a.id, "pendiente");
+    }
+
+    function responder(p: Prestamo, aceptar: boolean) {
+        // TODO: avisar al backend
+        const estado: EstadoPrestamo = aceptar ? "aceptado" : "rechazado";
+
+        setPrestamos((prev) => prev.map((x) => (x.id === p.id ? { ...x, estado } : x)));
+        if (!aceptar) cambiarEstadoArticulo(p.articuloId, "disponible");
+    }
+
+
+    function registrarCodigo(p: Prestamo) {
+        // TODO: validar el código en el backend
+        const actualizado = avanzar(p, Date.now());
+
+        setPrestamos((prev) => prev.map((x) => (x.id === p.id ? actualizado : x)));
+        if (actualizado.estado === "en_curso") cambiarEstadoArticulo(p.articuloId, "no_disponible");
+        if (actualizado.estado === "finalizado") cambiarEstadoArticulo(p.articuloId, "disponible");
     }
 
     const detalle = articulos.find((a) => a.id === detalleId);
@@ -248,10 +333,8 @@ export default function InicioPage() {
     const mios = visibles.filter((a) => a.duenio === YO);
     const deOtros = visibles.filter((a) => a.duenio !== YO);
 
-    const menu: { label: string; icon: IconName }[] = [
-        { label: "Préstamos", icon: "calendar" },
-        { label: "Reportes", icon: "alert" },
-    ];
+    const claseItem = (activo: boolean) =>
+        `${ITEM} cursor-pointer ${activo ? "text-white" : "text-white/40 hover:text-white/80"}`;
 
     return (
         <div className="flex h-screen flex-col overflow-hidden bg-[#e9eef3] font-sans text-black">
@@ -309,51 +392,64 @@ export default function InicioPage() {
                         </button>
                     </div>
 
-                    <div className="relative hidden sm:block">
-                        <input
-                            aria-label="Buscar artículo"
-                            value={busqueda}
-                            onChange={(e) => {
-                                setBusqueda(e.target.value);
-                                setDetalleId(null);
-                            }}
-                            placeholder="Buscar artículo..."
-                            className="w-72 rounded-full bg-white/10 py-1.5 pl-4 pr-10 text-sm text-white outline-none placeholder:text-white/70 focus:bg-white/20 lg:w-80"
-                        />
+                    {seccion === "inicio" && (
+                        <div className="relative hidden sm:block">
+                            <input
+                                aria-label="Buscar artículo"
+                                value={busqueda}
+                                onChange={(e) => {
+                                    setBusqueda(e.target.value);
+                                    setDetalleId(null);
+                                }}
+                                placeholder="Buscar artículo..."
+                                className="w-72 rounded-full bg-white/10 py-1.5 pl-4 pr-10 text-sm
+                                text-white outline-none placeholder:text-white/70
+                                focus:bg-white/20 lg:w-80"
+                            />
 
-                        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                            <Icon name="search" size={18} />
-                        </span>
-                    </div>
+                            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                                <Icon name="search" size={18} />
+                            </span>
+                        </div>
+                    )}
                 </div>
             </header>
 
             <div className="flex min-h-0 flex-1">
                 <aside className="flex w-16 shrink-0 flex-col space-y-3 bg-[#1e4a73] px-1 pt-8 md:w-56 md:px-3">
-                    <div
-                        className={`${ITEM} text-white`}
-                        aria-current="page"
+                    <button
+                        type="button"
+                        onClick={() => irA("inicio")}
+                        aria-current={seccion === "inicio" ? "page" : undefined}
+                        className={claseItem(seccion === "inicio")}
                     >
                         <Icon name="house" size={26} />
                         <span className="hidden md:inline">Inicio</span>
-                    </div>
+                    </button>
 
-                    {menu.map(({ label, icon }) => (
-                        <button
-                            key={label}
-                            type="button"
-                            disabled
-                            className={`${ITEM} cursor-not-allowed text-white/40`}
-                        >
-                            <Icon name={icon} size={26} />
-                            <span className="hidden md:inline">{label}</span>
-                        </button>
-                    ))}
+                    <button
+                        type="button"
+                        onClick={() => irA("prestamos")}
+                        aria-current={seccion === "prestamos" ? "page" : undefined}
+                        className={claseItem(seccion === "prestamos")}
+                    >
+                        <Icon name="calendar" size={26} />
+                        <span className="hidden md:inline">Préstamos</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        disabled
+                        className={`${ITEM} cursor-not-allowed text-white/40`}
+                    >
+                        <Icon name="alert" size={26} />
+                        <span className="hidden md:inline">Reportes</span>
+                    </button>
 
                     <button
                         type="button"
                         onClick={() => setPerfil(true)}
-                        className={`${ITEM} cursor-pointer text-white/40 hover:text-white/80`}
+                        className={claseItem(false)}
                     >
                         <Icon name="user" size={26} />
                         <span className="hidden md:inline">Perfil</span>
@@ -362,7 +458,7 @@ export default function InicioPage() {
                     <button
                         type="button"
                         onClick={() => setSalir(true)}
-                        className={`${ITEM} cursor-pointer text-white/40 hover:text-white/80`}
+                        className={claseItem(false)}
                     >
                         <Icon name="logout" size={26} />
                         <span className="hidden md:inline">Cerrar sesión</span>
@@ -370,11 +466,18 @@ export default function InicioPage() {
                 </aside>
 
                 <main className="min-w-0 flex-1 overflow-y-auto px-4 pb-8 pt-6 md:px-10">
-                    {detalle ? (
+                    {seccion === "prestamos" ? (
+                        <PrestamosVista
+                            prestamos={prestamos}
+                            usuario={YO}
+                            onResponderAction={responder}
+                            onCodigoAction={registrarCodigo}
+                        />
+                    ) : detalle ? (
                         <Ficha
                             a={detalle}
                             onVolver={() => setDetalleId(null)}
-                            onSolicitar={detalle.duenio !== YO ? () => solicitar(detalle.id) : undefined}
+                            onSolicitar={detalle.duenio !== YO ? (tiempo) => solicitar(detalle, tiempo) : undefined}
                         />
                     ) : (
                         <>

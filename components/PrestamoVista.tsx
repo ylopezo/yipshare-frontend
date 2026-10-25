@@ -1,0 +1,258 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import {
+    codigoValido,
+    nuevoCodigo,
+    SEGUNDOS_CODIGO,
+    type Codigo,
+    type EstadoPrestamo,
+    type Prestamo,
+} from "@/lib/prestamos";
+import { Modal } from "./Modal";
+
+type Rol = "prestatario" | "duenio";
+
+type Ventana =
+    | { tipo: "peticion"; p: Prestamo }
+    | { tipo: "codigo"; p: Prestamo; codigo: Codigo }
+    | null;
+
+const ESTADO: Record<EstadoPrestamo, { texto: string; clase: string }> = {
+    pendiente: { texto: "Pendiente de conformación", clase: "bg-[#fde9a8] text-amber-900" },
+    aceptado: { texto: "Reservado", clase: "bg-[#dbe7f5] text-[#1e4a73]" },
+    en_curso: { texto: "En préstamo", clase: "bg-[#b9f0c8] text-green-900" },
+    finalizado: { texto: "Finalizado", clase: "bg-slate-200 text-slate-700" },
+    rechazado: { texto: "Rechazado", clase: "bg-[#f6b5b5] text-red-900" },
+};
+
+const BOTON_OSCURO =
+    "cursor-pointer rounded-full bg-[#1f2d47] text-white transition hover:bg-[#2c4066] disabled:cursor-not-allowed disabled:opacity-50";
+
+function CodigoModal({
+                         fase,
+                         codigoInicial,
+                         onConfirmarAction,
+                         onCancelarAction,
+                     }: {
+    fase: "entrega" | "devolución";
+    codigoInicial: Codigo;
+    onConfirmarAction: () => void;
+    onCancelarAction: () => void;
+}) {
+    const [cod, setCod] = useState(codigoInicial);
+    const [ahora, setAhora] = useState(codigoInicial.expira - SEGUNDOS_CODIGO * 1000);
+    const [escrito, setEscrito] = useState("");
+    const [error, setError] = useState(false);
+
+    useEffect(() => {
+        const t = setInterval(() => setAhora(Date.now()), 1000);
+        return () => clearInterval(t);
+    }, []);
+
+
+    useEffect(() => {
+        const t = setTimeout(() => setCod(nuevoCodigo(Date.now())), Math.max(0, cod.expira - Date.now()));
+        return () => clearTimeout(t);
+    }, [cod]);
+
+    const restante = Math.min(SEGUNDOS_CODIGO, Math.max(0, Math.ceil((cod.expira - ahora) / 1000)));
+
+    return (
+        <Modal label="Ingresar código" onCloseAction={onCancelarAction}>
+            <form
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    // shortcut: compara contra el código mostrado aquí para poder probar sin backend;
+                    // con backend, el código a escribir es el que genera la otra persona
+                    if (codigoValido(cod, escrito, Date.now())) onConfirmarAction();
+                    else setError(true);
+                }}
+                className="w-[min(92vw,360px)] rounded-[2rem] bg-white px-8 py-8 text-center shadow-xl"
+            >
+                <h2 className="m-0 text-xl font-extrabold uppercase">Ingresar código</h2>
+                <p className="mb-0 mt-1 text-xs text-slate-500">Código de {fase}</p>
+
+                <input
+                    aria-label="Código"
+                    inputMode="numeric"
+                    maxLength={6}
+                    autoComplete="off"
+                    placeholder="Código"
+                    value={escrito}
+                    onChange={(e) => {
+                        setEscrito(e.target.value);
+                        setError(false);
+                    }}
+                    className="mt-5 w-full rounded-xl border border-slate-600 bg-[#eeeeee] px-4 py-2 text-center text-lg tracking-widest text-slate-700 outline-none focus:border-[#1e4a73]"
+                />
+                {error && (
+                    <p role="alert" className="mb-0 mt-2 text-sm text-red-600">
+                        Código incorrecto o vencido.
+                    </p>
+                )}
+
+                <button
+                    type="submit"
+                    disabled={escrito.trim().length !== 6}
+                    className={`${BOTON_OSCURO} mx-auto mt-4 block w-3/5 py-2 text-sm font-semibold`}
+                >
+                    Confirmar
+                </button>
+
+                <div className="mt-6 border-t border-slate-300 pt-4">
+                    <p className="m-0 text-xs font-bold text-[#1e4a73]">Tu código</p>
+                    <p className="m-0 mt-1 font-mono text-3xl font-bold tracking-widest text-[#1e4a73]">{cod.valor}</p>
+                    <p className="m-0 mt-1 text-xs text-slate-500">
+                        Vence en {Math.floor(restante / 60)}:{String(restante % 60).padStart(2, "0")}
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    onClick={onCancelarAction}
+                    className="mx-auto mt-4 block cursor-pointer text-sm font-bold text-[#2a5a88] hover:underline"
+                >
+                    Cancelar
+                </button>
+            </form>
+        </Modal>
+    );
+}
+
+export function PrestamosVista({
+                                   prestamos,
+                                   usuario,
+                                   onResponderAction,
+                                   onCodigoAction,
+                               }: {
+    prestamos: Prestamo[];
+    usuario: string;
+    onResponderAction: (p: Prestamo, aceptar: boolean) => void;
+    onCodigoAction: (p: Prestamo) => void;
+}) {
+    const [ventana, setVentana] = useState<Ventana>(null);
+    const cerrar = () => setVentana(null);
+
+    const accion = (p: Prestamo, rol: Rol) => {
+        if (p.estado === "pendiente" && rol === "duenio") {
+            return { texto: "Confirmar Petición", abrir: () => setVentana({ tipo: "peticion", p }) };
+        }
+        if (p.estado === "aceptado" || p.estado === "en_curso") {
+            return {
+                texto: "Ingresar Código",
+                abrir: () => setVentana({ tipo: "codigo", p, codigo: nuevoCodigo(Date.now()) }),
+            };
+        }
+        return null;
+    };
+
+    const tarjeta = (p: Prestamo, rol: Rol) => {
+        const a = accion(p, rol);
+        return (
+            <li key={p.id} className="w-48 overflow-hidden rounded-lg bg-white shadow-sm">
+                <div className="h-24 bg-[#e4e4e4]">
+                    {p.imagen && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={p.imagen} alt={p.nombre} className="h-full w-full object-cover" />
+                    )}
+                </div>
+
+                <div className="px-3 pb-3 pt-2">
+                    <p className="m-0 break-words text-base font-bold text-[#1e4a73]">{p.nombre}</p>
+                    <p className="m-0 text-[10px] text-slate-500">{rol === "prestatario" ? p.duenio : p.prestatario}</p>
+                    {p.estado === "en_curso" && p.fin && (
+                        <p className="m-0 mt-1 text-[10px] text-slate-500">
+                            Vence: {new Date(p.fin).toLocaleString("es-MX", { dateStyle: "medium", timeStyle: "short" })}
+                        </p>
+                    )}
+
+                    <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+                        <span className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${ESTADO[p.estado].clase}`}>
+                            {ESTADO[p.estado].texto}
+                        </span>
+                        {a && (
+                            <button type="button" onClick={a.abrir} className={`${BOTON_OSCURO} px-3 py-1 text-[10px] font-semibold`}>
+                                {a.texto}
+                            </button>
+                        )}
+                    </div>
+                </div>
+            </li>
+        );
+    };
+
+    const columna = (titulo: string, lista: Prestamo[], rol: Rol) => (
+        <section>
+            <h3 className="m-0 text-sm font-bold text-slate-700">{titulo}</h3>
+            {lista.length === 0 ? (
+                <p className="mb-0 mt-3 text-sm text-slate-500">No hay préstamos.</p>
+            ) : (
+                <ul className="m-0 mt-3 flex list-none flex-wrap gap-4 p-0">{lista.map((p) => tarjeta(p, rol))}</ul>
+            )}
+        </section>
+    );
+
+    return (
+        <>
+            <h2 className="m-0 text-base font-bold">Mis Préstamos</h2>
+
+            <div className="mt-4 grid gap-8 md:grid-cols-2">
+                {columna("Como Prestatario", prestamos.filter((p) => p.prestatario === usuario), "prestatario")}
+                {columna("Como Dueño", prestamos.filter((p) => p.duenio === usuario), "duenio")}
+            </div>
+
+            {ventana?.tipo === "peticion" && (
+                <Modal label="Confirmar petición" onCloseAction={cerrar}>
+                    <div className="w-[min(92vw,360px)] rounded-[2rem] bg-white px-8 py-8 text-center shadow-xl">
+                        <h2 className="m-0 text-xl font-extrabold uppercase">Confirmar petición</h2>
+                        <p className="mb-0 mt-3 text-sm text-slate-600">
+                            {ventana.p.prestatario} quiere pedir «{ventana.p.nombre}» por {ventana.p.tiempo}.
+                        </p>
+
+                        <button
+                            type="button"
+                            onClick={() => {
+                                onResponderAction(ventana.p, true);
+                                cerrar();
+                            }}
+                            className={`${BOTON_OSCURO} mx-auto mt-6 block w-3/5 py-2 text-sm font-semibold`}
+                        >
+                            Aceptar
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                onResponderAction(ventana.p, false);
+                                cerrar();
+                            }}
+                            className="mx-auto mt-3 block w-3/5 cursor-pointer rounded-full border border-red-600 bg-white py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50"
+                        >
+                            Denegar
+                        </button>
+                        <button
+                            type="button"
+                            onClick={cerrar}
+                            className="mx-auto mt-4 block cursor-pointer text-sm font-bold text-[#2a5a88] hover:underline"
+                        >
+                            Cancelar
+                        </button>
+                    </div>
+                </Modal>
+            )}
+
+            {ventana?.tipo === "codigo" && (
+                <CodigoModal
+                    key={ventana.p.id}
+                    fase={ventana.p.estado === "aceptado" ? "entrega" : "devolución"}
+                    codigoInicial={ventana.codigo}
+                    onConfirmarAction={() => {
+                        onCodigoAction(ventana.p);
+                        cerrar();
+                    }}
+                    onCancelarAction={cerrar}
+                />
+            )}
+        </>
+    );
+}
