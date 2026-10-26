@@ -38,7 +38,7 @@ export type Articulo = {
     descripcion: string;
     condicion: Condicion;
     tiempos: Tiempo[];
-    estado: Estado; // disponibilidad (la cambian los préstamos, no este formulario)
+    estado: Estado; // disponibilidad SOLAMENTE CAMBIARÁ MEDIANTE BACK
     imagen: string | null;
     duenio: string;
     direccion: string;
@@ -97,7 +97,6 @@ export function ArticuloModal({
                 <h2 className="m-0 text-center text-xl font-extrabold uppercase">{titulo}</h2>
 
                 <div className="mt-6 grid gap-6 md:grid-cols-[240px_1fr]">
-                    {/* Imagen a la izquierda */}
                     <div>
                         <button
                             type="button"
@@ -106,7 +105,7 @@ export function ArticuloModal({
                             className="flex aspect-square w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#e4e4e4] text-slate-500 hover:bg-[#d8d8d8]"
                         >
                             {imagen ? (
-
+                                // eslint-disable-next-line @next/next/no-img-element
                                 <img src={imagen} alt="" className="h-full w-full object-cover" />
                             ) : (
                                 <span className="flex flex-col items-center gap-1 text-xs font-semibold">

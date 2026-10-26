@@ -77,7 +77,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
                             value={busqueda}
                             onChange={(e) => setBusqueda(e.target.value)}
                             placeholder={placeholderBusqueda}
-                            className="w-72 rounded-full bg-white/10 py-1.5 pl-4 pr-10 text-sm text-white placeholder:text-white/70 outline-none transition focus:bg-white/20 lg:w-80"
+                            className="w-72 rounded-full bg-white/10 py-1.5 pl-4 pr-10 text-sm text-white outline-none transition lg:w-80"
                         />
                         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white">
                             <Icon name="search" size={18} />

@@ -50,7 +50,6 @@ function CodigoModal({
         return () => clearInterval(t);
     }, []);
 
-
     useEffect(() => {
         const t = setTimeout(() => setCod(nuevoCodigo(Date.now())), Math.max(0, cod.expira - Date.now()));
         return () => clearTimeout(t);
@@ -153,7 +152,6 @@ export function PrestamosVista({
             <li key={p.id} className="w-48 overflow-hidden rounded-lg bg-white shadow-sm">
                 <div className="h-24 bg-[#e4e4e4]">
                     {p.imagen && (
-                        // eslint-disable-next-line @next/next/no-img-element
                         <img src={p.imagen} alt={p.nombre} className="h-full w-full object-cover" />
                     )}
                 </div>

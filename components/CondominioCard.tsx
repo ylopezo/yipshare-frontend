@@ -8,7 +8,6 @@ const ETIQUETA: Record<RolEnCondominio, string> = {
     habitante: "Usted es miembro",
 };
 
-// Cada rol entra a su propia sección. Cambia las rutas por las tuyas.
 const RUTA_BASE: Record<RolEnCondominio, string> = {
     admin: "/habitante_yipshare/condominio_admin",
     habitante: "/habitante_yipshare/condominio",

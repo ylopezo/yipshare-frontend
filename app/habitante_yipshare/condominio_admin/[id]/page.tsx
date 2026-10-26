@@ -120,7 +120,6 @@ const BOTON_PELIGRO =
 const INPUT_LECTURA =
     "w-full rounded-full border border-slate-500 bg-[#eeeeee] px-4 py-2 text-sm text-slate-700 outline-none read-only:cursor-default";
 
-// -Componentes
 
 function Tarjeta({ a, onVer, onEditar }: { a: Articulo; onVer: () => void; onEditar?: () => void }) {
     return (
@@ -138,7 +137,7 @@ function Tarjeta({ a, onVer, onEditar }: { a: Articulo; onVer: () => void; onEdi
                     <span className={`self-start rounded-full px-2 py-0.5 text-[9px] font-bold uppercase ${COLOR[a.estado]}`}>
                         {ESTADOS[a.estado]}
                     </span>
-                    <p className="m-0 mt-1 break-words text-lg font-bold text-[#1e4a73]">{a.nombre}</p>
+                    <p className="m-0 mt-1 wrap-break-word text-lg font-bold text-[#1e4a73]">{a.nombre}</p>
                     <p className="m-0 text-[10px] text-slate-500">{a.duenio}</p>
                 </div>
             </button>
@@ -726,8 +725,8 @@ export default function CondominioAdminPage() {
 
     return (
         <div className="flex h-screen flex-col overflow-hidden bg-[#e9eef3] font-sans text-black">
-            <header className="flex h-[100px] shrink-0 items-center gap-4 bg-[#1e4a73] px-4 text-white md:px-6">
-                <Link href="/admin_yipshare/principal_page" aria-label="Volver a mis condominios">
+            <header className="flex h-25 shrink-0 items-center gap-4 bg-[#1e4a73] px-4 text-white md:px-6">
+                <Link href="/habitante_yipshare/principal_page" aria-label="Volver a mis condominios">
                     <Image
                         src="/img/logo_yipshare_icono.png"
                         alt="YipShare"
