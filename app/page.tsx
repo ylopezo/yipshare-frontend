@@ -46,7 +46,8 @@ export default function Home() {
     }, []);
 
     return (
-        <div className="relative m-0 min-h-screen flex flex-col bg-linear-to-b from-[#24557f] to-[#3b8bd9] text-white font-sans">
+        <div className="relative m-0 min-h-screen flex flex-col bg-linear-to-b
+        from-[#24557f] to-[#3b8bd9] text-white font-sans">
 
             <div
                 aria-hidden="true"
@@ -84,13 +85,15 @@ export default function Home() {
                     <div className="flex items-center gap-3">
                         <Link
                             href="/login"
-                            className="w-32 rounded-full bg-[#2a6aa8] py-1 text-center text-sm font-bold text-white transition hover:bg-[#3b86cc]"
+                            className="w-32 rounded-full bg-[#2a6aa8] py-1 text-center text-sm font-bold
+                            text-white transition hover:bg-[#3b86cc]"
                         >
                             Iniciar Sesión
                         </Link>
                         <Link
                             href="/register_account"
-                            className="w-32 rounded-full bg-white py-1 text-center text-sm font-bold text-[#1e4a73] transition hover:bg-sky-200"
+                            className="w-32 rounded-full bg-white py-1 text-center text-sm font-bold
+                            text-[#1e4a73] transition hover:bg-sky-200"
                         >
                             Registrarse
                         </Link>

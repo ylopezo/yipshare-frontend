@@ -1,4 +1,4 @@
-import type { Tiempo } from "../components/ArticuloModal";
+import type { Tiempo } from "@/components/ArticuloModal";
 
 export type EstadoPrestamo = "pendiente" | "aceptado" | "en_curso" | "finalizado" | "rechazado";
 
@@ -10,11 +10,17 @@ export type Prestamo = {
     duenio: string;
     prestatario: string;
     tiempo: Tiempo;
+
     estado: EstadoPrestamo;
     fin: number | null;
 };
 
 export type Codigo = { valor: string; expira: number };
+
+export type Calificacion = { prestamoId: number; de: string; para: string; estrellas: number; comentario: string };
+
+export const promedio = (cs: Calificacion[]) =>
+    cs.length === 0 ? 0 : cs.reduce((suma, c) => suma + c.estrellas, 0) / cs.length;
 
 
 export const DIAS: Record<Tiempo, number> = {

@@ -72,7 +72,6 @@ export function ArticuloModal({
     const titulo = articulo ? "Editar artículo" : "Agregar artículo";
     const valido = nombre.trim() !== "" && descripcion.trim() !== "" && categoria && condicion && tiempos.length > 0;
 
-    // Agrega o quita un tiempo y conserva el orden de TIEMPOS
     const alternarTiempo = (t: Tiempo) =>
         setTiempos((prev) => TIEMPOS.filter((x) => (x === t ? !prev.includes(x) : prev.includes(x))));
 
@@ -102,15 +101,13 @@ export function ArticuloModal({
                             type="button"
                             onClick={() => archivo.current?.click()}
                             aria-label="Elegir imagen"
-                            className="flex aspect-square w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-[#e4e4e4] text-slate-500 hover:bg-[#d8d8d8]"
+                            className="flex aspect-square w-full cursor-pointer items-center
+                            justify-center overflow-hidden rounded-xl bg-[#e4e4e4] text-slate-500 hover:bg-[#d8d8d8]"
                         >
                             {imagen ? (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img src={imagen} alt="" className="h-full w-full object-cover" />
-                            ) : (
+                                <img src={imagen} alt="" className="h-full w-full object-cover" /> ) : (
                                 <span className="flex flex-col items-center gap-1 text-xs font-semibold">
-                                    <Icon name="plus" size={28} />
-                                    Agregar imagen
+                                    <Icon name="plus" size={28} />Agregar imagen
                                 </span>
                             )}
                         </button>

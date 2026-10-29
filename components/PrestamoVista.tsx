@@ -5,10 +5,13 @@ import {
     codigoValido,
     nuevoCodigo,
     SEGUNDOS_CODIGO,
+    type Calificacion,
     type Codigo,
     type EstadoPrestamo,
     type Prestamo,
 } from "@/lib/prestamos";
+import { CalificarModal } from "./CalificarModal";
+import { REPORTE_ESTADOS, type Reporte } from "./ReportesVista";
 import { Modal } from "./Modal";
 
 type Rol = "prestatario" | "duenio";
@@ -16,9 +19,10 @@ type Rol = "prestatario" | "duenio";
 type Ventana =
     | { tipo: "peticion"; p: Prestamo }
     | { tipo: "codigo"; p: Prestamo; codigo: Codigo }
+    | { tipo: "calificar"; p: Prestamo }
     | null;
 
-const ESTADO: Record<EstadoPrestamo, { texto: string; clase: string }> = {
+export const ESTADO_PRESTAMO: Record<EstadoPrestamo, { texto: string; clase: string }> = {
     pendiente: { texto: "Pendiente de conformación", clase: "bg-[#fde9a8] text-amber-900" },
     aceptado: { texto: "Reservado", clase: "bg-[#dbe7f5] text-[#1e4a73]" },
     en_curso: { texto: "En préstamo", clase: "bg-[#b9f0c8] text-green-900" },
@@ -124,14 +128,19 @@ export function PrestamosVista({
                                    usuario,
                                    onResponderAction,
                                    onCodigoAction,
+                                   onCalificarAction,
+                                   reportes,
                                }: {
     prestamos: Prestamo[];
     usuario: string;
+    reportes: Reporte[];
     onResponderAction: (p: Prestamo, aceptar: boolean) => void;
     onCodigoAction: (p: Prestamo) => void;
+    onCalificarAction: (c: Calificacion) => void;
 }) {
     const [ventana, setVentana] = useState<Ventana>(null);
     const cerrar = () => setVentana(null);
+    const otro = (p: Prestamo) => (p.duenio === usuario ? p.prestatario : p.duenio);
 
     const accion = (p: Prestamo, rol: Rol) => {
         if (p.estado === "pendiente" && rol === "duenio") {
@@ -166,8 +175,8 @@ export function PrestamosVista({
                     )}
 
                     <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-                        <span className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${ESTADO[p.estado].clase}`}>
-                            {ESTADO[p.estado].texto}
+                        <span className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${ESTADO_PRESTAMO[p.estado].clase}`}>
+                            {ESTADO_PRESTAMO[p.estado].texto}
                         </span>
                         {a && (
                             <button type="button" onClick={a.abrir} className={`${BOTON_OSCURO} px-3 py-1 text-[10px] font-semibold`}>
@@ -208,6 +217,32 @@ export function PrestamosVista({
                             {ventana.p.prestatario} quiere pedir «{ventana.p.nombre}» por {ventana.p.tiempo}.
                         </p>
 
+                        {(() => {
+                            const contra = reportes.filter((r) => r.involucrado === ventana.p.prestatario);
+                            return contra.length === 0 ? (
+                                <p className="mb-0 mt-3 text-xs text-slate-500">Este vecino no tiene reportes.</p>
+                            ) : (
+                                <details className="mt-3 text-left">
+                                    <summary className="cursor-pointer text-center text-xs font-bold text-red-700">
+                                        Ver reportes del vecino ({contra.length})
+                                    </summary>
+                                    <ul className="m-0 mt-2 flex max-h-48 list-none flex-col gap-2 overflow-y-auto p-0">
+                                        {contra.map((r) => {
+                                            const info = REPORTE_ESTADOS.find((e) => e.valor === r.estado)!;
+                                            return (
+                                                <li key={r.id} className="rounded-xl border border-slate-300 px-3 py-2">
+                                                    <span className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${info.clase}`}>
+                                                        {info.texto}
+                                                    </span>
+                                                    <p className="mb-0 mt-1 break-words text-xs text-slate-600">{r.detalles}</p>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                </details>
+                            );
+                        })()}
+
                         <button
                             type="button"
                             onClick={() => {
@@ -246,6 +281,24 @@ export function PrestamosVista({
                     codigoInicial={ventana.codigo}
                     onConfirmarAction={() => {
                         onCodigoAction(ventana.p);
+                        // El segundo código (devolución) cierra el préstamo: toca calificar al vecino
+                        setVentana(ventana.p.estado === "en_curso" ? { tipo: "calificar", p: ventana.p } : null);
+                    }}
+                    onCancelarAction={cerrar}
+                />
+            )}
+
+            {ventana?.tipo === "calificar" && (
+                <CalificarModal
+                    vecino={otro(ventana.p)}
+                    onEnviarAction={(estrellas, comentario) => {
+                        onCalificarAction({
+                            prestamoId: ventana.p.id,
+                            de: usuario,
+                            para: otro(ventana.p),
+                            estrellas,
+                            comentario,
+                        });
                         cerrar();
                     }}
                     onCancelarAction={cerrar}

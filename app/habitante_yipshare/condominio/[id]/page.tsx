@@ -6,11 +6,13 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { ESTADOS, ArticuloModal, type Articulo, type Datos, type Estado, type Tiempo } from "@/components/ArticuloModal";
 import { Icon, type IconName } from "@/components/Icon";
+import { Cargando, useCargando } from "@/components/Cargando";
 import { ConfirmDialog } from "@/components/Modal";
 import { PrestamosVista } from "@/components/PrestamoVista";
 import { ReportarVista, type DatosReporte } from "@/components/ReportarVista";
+import type { Reporte } from "@/components/ReportesVista";
 import { PerfilHabitanteModal, type DatosPerfil, type PerfilUsuario } from "@/components/PerfilHabitanteModal";
-import { avanzar, type Prestamo } from "@/lib/prestamos";
+import { avanzar, promedio, type Calificacion, type Prestamo } from "@/lib/prestamos";
 import { NOMBRE_USUARIO, REGISTRADOS_INICIALES, UNIDOS_INICIALES } from "@/lib/datosHabitante";
 
 const YO = "mi_usuario";
@@ -201,6 +203,7 @@ function Ficha({
 export default function InicioPage() {
     const { id } = useParams<{ id: string }>();
     const router = useRouter();
+    const { cargando, conCarga } = useCargando();
 
     const [articulos, setArticulos] = useState<Articulo[]>([]);
     const [busqueda, setBusqueda] = useState("");
@@ -211,6 +214,11 @@ export default function InicioPage() {
     const [detalleId, setDetalleId] = useState<number | null>(null);
     const [seccion, setSeccion] = useState<Seccion>("inicio");
     const [prestamos, setPrestamos] = useState<Prestamo[]>([]);
+    const [calificaciones, setCalificaciones] = useState<Calificacion[]>([]);
+    // TODO: cargar del backend los reportes del condominio
+    const [reportes, setReportes] = useState<Reporte[]>([]);
+    const recibidas = calificaciones.filter((c) => c.para === YO);
+    const miCalificacion = promedio(recibidas);
 
     const condominio = [...REGISTRADOS_INICIALES, ...UNIDOS_INICIALES].find(
         (c) => String(c.id) === id
@@ -242,7 +250,7 @@ export default function InicioPage() {
                     id: randomId,
                     duenio: YO,
                     direccion: `${datosPerfil.edificio}, ${datosPerfil.departamento}`,
-                    calificacion: datosPerfil.calificacion,
+                    calificacion: miCalificacion,
                 },
             ]);
         } else if (modal) {
@@ -301,7 +309,16 @@ export default function InicioPage() {
 
     function reportar(datos: DatosReporte) {
         // TODO: enviar el reporte al backend para que lo revise el administrador del condominio
-        void datos;
+        setReportes((prev) => [
+            ...prev,
+            {
+                id: crypto.getRandomValues(new Uint32Array(1))[0],
+                involucrado: datos.involucrado,
+                reporto: YO,
+                detalles: datos.detalles,
+                estado: "pendiente",
+            },
+        ]);
     }
 
     const detalle = articulos.find((a) => a.id === detalleId);
@@ -439,16 +456,21 @@ export default function InicioPage() {
                         <PrestamosVista
                             prestamos={prestamos}
                             usuario={YO}
-                            onResponderAction={responder}
-                            onCodigoAction={registrarCodigo}
+                            onResponderAction={conCarga(responder)}
+                            onCodigoAction={(p) => conCarga(registrarCodigo)(p)}
+                            reportes={reportes}
+                            onCalificarAction={conCarga((c: Calificacion) => {
+                                // TODO: guardar la calificación en el backend
+                                setCalificaciones((prev) => [...prev, c]);
+                            })}
                         />
                     ) : seccion === "reportes" ? (
-                        <ReportarVista prestamos={prestamos} usuario={YO} onEnviarAction={reportar} />
+                        <ReportarVista prestamos={prestamos} usuario={YO} onEnviarAction={conCarga(reportar)} />
                     ) : detalle ? (
                         <Ficha
                             a={detalle}
                             onVolver={() => setDetalleId(null)}
-                            onSolicitar={detalle.duenio !== YO ? (tiempo) => solicitar(detalle, tiempo) : undefined}
+                            onSolicitar={detalle.duenio !== YO ? (tiempo) => conCarga(solicitar)(detalle, tiempo) : undefined}
                         />
                     ) : (
                         <>
@@ -506,12 +528,13 @@ export default function InicioPage() {
 
             {perfil && (
                 <PerfilHabitanteModal
-                    perfil={datosPerfil}
-                    onActualizarAction={(datos: DatosPerfil) => {
+                    perfil={{ ...datosPerfil, calificacion: miCalificacion }}
+                    recibidas={recibidas}
+                    onActualizarAction={conCarga((datos: DatosPerfil) => {
                         // TODO: guardar `datos` en el backend
                         setDatosPerfil({ ...datosPerfil, ...datos });
                         setPerfil(false);
-                    }}
+                    })}
                     onEliminarAction={() => {
                         // TODO: borrar la cuenta en el backend
                         router.replace("/login");
@@ -524,7 +547,7 @@ export default function InicioPage() {
                 <ArticuloModal
                     key={modal === "nuevo" ? "nuevo" : modal.id}
                     articulo={modal === "nuevo" ? null : modal}
-                    onGuardarAction={guardar}
+                    onGuardarAction={conCarga(guardar)}
                     onCancelarAction={() => setModal(null)}
                 />
             )}
@@ -537,6 +560,8 @@ export default function InicioPage() {
                     onCancelarAction={() => setSalir(false)}
                 />
             )}
+
+            {cargando && <Cargando />}
         </div>
     );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { Calificacion } from "@/lib/prestamos";
 import { Icon } from "./Icon";
 import { ConfirmDialog, Modal } from "./Modal";
 
@@ -30,11 +31,13 @@ const DIRECCION: [Campo, string][] = [
 
 export function PerfilHabitanteModal({
                                          perfil,
+                                         recibidas,
                                          onActualizarAction,
                                          onEliminarAction,
                                          onCloseAction,
                                      }: {
     perfil: PerfilUsuario;
+    recibidas: Calificacion[];
     onActualizarAction: (datos: DatosPerfil) => void;
     onEliminarAction: () => void;
     onCloseAction: () => void;
@@ -43,6 +46,7 @@ export function PerfilHabitanteModal({
     const [datos, setDatos] = useState<DatosPerfil>(inicial);
     const [editando, setEditando] = useState(false);
     const [confirmar, setConfirmar] = useState<"guardar" | "eliminar" | null>(null);
+    const [verRecibidas, setVerRecibidas] = useState(false);
 
     const valido = Object.values(datos).every((v) => v.trim() !== "");
 
@@ -117,6 +121,13 @@ export function PerfilHabitanteModal({
                                 ))}
                                 <span className="ml-1 text-xs text-slate-500">{calificacion.toFixed(1)}</span>
                             </div>
+                            <button
+                                type="button"
+                                onClick={() => setVerRecibidas(true)}
+                                className="mt-1 cursor-pointer text-xs font-semibold text-[#5aa0e8] hover:underline"
+                            >
+                                Ver calificaciones recibidas
+                            </button>
                         </div>
 
                         <div>
@@ -166,6 +177,47 @@ export function PerfilHabitanteModal({
                     )}
                 </div>
             </Modal>
+
+            {verRecibidas && (
+                <Modal label="Calificaciones recibidas" onCloseAction={() => setVerRecibidas(false)}>
+                    <div className="max-h-[80vh] w-[min(92vw,420px)] overflow-y-auto rounded-[2rem] bg-white px-8 py-8 shadow-xl">
+                        <h2 className="m-0 text-center text-xl font-extrabold uppercase">Calificaciones recibidas</h2>
+
+                        {recibidas.length === 0 ? (
+                            <p className="mb-0 mt-4 text-center text-sm text-slate-500">Aún no tienes calificaciones.</p>
+                        ) : (
+                            <ul className="m-0 mt-4 flex list-none flex-col gap-3 p-0">
+                                {recibidas.map((c) => (
+                                    <li key={`${c.prestamoId}-${c.de}`} className="rounded-xl border border-slate-300 px-4 py-3">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <p className="m-0 text-sm font-bold text-[#1e4a73]">{c.de}</p>
+                                            <span
+                                                role="img"
+                                                aria-label={`${c.estrellas} de 5 estrellas`}
+                                                className="text-amber-400"
+                                            >
+                                                {"★".repeat(c.estrellas)}
+                                                <span className="text-slate-300">{"★".repeat(5 - c.estrellas)}</span>
+                                            </span>
+                                        </div>
+                                        {c.comentario && (
+                                            <p className="mb-0 mt-1 break-words text-xs text-slate-600">{c.comentario}</p>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+
+                        <button
+                            type="button"
+                            onClick={() => setVerRecibidas(false)}
+                            className="mx-auto mt-6 block cursor-pointer text-sm font-bold text-[#2a5a88] hover:underline"
+                        >
+                            Cerrar
+                        </button>
+                    </div>
+                </Modal>
+            )}
 
             {confirmar && (
                 <ConfirmDialog
