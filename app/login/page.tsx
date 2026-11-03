@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -14,6 +14,24 @@ export default function LoginPage() {
     const [errorUsuario, setErrorUsuario] = useState("");
     const [errorContrasena, setErrorContrasena] = useState("");
     const [mensajeExito, setMensajeExito] = useState("");
+    function limpiarFormulario() {
+        setUsuario("");
+        setContrasena("");
+        setMostrarContrasena(false);
+        setErrorUsuario("");
+        setErrorContrasena("");
+        setMensajeExito("");
+    }
+
+
+    useEffect(() => {
+        const onPageShow = (e: PageTransitionEvent) => {
+            if (e.persisted) limpiarFormulario();
+        };
+
+        window.addEventListener("pageshow", onPageShow);
+        return () => window.removeEventListener("pageshow", onPageShow);
+    }, []);
 
     function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -29,7 +47,7 @@ export default function LoginPage() {
             return;
         }
 
-        setMensajeExito("Datos correctos.");
+        limpiarFormulario();
         router.push("/habitante_yipshare/principal_page");
     }
 
