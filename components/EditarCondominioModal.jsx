@@ -19,7 +19,7 @@ export function EditarCondominioModal({ condominio, onGuardarAction, onCancelarA
         Number.isInteger(cantidadNum) &&
         cantidadNum > 0;
 
-    function handleSubmit(e) {
+    function manejarEnvio(e) {
         e.preventDefault();
 
         if (!valido) {
@@ -42,7 +42,7 @@ export function EditarCondominioModal({ condominio, onGuardarAction, onCancelarA
     return (
         <Modal label="Editar condominio" onCloseAction={onCancelarAction}>
             <form
-                onSubmit={handleSubmit}
+                onSubmit={manejarEnvio}
                 className="relative w-[min(90vw,360px)] rounded-[2rem] border border-slate-400 bg-white px-7 py-8 shadow-xl"
             >
                 <button

@@ -7,6 +7,8 @@ import { useState } from "react";
 import { Icon } from "@/components/Icon";
 import { ConfirmDialog } from "@/components/Modal";
 import { PerfilModal } from "@/components/PerfilModal";
+import { RequiereSesion } from "@/components/RequiereSesion";
+import { cerrarSesion } from "@/lib/sesion";
 import { AdminProvider, useAdmin } from "./AdminContext";
 
 const BASE = "/admin_yipshare/principal_page";
@@ -121,9 +123,10 @@ function AdminShell({ children }) {
                 <ConfirmDialog
                     titulo="¿Estás seguro?"
                     mensaje="Se cerrará tu sesión de administrador."
-                    onConfirmarAction={() => {
+                    onConfirmarAction={async () => {
                         setCerrarSesionAbierto(false);
-                        router.push("/login");
+                        await cerrarSesion();
+                        router.replace("/login");
                     }}
                     onCancelarAction={() => setCerrarSesionAbierto(false)}
                 />
@@ -134,8 +137,10 @@ function AdminShell({ children }) {
 
 export default function AdminLayout({ children }) {
     return (
-        <AdminProvider>
-            <AdminShell>{children}</AdminShell>
-        </AdminProvider>
+        <RequiereSesion rol="admin_global">
+            <AdminProvider>
+                <AdminShell>{children}</AdminShell>
+            </AdminProvider>
+        </RequiereSesion>
     );
 }

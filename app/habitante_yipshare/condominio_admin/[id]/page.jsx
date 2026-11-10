@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { cerrarSesion } from "@/lib/sesion";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -28,6 +29,8 @@ const PERFIL_EJEMPLO = {
     nombres: "Juan Carlos",
     edificio: "Edificio 2",
     departamento: "Departamento 14",
+    lada: "MX",
+    telefono: "5512345678",
     calificacion: 4.2,
 };
 
@@ -92,7 +95,7 @@ const PRESTAMOS_EJEMPLO = [
     {
         id: 1,
         articuloId: -1,
-        nombre: "Taladro",
+        nombre: "Taladro percutor inalámbrico Bosch 18V",
         imagen: null,
         duenio: "vecino_ana",
         prestatario: YO,
@@ -103,7 +106,7 @@ const PRESTAMOS_EJEMPLO = [
     {
         id: 2,
         articuloId: -2,
-        nombre: "Escalera",
+        nombre: "Escalera de tijera de aluminio, 3 m",
         imagen: null,
         duenio: YO,
         prestatario: "vecino_luis",
@@ -114,7 +117,7 @@ const PRESTAMOS_EJEMPLO = [
     {
         id: 3,
         articuloId: -3,
-        nombre: "Bocina",
+        nombre: "Bocina JBL Charge 5",
         imagen: null,
         duenio: "vecino_marta",
         prestatario: YO,
@@ -125,7 +128,7 @@ const PRESTAMOS_EJEMPLO = [
     {
         id: 4,
         articuloId: -4,
-        nombre: "Podadora",
+        nombre: "Podadora eléctrica Truper",
         imagen: null,
         duenio: YO,
         prestatario: "vecino_pedro",
@@ -136,26 +139,50 @@ const PRESTAMOS_EJEMPLO = [
     {
         id: 5,
         articuloId: -5,
-        nombre: "Carpa",
+        nombre: "Carpa plegable 3 × 3 m",
         imagen: null,
         duenio: "vecino_ana",
         prestatario: "vecino_luis",
         tiempo: "1 día",
         estado: "en_curso",
-        fin: Date.parse("2026-01-10T12:00:00"),
+        fin: Date.parse("2026-11-06T12:00:00"),
     },
     {
         id: 6,
         articuloId: -6,
-        nombre: "Bicicleta",
+        nombre: "Bicicleta de montaña rodada 26",
         imagen: null,
         duenio: "vecino_marta",
         prestatario: "vecino_ana",
         tiempo: "2 días",
         estado: "finalizado",
-        fin: Date.parse("2026-01-05T12:00:00"),
+        fin: Date.parse("2026-11-02T12:00:00"),
+    },
+    {
+        id: 7,
+        articuloId: -7,
+        nombre: "Hidrolavadora Kärcher K2",
+        imagen: null,
+        duenio: "vecino_luis",
+        prestatario: "vecino_marta",
+        tiempo: "1 semana",
+        estado: "en_curso",
+        fin: Date.parse("2026-11-14T18:00:00"),
     },
 ];
+
+// Nombre y departamento de cada usuario, para mostrar personas en lugar de "vecino_ana"
+const PERSONAS_EJEMPLO = Object.fromEntries(
+    [
+        ...VECINOS_EJEMPLO,
+        ...ASPIRANTES_EJEMPLO,
+        {
+            usuario: YO,
+            nombre: `${PERFIL_EJEMPLO.nombres} ${PERFIL_EJEMPLO.apellidoPaterno}`,
+            depto: "Edificio 2, Dpto 14",
+        },
+    ].map((v) => [v.usuario, { nombre: v.nombre, depto: v.depto }]),
+);
 
 const CALIFICACIONES_EJEMPLO = [
     {
@@ -214,7 +241,7 @@ export default function CondominioAdminPage() {
             <main className="p-10">
                 <p>No se encontró el condominio.</p>
 
-                <Link href="/admin_yipshare/principal_page" className="font-bold text-[#2a6aa8] hover:underline">
+                <Link href="/habitante_yipshare/principal_page" className="font-bold text-[#2a6aa8] hover:underline">
                     Volver
                 </Link>
             </main>
@@ -360,7 +387,7 @@ export default function CondominioAdminPage() {
         setReportes((prev) => prev.map((r) => (r.id === idReporte ? { ...r, estado } : r)));
     }
 
-    function handleConfirmar() {
+    function manejarConfirmar() {
         if (confirmar?.tipo === "eliminar") eliminarArticulo(confirmar.articulo);
         if (confirmar?.tipo === "expulsar") expulsar(confirmar.vecino);
         setConfirmar(null);
@@ -512,10 +539,19 @@ export default function CondominioAdminPage() {
                             onResponderAction={conCarga(responder)}
                             onCodigoAction={(p) => conCarga(registrarCodigo)(p)}
                             reportes={reportes}
+                            calificaciones={calificaciones}
                             onCalificarAction={conCarga(calificar)}
                         />
                     ) : seccion === "todos" ? (
-                        <TodosPrestamosVista prestamos={prestamos} />
+                        <TodosPrestamosVista
+                            prestamos={prestamos}
+                            personas={PERSONAS_EJEMPLO}
+                            yo={YO}
+                            onRecordarAction={conCarga((p) => {
+                                // TODO: enviar el recordatorio de devolución desde el backend
+                                setPrestamos((prev) => prev.map((x) => (x.id === p.id ? { ...x, recordado: true } : x)));
+                            })}
+                        />
                     ) : seccion === "reportes" ? (
                         <ReportesVista reportes={reportes} onCambiarEstadoAction={conCarga(cambiarEstadoReporte)} />
                     ) : detalle ? (
@@ -637,7 +673,7 @@ export default function CondominioAdminPage() {
                             ? `Se eliminará «${confirmar.articulo.nombre}» de ${confirmar.articulo.duenio} y se cancelarán sus solicitudes pendientes.`
                             : `${confirmar.vecino.nombre} saldrá del condominio y se eliminarán sus artículos y préstamos pendientes.`
                     }
-                    onConfirmarAction={conCarga(handleConfirmar)}
+                    onConfirmarAction={conCarga(manejarConfirmar)}
                     onCancelarAction={() => setConfirmar(null)}
                 />
             )}
@@ -646,7 +682,10 @@ export default function CondominioAdminPage() {
                 <ConfirmDialog
                     titulo="¿Estás seguro?"
                     mensaje="Se cerrará tu sesión."
-                    onConfirmarAction={() => router.replace("/login")}
+                    onConfirmarAction={async () => {
+                        await cerrarSesion();
+                        router.replace("/login");
+                    }}
                     onCancelarAction={() => setSalir(false)}
                 />
             )}

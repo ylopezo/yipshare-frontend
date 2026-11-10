@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { codigoValido, nuevoCodigo, SEGUNDOS_CODIGO } from "@/lib/prestamos";
 import { CalificarModal } from "./CalificarModal";
 import { REPORTE_ESTADOS } from "./ReportesVista";
-import { Modal } from "./Modal";
+import { BOTON_OSCURO, Modal } from "./Modal";
 
 export const ESTADO_PRESTAMO = {
     pendiente: { texto: "Pendiente de conformación", clase: "bg-[#fde9a8] text-amber-900" },
@@ -13,9 +13,6 @@ export const ESTADO_PRESTAMO = {
     finalizado: { texto: "Finalizado", clase: "bg-slate-200 text-slate-700" },
     rechazado: { texto: "Rechazado", clase: "bg-[#f6b5b5] text-red-900" },
 };
-
-const BOTON_OSCURO =
-    "cursor-pointer rounded-full bg-[#1f2d47] text-white transition hover:bg-[#2c4066] disabled:cursor-not-allowed disabled:opacity-50";
 
 function CodigoModal({ fase, codigoInicial, onConfirmarAction, onCancelarAction }) {
     const [cod, setCod] = useState(codigoInicial);
@@ -97,7 +94,15 @@ function CodigoModal({ fase, codigoInicial, onConfirmarAction, onCancelarAction 
     );
 }
 
-export function PrestamosVista({ prestamos, usuario, onResponderAction, onCodigoAction, onCalificarAction, reportes }) {
+export function PrestamosVista({
+    prestamos,
+    usuario,
+    onResponderAction,
+    onCodigoAction,
+    onCalificarAction,
+    reportes,
+    calificaciones = [],
+}) {
     const [ventana, setVentana] = useState(null);
     const cerrar = () => setVentana(null);
     const otro = (p) => (p.duenio === usuario ? p.prestatario : p.duenio);
@@ -111,6 +116,10 @@ export function PrestamosVista({ prestamos, usuario, onResponderAction, onCodigo
                 texto: "Ingresar Código",
                 abrir: () => setVentana({ tipo: "codigo", p, codigo: nuevoCodigo(Date.now()) }),
             };
+        }
+        // Las dos personas califican, no solo la que escribió el código de devolución
+        if (p.estado === "finalizado" && !calificaciones.some((c) => c.prestamoId === p.id && c.de === usuario)) {
+            return { texto: "Calificar", abrir: () => setVentana({ tipo: "calificar", p }) };
         }
         return null;
     };

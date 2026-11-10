@@ -58,7 +58,7 @@ export function CrearCondominioModal({ onCrearAction, onCancelarAction }) {
         setDocs((prev) => ({ ...prev, [clave]: archivo }));
     }
 
-    function handleSubmit(e) {
+    function manejarEnvio(e) {
         e.preventDefault();
         if (!valido || !completo(docs)) return;
 
@@ -73,7 +73,7 @@ export function CrearCondominioModal({ onCrearAction, onCancelarAction }) {
     return (
         <Modal label="Crear condominio" onCloseAction={onCancelarAction}>
             <form
-                onSubmit={handleSubmit}
+                onSubmit={manejarEnvio}
                 className="max-h-[90vh] w-[min(92vw,400px)] overflow-y-auto rounded-4xl bg-white px-8 py-8 shadow-xl"
             >
                 <h2 className="m-0 text-center text-xl font-extrabold uppercase tracking-wide text-black">

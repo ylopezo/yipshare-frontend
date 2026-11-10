@@ -7,7 +7,7 @@ import { Modal } from "./Modal";
 export function PerfilModal({ onCloseAction, titulo = "Admin", usuario = USUARIO_ADMIN }) {
     return (
         <Modal label="Perfil" onCloseAction={onCloseAction}>
-            <div className="relative w-[min(90vw,320px)] rounded-[2rem] border border-slate-400 bg-white px-7 py-8 shadow-xl">
+            <div className="relative w-[min(90vw,320px)] rounded-4xl border border-slate-400 bg-white px-7 py-8 shadow-xl">
                 <button
                     type="button"
                     aria-label="Cerrar perfil"

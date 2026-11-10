@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ConfirmDialog } from "@/components/Modal";
 import { EditarCondominioModal } from "@/components/EditarCondominioModal";
 import { useAdmin } from "../AdminContext";
@@ -11,17 +11,10 @@ export default function CondominiosPage() {
     const { condominios, busqueda, editarCondominio, eliminarCondominio } = useAdmin();
     const [dialogo, setDialogo] = useState(null);
 
-    const filtrados = useMemo(() => {
-        const texto = busqueda.trim().toLowerCase();
-        if (!texto) return condominios;
-
-        return condominios.filter(({ nombre, direccion, admin }) => {
-            const nom = nombre.toLowerCase();
-            const dir = direccion.toLowerCase();
-            const adm = admin.toLowerCase();
-            return nom.includes(texto) || dir.includes(texto) || adm.includes(texto);
-        });
-    }, [busqueda, condominios]);
+    const texto = busqueda.trim().toLowerCase();
+    const filtrados = condominios.filter(({ nombre, direccion, admin }) =>
+        `${nombre} ${direccion} ${admin}`.toLowerCase().includes(texto),
+    );
 
     return (
         <>
@@ -86,11 +79,20 @@ export default function CondominiosPage() {
             {dialogo?.tipo === "editar" && (
                 <EditarCondominioModal
                     condominio={dialogo.condominio}
-                    onGuardarAction={(actualizado) => {
-                        editarCondominio(actualizado);
+                    onGuardarAction={(actualizado) => setDialogo({ ...dialogo, actualizado })}
+                    onCancelarAction={() => setDialogo(null)}
+                />
+            )}
+
+            {dialogo?.actualizado && (
+                <ConfirmDialog
+                    titulo="¿Guardar cambios?"
+                    mensaje={`Se actualizarán los datos del condominio «${dialogo.condominio.nombre}».`}
+                    onConfirmarAction={() => {
+                        editarCondominio(dialogo.actualizado);
                         setDialogo(null);
                     }}
-                    onCancelarAction={() => setDialogo(null)}
+                    onCancelarAction={() => setDialogo({ tipo: "editar", condominio: dialogo.condominio })}
                 />
             )}
         </>

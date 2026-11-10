@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { DIAS } from "@/lib/prestamos";
 import { Icon } from "./Icon";
 import { Modal } from "./Modal";
 
@@ -23,7 +24,7 @@ export const CATEGORIAS = [
 
 export const CONDICIONES = ["Excelente estado", "Buen estado", "Estado intermedio", "Mal estado"];
 
-export const TIEMPOS = ["1 día", "2 días", "3 días", "1 semana", "2 semanas", "1 mes"];
+export const TIEMPOS = Object.keys(DIAS);
 
 const INPUT =
     "w-full rounded-xl border border-slate-600 bg-[#eeeeee] px-4 py-2 text-sm text-slate-700 outline-none focus:border-[#1e4a73]";

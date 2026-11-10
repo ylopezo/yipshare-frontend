@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { BOTON_OSCURO } from "./Modal";
 
 export const REPORTE_ESTADOS = [
     { valor: "en_revision", texto: "En revisión", clase: "bg-[#dbe7f5] text-[#1e4a73]" },
@@ -8,8 +9,6 @@ export const REPORTE_ESTADOS = [
     { valor: "finalizado", texto: "Finalizado", clase: "bg-[#b9f0c8] text-green-900" },
 ];
 
-const BOTON_OSCURO =
-    "cursor-pointer rounded-full bg-[#1f2d47] text-white transition hover:bg-[#2c4066] disabled:cursor-not-allowed disabled:opacity-50";
 const INPUT_LECTURA =
     "w-full rounded-full border border-slate-500 bg-[#eeeeee] px-4 py-2 text-sm text-slate-700 outline-none read-only:cursor-default";
 

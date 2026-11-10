@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { prestamoActivo } from "@/lib/prestamos";
+import { BOTON_OSCURO } from "./Modal";
 
 const INPUT =
     "w-full rounded-full border border-slate-500 bg-[#eeeeee] px-4 py-2 text-sm text-slate-700 outline-none focus:border-[#1e4a73]";
@@ -13,7 +13,9 @@ export function ReportarVista({ prestamos, usuario, onEnviarAction }) {
 
     const otro = (p) => (p.duenio === usuario ? p.prestatario : p.duenio);
 
-    const activos = prestamos.filter((p) => (p.duenio === usuario || p.prestatario === usuario) && prestamoActivo(p));
+    // Se puede reportar desde que el préstamo se acepta, también ya devuelto (p. ej. llegó dañado)
+    const reportables = (p) => p.estado !== "pendiente" && p.estado !== "rechazado";
+    const activos = prestamos.filter((p) => (p.duenio === usuario || p.prestatario === usuario) && reportables(p));
     const elegido = activos.find((p) => String(p.id) === prestamoId);
     const valido = elegido && detalles.trim() !== "";
 
@@ -23,7 +25,7 @@ export function ReportarVista({ prestamos, usuario, onEnviarAction }) {
 
             {activos.length === 0 ? (
                 <p className="mb-0 mt-3 max-w-md text-sm text-slate-500">
-                    Solo puedes reportar a un vecino con el que tengas un préstamo activo.
+                    Solo puedes reportar a un vecino con el que tengas o hayas tenido un préstamo.
                 </p>
             ) : (
                 <form
@@ -95,8 +97,7 @@ export function ReportarVista({ prestamos, usuario, onEnviarAction }) {
                     <button
                         type="submit"
                         disabled={!valido}
-                        className="mx-auto mt-6 block w-full max-w-xs cursor-pointer rounded-full
-                        bg-[#1f2d47] py-2 text-sm font-semibold text-white transition hover:bg-[#2c4066] disabled:opacity-50"
+                        className={`${BOTON_OSCURO} mx-auto mt-6 block w-full max-w-xs py-2 text-sm font-semibold`}
                     >
                         Enviar reporte
                     </button>

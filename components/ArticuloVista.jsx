@@ -147,18 +147,22 @@ export function ArticuloFicha({ a, onVolverAction, onSolicitarAction, onEliminar
             )}
 
             {/* Acción exclusiva del administrador */}
-            <button
-                type="button"
-                disabled={eliminarBloqueado}
-                onClick={onEliminarAction}
-                className={`${BOTON_PELIGRO} mx-auto mt-3 block w-full max-w-xs py-2 text-sm font-bold`}
-            >
-                Eliminar publicación
-            </button>
-            {eliminarBloqueado && (
-                <p className="mx-auto mb-0 mt-2 max-w-xs text-center text-xs text-slate-500">
-                    No se puede eliminar mientras el artículo esté en préstamo.
-                </p>
+            {onEliminarAction && (
+                <>
+                    <button
+                        type="button"
+                        disabled={eliminarBloqueado}
+                        onClick={onEliminarAction}
+                        className={`${BOTON_PELIGRO} mx-auto mt-3 block w-full max-w-xs py-2 text-sm font-bold`}
+                    >
+                        Eliminar publicación
+                    </button>
+                    {eliminarBloqueado && (
+                        <p className="mx-auto mb-0 mt-2 max-w-xs text-center text-xs text-slate-500">
+                            No se puede eliminar mientras el artículo esté en préstamo.
+                        </p>
+                    )}
+                </>
             )}
         </>
     );

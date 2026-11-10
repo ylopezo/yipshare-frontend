@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CondominioCard } from "@/components/CondominioCard";
 import { CrearCondominioModal } from "@/components/CrearCondominioModal";
 import { Icon } from "@/components/Icon";
 import { LogoMenuSesion } from "@/components/LogoMenuSesion";
+import { ConfirmDialog } from "@/components/Modal";
 import { UnirseCondominioModal } from "@/components/UnirseCondominioModal";
 import { NOMBRE_USUARIO, REGISTRADOS_INICIALES, UNIDOS_INICIALES } from "@/lib/datosHabitante";
 
@@ -23,7 +24,7 @@ function Seccion({ titulo, vacio, children }) {
 
 export default function HabitantePrincipalPage() {
     const [registrados] = useState(REGISTRADOS_INICIALES);
-    const [unidos, setUnidos] = useState(UNIDOS_INICIALES);
+    const [unidos] = useState(UNIDOS_INICIALES);
     const [busqueda, setBusqueda] = useState("");
     const [menuAbierto, setMenuAbierto] = useState(false);
     const [modal, setModal] = useState(null);
@@ -57,45 +58,31 @@ export default function HabitantePrincipalPage() {
         };
     }, [menuAbierto]);
 
-    const filtrar = useCallback(
-        (lista) => {
-            const texto = busqueda.trim().toLowerCase();
+    const texto = busqueda.trim().toLowerCase();
+    const filtrar = (lista) => lista.filter(({ nombre, admin }) => `${nombre} ${admin}`.toLowerCase().includes(texto));
 
-            return texto
-                ? lista.filter(({ nombre, admin }) => `${nombre} ${admin}`.toLowerCase().includes(texto))
-                : lista;
-        },
-        [busqueda],
-    );
-
-    const registradosFiltrados = useMemo(() => filtrar(registrados), [filtrar, registrados]);
-
-    const unidosFiltrados = useMemo(() => filtrar(unidos), [filtrar, unidos]);
+    const registradosFiltrados = filtrar(registrados);
+    const unidosFiltrados = filtrar(unidos);
 
     const sinCondominios = registrados.length === 0 && unidos.length === 0;
 
     const sinResultados = !sinCondominios && registradosFiltrados.length === 0 && unidosFiltrados.length === 0;
+
+    const [confirmacion, setConfirmacion] = useState(null); // { titulo, mensaje, hacer }
 
     const abrirModal = (tipo) => {
         setMenuAbierto(false);
         setModal(tipo);
     };
 
-    const handleUnirse = (datos) => {
-        const randomId = crypto.getRandomValues(new Uint32Array(1))[0];
-
-        setUnidos((prev) => [
-            ...prev,
-            {
-                id: randomId,
-                nombre: `Condominio ${datos.codigo}`,
-                admin: "por_definir",
-            },
-        ]);
+    // TODO: enviar la solicitud al backend; el condominio aparece cuando su administrador te acepta
+    const manejarUnirse = (datos) => {
+        void datos;
         setModal(null);
+        setAviso("Tu solicitud fue enviada. El administrador del condominio te aceptará.");
     };
 
-    const handleCrear = (datos) => {
+    const manejarCrear = (datos) => {
         void datos;
         setModal(null);
         setAviso("Tu solicitud fue enviada. El condominio aparecerá cuando sea aprobada.");
@@ -240,11 +227,41 @@ export default function HabitantePrincipalPage() {
             </main>
 
             {modal === "unirse" && (
-                <UnirseCondominioModal onEntrarAction={handleUnirse} onCancelarAction={() => setModal(null)} />
+                <UnirseCondominioModal
+                    onEntrarAction={(datos) =>
+                        setConfirmacion({
+                            titulo: "¿Enviar solicitud?",
+                            mensaje: `Se enviará tu solicitud para unirte al condominio con código ${datos.codigo} como habitante de ${datos.edificio}, ${datos.departamento}.`,
+                            hacer: () => manejarUnirse(datos),
+                        })
+                    }
+                    onCancelarAction={() => setModal(null)}
+                />
             )}
 
             {modal === "crear" && (
-                <CrearCondominioModal onCrearAction={handleCrear} onCancelarAction={() => setModal(null)} />
+                <CrearCondominioModal
+                    onCrearAction={(datos) =>
+                        setConfirmacion({
+                            titulo: "¿Enviar solicitud?",
+                            mensaje: `Se enviará la solicitud para registrar «${datos.nombre}». Revisa que los datos y documentos sean correctos.`,
+                            hacer: () => manejarCrear(datos),
+                        })
+                    }
+                    onCancelarAction={() => setModal(null)}
+                />
+            )}
+
+            {confirmacion && (
+                <ConfirmDialog
+                    titulo={confirmacion.titulo}
+                    mensaje={confirmacion.mensaje}
+                    onConfirmarAction={() => {
+                        confirmacion.hacer();
+                        setConfirmacion(null);
+                    }}
+                    onCancelarAction={() => setConfirmacion(null)}
+                />
             )}
         </div>
     );

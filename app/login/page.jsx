@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { iniciarSesion, paginaDeInicio } from "@/lib/sesion";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -13,27 +14,26 @@ export default function LoginPage() {
 
     const [errorUsuario, setErrorUsuario] = useState("");
     const [errorContrasena, setErrorContrasena] = useState("");
-    const [mensajeExito, setMensajeExito] = useState("");
     function limpiarFormulario() {
         setUsuario("");
         setContrasena("");
         setMostrarContrasena(false);
         setErrorUsuario("");
         setErrorContrasena("");
-        setMensajeExito("");
     }
 
 
     useEffect(() => {
-        const onPageShow = (e) => {
+        const alMostrarPagina = (e) => {
             if (e.persisted) limpiarFormulario();
         };
 
-        window.addEventListener("pageshow", onPageShow);
-        return () => window.removeEventListener("pageshow", onPageShow);
+        window.addEventListener("pageshow", alMostrarPagina);
+        return () => window.removeEventListener("pageshow", alMostrarPagina);
     }, []);
 
-    function handleSubmit(e) {
+    // Manda usuario y contraseña; si son correctos el servidor responde con Set-Cookie y el navegador la guarda
+    async function manejarEnvio(e) {
         e.preventDefault();
 
         const errUsuario = usuario.trim() ? "" : "Ingresa tu usuario.";
@@ -42,20 +42,24 @@ export default function LoginPage() {
         setErrorUsuario(errUsuario);
         setErrorContrasena(errContrasena);
 
-        if (errUsuario || errContrasena) {
-            setMensajeExito("");
+        if (errUsuario || errContrasena) return;
+
+        const { status, datos } = await iniciarSesion(usuario.trim(), contrasena);
+        if (status !== 200) {
+            // 401: usuario o contraseña incorrectos; 0: no hay servidor
+            setErrorContrasena(datos.error || "Usuario o contraseña incorrectos.");
             return;
         }
 
         limpiarFormulario();
-        router.push("/habitante_yipshare/principal_page");
+        router.push(paginaDeInicio(datos.usuario?.rol));
     }
 
     return (
         <div
             className="m-0 flex min-h-screen flex-col items-center justify-center bg-cover bg-center px-4 py-10 font-sans text-[#1e2b45]"
             style={{
-                backgroundImage: "url('/img/img.png'), linear-gradient(to bottom, #1e4a73, #2f78b8)",
+                backgroundImage: "url('/img/fondo.webp'), linear-gradient(to bottom, #1e4a73, #2f78b8)",
             }}
         >
             <Link href="/" aria-label="YipShare - inicio" className="mb-4">
@@ -65,7 +69,7 @@ export default function LoginPage() {
             <form
                 id="form-login"
                 noValidate
-                onSubmit={handleSubmit}
+                onSubmit={manejarEnvio}
                 className="w-full max-w-md rounded-3xl bg-white px-8 pb-4 pt-6 shadow-xl"
             >
                 <h1 className="m-0 text-center text-3xl font-black uppercase tracking-wide">Iniciar Sesión</h1>
@@ -100,7 +104,7 @@ export default function LoginPage() {
                             autoComplete="username"
                             value={usuario}
                             onChange={(e) => setUsuario(e.target.value)}
-                            className="w-full rounded-lg border border-slate-600 bg-[#eeeeee] py-2 pl-11 pr-3 text-lg placeholder:text-slate-500 focus:outline-2 focus:outline-[#2a6aa8]"
+                            className="w-full rounded-lg border border-slate-600 bg-[#eeeeee] py-2 pl-11 pr-3 text-lg placeholder:text-slate-500 outline-none focus:border-slate-900"
                         />
                     </div>
 
@@ -139,7 +143,7 @@ export default function LoginPage() {
                             autoComplete="current-password"
                             value={contrasena}
                             onChange={(e) => setContrasena(e.target.value)}
-                            className="w-full rounded-lg border border-slate-600 bg-[#eeeeee] py-2 pl-11 pr-11 text-lg text-slate-700 focus:outline-2 focus:outline-[#2a6aa8]"
+                            className="w-full rounded-lg border border-slate-600 bg-[#eeeeee] py-2 pl-11 pr-11 text-lg text-slate-700 outline-none focus:border-slate-900"
                         />
 
                         <button
@@ -199,10 +203,6 @@ export default function LoginPage() {
                         Entrar
                     </button>
                 </div>
-
-                <p id="mensaje-exito" className="mt-2 min-h-5 text-center text-sm font-semibold text-green-700">
-                    {mensajeExito}
-                </p>
 
                 <p className="mt-4 text-center text-xs text-slate-600">
                     ¿No tienes cuenta?

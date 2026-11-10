@@ -18,12 +18,11 @@ export function Cargando() {
                 priority
                 className="h-24 w-auto animate-spin object-contain motion-reduce:animate-pulse"
             />
-            <span className="sr-only">Guardando…</span>
+            <span className="sr-only">Cargando…</span>
         </div>
     );
 }
 
-// shortcut: simula la espera del backend con un retraso fijo; con backend, mostrarlo mientras se espera la petición real
 export function useCargando(ms = 800) {
     const [cargando, setCargando] = useState(false);
 

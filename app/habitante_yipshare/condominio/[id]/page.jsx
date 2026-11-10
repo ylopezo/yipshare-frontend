@@ -1,10 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import { cerrarSesion } from "@/lib/sesion";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { ESTADOS, ArticuloModal } from "@/components/ArticuloModal";
+import { ArticuloModal } from "@/components/ArticuloModal";
+import { ArticuloFicha, ArticuloTarjeta } from "@/components/ArticuloVista";
 import { Icon } from "@/components/Icon";
 import { Cargando, useCargando } from "@/components/Cargando";
 import { ConfirmDialog } from "@/components/Modal";
@@ -22,150 +24,13 @@ const PERFIL_EJEMPLO = {
     nombres: "Juan Carlos",
     edificio: "Edificio 2",
     departamento: "Departamento 14",
+    lada: "MX",
+    telefono: "5512345678",
     calificacion: 4.2,
-};
-
-const COLOR = {
-    disponible: "bg-[#b9f0c8] text-green-900",
-    pendiente: "bg-[#fde9a8] text-amber-900",
-    no_disponible: "bg-[#f6b5b5] text-red-900",
 };
 
 const ITEM = "flex w-full items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wide";
 const ICONO_HEADER = "cursor-pointer rounded-full p-1 text-white hover:bg-white/10";
-
-function Tarjeta({ a, onVer, onEditar }) {
-    return (
-        <div className="flex w-48 flex-col overflow-hidden rounded-lg bg-white shadow-sm">
-            <button
-                type="button"
-                onClick={onVer}
-                className="flex flex-1 cursor-pointer flex-col text-left hover:bg-slate-50"
-            >
-                <div className="h-28 w-full shrink-0 bg-[#e4e4e4]">
-                    {a.imagen && <img src={a.imagen} alt={a.nombre} className="h-full w-full object-cover" />}
-                </div>
-
-                <div className="flex flex-col px-3 pb-3 pt-2">
-                    <span
-                        className={`self-start rounded-full px-2 py-0.5 text-[9px] font-bold uppercase ${COLOR[a.estado]}`}
-                    >
-                        {ESTADOS[a.estado]}
-                    </span>
-
-                    <p className="m-0 mt-1 break-words text-lg font-bold text-[#1e4a73]">{a.nombre}</p>
-
-                    <p className="m-0 text-[10px] text-slate-500">{a.duenio}</p>
-                </div>
-            </button>
-
-            {onEditar && (
-                <button
-                    type="button"
-                    onClick={onEditar}
-                    className="cursor-pointer self-center pb-3 pt-1 text-[11px] font-semibold text-[#5aa0e8] hover:underline"
-                >
-                    Editar Artículo
-                </button>
-            )}
-        </div>
-    );
-}
-
-function Ficha({ a, onVolver, onSolicitar }) {
-    const [tiempo, setTiempo] = useState(a.tiempos[0]);
-
-    return (
-        <>
-            <button
-                type="button"
-                aria-label="Volver"
-                onClick={onVolver}
-                className="cursor-pointer rounded-full p-2 text-[#1e4a73] transition hover:bg-white"
-            >
-                <Icon name="arrow" size={28} />
-            </button>
-
-            <div className="mx-auto mt-2 w-full max-w-2xl rounded-[2.5rem] bg-white px-8 py-6 shadow-sm">
-                <div className="h-64 overflow-hidden rounded-2xl bg-[#e4e4e4]">
-                    {a.imagen && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={a.imagen} alt={a.nombre} className="h-full w-full object-cover" />
-                    )}
-                </div>
-
-                <span className={`mt-4 inline-block rounded-full px-4 py-1 text-sm font-semibold ${COLOR[a.estado]}`}>
-                    {ESTADOS[a.estado]}
-                </span>
-
-                <h2 className="m-0 mt-2 break-words text-lg font-bold uppercase text-[#1e4a73]">{a.nombre}</h2>
-                <p className="m-0 text-xs font-bold">{a.categoria}</p>
-
-                <p className="mb-0 mt-3 break-words text-xs font-semibold">{a.descripcion}</p>
-                <p className="mb-0 mt-2 text-xs text-slate-500">
-                    {a.condicion} · Préstamo: {a.tiempos.join(", ")}
-                </p>
-
-                <hr className="my-4 border-slate-300" />
-
-                <div className="flex items-center gap-4">
-                    <span className="text-slate-500">
-                        <Icon name="user" size={44} />
-                    </span>
-
-                    <div className="min-w-0">
-                        <p className="m-0 break-words text-base font-bold text-[#1e4a73]">
-                            {a.duenio} - {a.direccion}
-                        </p>
-
-                        <div
-                            role="img"
-                            aria-label={`Calificación ${a.calificacion.toFixed(1)} de 5`}
-                            className="flex items-center gap-1"
-                        >
-                            {[1, 2, 3, 4, 5].map((n) => (
-                                <span
-                                    key={n}
-                                    aria-hidden="true"
-                                    className={`text-xl ${n <= Math.round(a.calificacion) ? "text-amber-400" : "text-slate-700"}`}
-                                >
-                                    {n <= Math.round(a.calificacion) ? "★" : "☆"}
-                                </span>
-                            ))}
-                            <span className="ml-1 text-xs font-bold">{a.calificacion.toFixed(1)}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {onSolicitar && (
-                <div className="mx-auto mt-6 flex w-full max-w-xs flex-col gap-3">
-                    <select
-                        aria-label="Tiempo de préstamo"
-                        value={tiempo}
-                        onChange={(e) => setTiempo(e.target.value)}
-                        className="w-full cursor-pointer rounded-full border border-slate-500 bg-white px-4 py-2 text-sm text-slate-700 outline-none focus:border-[#1e4a73]"
-                    >
-                        {a.tiempos.map((t) => (
-                            <option key={t} value={t}>
-                                Préstamo por {t}
-                            </option>
-                        ))}
-                    </select>
-
-                    <button
-                        type="button"
-                        disabled={a.estado !== "disponible"}
-                        onClick={() => onSolicitar(tiempo)}
-                        className="w-full cursor-pointer rounded-full bg-[#1e4a73] py-2 text-base font-bold text-white hover:bg-[#2a6aa8] disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                        Solicitar Artículo
-                    </button>
-                </div>
-            )}
-        </>
-    );
-}
 
 export default function InicioPage() {
     const { id } = useParams();
@@ -403,6 +268,7 @@ export default function InicioPage() {
                             onResponderAction={conCarga(responder)}
                             onCodigoAction={(p) => conCarga(registrarCodigo)(p)}
                             reportes={reportes}
+                            calificaciones={calificaciones}
                             onCalificarAction={conCarga((c) => {
                                 // TODO: guardar la calificación en el backend
                                 setCalificaciones((prev) => [...prev, c]);
@@ -411,10 +277,11 @@ export default function InicioPage() {
                     ) : seccion === "reportes" ? (
                         <ReportarVista prestamos={prestamos} usuario={YO} onEnviarAction={conCarga(reportar)} />
                     ) : detalle ? (
-                        <Ficha
+                        <ArticuloFicha
+                            key={detalle.id}
                             a={detalle}
-                            onVolver={() => setDetalleId(null)}
-                            onSolicitar={
+                            onVolverAction={() => setDetalleId(null)}
+                            onSolicitarAction={
                                 detalle.duenio !== YO ? (tiempo) => conCarga(solicitar)(detalle, tiempo) : undefined
                             }
                         />
@@ -426,11 +293,11 @@ export default function InicioPage() {
 
                             <div className="mt-4 flex flex-wrap items-center gap-4">
                                 {mios.map((a) => (
-                                    <Tarjeta
+                                    <ArticuloTarjeta
                                         key={a.id}
                                         a={a}
-                                        onVer={() => setDetalleId(a.id)}
-                                        onEditar={() => setModal(a)}
+                                        onVerAction={() => setDetalleId(a.id)}
+                                        onEditarAction={() => setModal(a)}
                                     />
                                 ))}
 
@@ -452,7 +319,7 @@ export default function InicioPage() {
 
                             <div className="mt-4 flex flex-wrap gap-4">
                                 {deOtros.map((a) => (
-                                    <Tarjeta key={a.id} a={a} onVer={() => setDetalleId(a.id)} />
+                                    <ArticuloTarjeta key={a.id} a={a} onVerAction={() => setDetalleId(a.id)} />
                                 ))}
                             </div>
                         </>
@@ -490,7 +357,10 @@ export default function InicioPage() {
                 <ConfirmDialog
                     titulo="¿Estás seguro?"
                     mensaje="Se cerrará tu sesión."
-                    onConfirmarAction={() => router.replace("/login")}
+                    onConfirmarAction={async () => {
+                        await cerrarSesion();
+                        router.replace("/login");
+                    }}
                     onCancelarAction={() => setSalir(false)}
                 />
             )}

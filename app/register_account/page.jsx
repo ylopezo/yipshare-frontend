@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { LADAS, soloDigitos, telefonoValido } from "@/lib/datos";
 
 const MENSAJES_ERROR = {
     apellidoPaterno: "Ingresa tu apellido paterno.",
     apellidoMaterno: "Ingresa tu apellido materno.",
     nombres: "Ingresa tu nombre o nombres.",
+    telefono: "Ingresa un teléfono de 10 dígitos.",
     usuario: "Ingresa un nombre de usuario.",
     contrasena: "Ingresa una contraseña.",
 };
@@ -21,7 +23,7 @@ const CAMPOS_NOMBRE = [
 const RUTA_DESPUES_DE_REGISTRO = "/login";
 
 const CLASE_INPUT =
-    "w-full rounded-lg border border-slate-600 bg-[#eeeeee] py-2 pr-3 text-lg text-slate-700 placeholder:text-slate-500 focus:outline-2 focus:outline-[#2a6aa8]";
+    "w-full rounded-lg border border-slate-600 bg-[#eeeeee] py-2 pr-3 text-lg text-slate-700 placeholder:text-slate-500 outline-none focus:border-slate-900";
 
 export default function RegistroPage() {
     const router = useRouter();
@@ -30,6 +32,8 @@ export default function RegistroPage() {
         apellidoPaterno: "",
         apellidoMaterno: "",
         nombres: "",
+        lada: "MX",
+        telefono: "",
         usuario: "",
         contrasena: "",
     });
@@ -37,12 +41,12 @@ export default function RegistroPage() {
     const [errores, setErrores] = useState({});
     const [mostrarContrasena, setMostrarContrasena] = useState(false);
 
-    function handleChange(e) {
+    function manejarCambio(e) {
         const { name, value } = e.target;
-        setDatos((prev) => ({ ...prev, [name]: value }));
+        setDatos((prev) => ({ ...prev, [name]: name === "telefono" ? soloDigitos(value) : value }));
     }
 
-    function handleSubmit(e) {
+    function manejarEnvio(e) {
         e.preventDefault();
 
         const nuevosErrores = {};
@@ -52,6 +56,10 @@ export default function RegistroPage() {
                 nuevosErrores[campo] = MENSAJES_ERROR[campo];
             }
         });
+
+        if (!telefonoValido(datos.telefono)) {
+            nuevosErrores.telefono = MENSAJES_ERROR.telefono;
+        }
 
         setErrores(nuevosErrores);
 
@@ -68,7 +76,7 @@ export default function RegistroPage() {
                 aria-hidden="true"
                 className="hidden items-center justify-center bg-cover bg-center md:flex"
                 style={{
-                    backgroundImage: "url('/img/img.png'), linear-gradient(to bottom, #1e4a73, #2f78b8)",
+                    backgroundImage: "url('/img/fondo.webp'), linear-gradient(to bottom, #1e4a73, #2f78b8)",
                 }}
             >
                 <Link href="/">
@@ -85,7 +93,7 @@ export default function RegistroPage() {
                     />
                 </Link>
 
-                <form id="form-registro" noValidate onSubmit={handleSubmit} className="w-full max-w-md">
+                <form id="form-registro" noValidate onSubmit={manejarEnvio} className="w-full max-w-md">
                     <h1 className="m-0 text-center text-3xl font-black uppercase tracking-wide">Registrarse</h1>
 
                     <div className="mt-8">
@@ -103,13 +111,59 @@ export default function RegistroPage() {
                                     required
                                     autoComplete={autoComplete}
                                     value={datos[name]}
-                                    onChange={handleChange}
+                                    onChange={manejarCambio}
                                     className={`${CLASE_INPUT} pl-5`}
                                 />
 
                                 <span className="mt-1 block min-h-5 text-sm text-red-600">{errores[name]}</span>
                             </div>
                         ))}
+                    </div>
+
+                    <div className="mb-1">
+                        <label htmlFor="telefono" className="sr-only">
+                            Teléfono
+                        </label>
+
+                        <div className="flex gap-2">
+                            <label htmlFor="lada" className="sr-only">
+                                Lada
+                            </label>
+                            <select
+                                id="lada"
+                                name="lada"
+                                autoComplete="tel-country-code"
+                                value={datos.lada}
+                                onChange={manejarCambio}
+                                className={`${CLASE_INPUT.replace("w-full ", "")} w-44 shrink-0 cursor-pointer pl-3`}
+                            >
+                                {LADAS.map((l) => (
+                                    <option key={l.valor} value={l.valor}>
+                                        {l.texto}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <input
+                                type="tel"
+                                id="telefono"
+                                name="telefono"
+                                placeholder="Teléfono (10 dígitos)"
+                                required
+                                inputMode="numeric"
+                                autoComplete="tel-national"
+                                maxLength={10}
+                                aria-invalid={Boolean(errores.telefono)}
+                                aria-describedby="telefono-error"
+                                value={datos.telefono}
+                                onChange={manejarCambio}
+                                className={`${CLASE_INPUT} min-w-0 flex-1 pl-5`}
+                            />
+                        </div>
+
+                        <span id="telefono-error" className="mt-1 block min-h-5 text-sm text-red-600">
+                            {errores.telefono}
+                        </span>
                     </div>
 
                     <div className="mt-6">
@@ -141,7 +195,7 @@ export default function RegistroPage() {
                                 required
                                 autoComplete="username"
                                 value={datos.usuario}
-                                onChange={handleChange}
+                                onChange={manejarCambio}
                                 className={`${CLASE_INPUT} pl-11`}
                             />
                         </div>
@@ -178,7 +232,7 @@ export default function RegistroPage() {
                                 required
                                 autoComplete="new-password"
                                 value={datos.contrasena}
-                                onChange={handleChange}
+                                onChange={manejarCambio}
                                 className={`${CLASE_INPUT} pl-11 pr-11`}
                             />
 

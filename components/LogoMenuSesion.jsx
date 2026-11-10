@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { cerrarSesion } from "@/lib/sesion";
 import { ConfirmDialog } from "./Modal";
 
 export function LogoMenuSesion() {
@@ -31,8 +32,9 @@ export function LogoMenuSesion() {
         };
     }, [menuAbierto]);
 
-    function handleConfirmar() {
+    async function manejarConfirmar() {
         setConfirmando(false);
+        await cerrarSesion();
         router.replace("/login");
     }
 
@@ -81,7 +83,7 @@ export function LogoMenuSesion() {
                 <ConfirmDialog
                     titulo="¿Estás seguro?"
                     mensaje="Se cerrará tu sesión."
-                    onConfirmarAction={handleConfirmar}
+                    onConfirmarAction={manejarConfirmar}
                     onCancelarAction={() => setConfirmando(false)}
                 />
             )}

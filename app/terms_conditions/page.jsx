@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 
 const INDICE = [
     { id: "aceptacion", label: "Aceptación de los términos" },
@@ -20,48 +20,7 @@ const INDICE = [
     { id: "ley", label: "Ley aplicable" },
 ];
 
-const IMAGENES_CASAS = ["/img/logo_yipshare_icono.png", "/img/lavadora.png", "/img/martillo2.png", "/img/tijeras2.png"];
-
-const CANTIDAD = 18;
-
-function generarCasas() {
-    return Array.from({ length: CANTIDAD }, () => {
-        const tamano = 20 + Math.random() * 40;
-        const randomId = crypto.getRandomValues(new Uint32Array(1))[0];
-
-        return {
-            id: randomId,
-            imagen: IMAGENES_CASAS[Math.floor(Math.random() * IMAGENES_CASAS.length)],
-            style: {
-                left: `${Math.random() * 100}vw`,
-                width: `${tamano}px`,
-                height: `${tamano}px`,
-                animationDuration: `${8 + Math.random() * 10}s`,
-                animationDelay: `${-Math.random() * 15}s`,
-                "--op": (0.08 + Math.random() * 0.22).toFixed(2),
-                "--giro": `${Math.random() * 360 - 180}deg`,
-            },
-        };
-    });
-}
-
-function LluviaCasas() {
-    const [casas, setCasas] = useState([]);
-
-    useEffect(() => {
-        setCasas(generarCasas());
-    }, []);
-
-    return (
-        <div id="lluvia-casas" aria-hidden="true" className="pointer-events-none fixed inset-0 overflow-hidden">
-            {casas.map((c) => (
-                <div key={c.id} className="casa" style={c.style}>
-                    <img src={c.imagen} alt="" className="h-full w-full object-contain" />
-                </div>
-            ))}
-        </div>
-    );
-}
+const LluviaCasas = dynamic(() => import("@/components/LluviaCasas"), { ssr: false });
 
 export default function TermsConditionsPage() {
     return (

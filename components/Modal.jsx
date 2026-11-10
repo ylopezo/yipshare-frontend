@@ -1,11 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+
+export const BOTON_OSCURO =
+    "cursor-pointer rounded-full bg-[#1f2d47] text-white transition hover:bg-[#2c4066] disabled:cursor-not-allowed disabled:opacity-50";
 
 export function Modal({ children, onCloseAction, label }) {
+    const ref = useRef(null);
+
     useEffect(() => {
         const onKeyDown = (e) => {
-            if (e.key === "Escape") onCloseAction();
+            // con modales apilados, Esc solo cierra el de arriba
+            const dialogos = document.querySelectorAll('[role="dialog"]');
+            if (e.key === "Escape" && dialogos[dialogos.length - 1] === ref.current) onCloseAction();
         };
         window.addEventListener("keydown", onKeyDown);
         return () => window.removeEventListener("keydown", onKeyDown);
@@ -13,7 +20,7 @@ export function Modal({ children, onCloseAction, label }) {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onCloseAction}>
-            <div role="dialog" aria-modal="true" aria-label={label} onClick={(e) => e.stopPropagation()}>
+            <div ref={ref} role="dialog" aria-modal="true" aria-label={label} onClick={(e) => e.stopPropagation()}>
                 {children}
             </div>
         </div>

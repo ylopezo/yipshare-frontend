@@ -1,51 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 
-const IMAGENES_CASAS = ["/img/logo_yipshare_icono.png", "/img/lavadora.png", "/img/martillo2.png", "/img/tijeras2.png"];
-
-const CANTIDAD = 18;
-
-function generarCasas() {
-    return Array.from({ length: CANTIDAD }, (_, i) => {
-        const tamano = 20 + Math.random() * 40;
-
-        return {
-            id: i,
-            imagen: IMAGENES_CASAS[Math.floor(Math.random() * IMAGENES_CASAS.length)],
-            style: {
-                left: `${Math.random() * 100}vw`,
-                width: `${tamano}px`,
-                height: `${tamano}px`,
-                animationDuration: `${8 + Math.random() * 10}s`,
-                animationDelay: `${-Math.random() * 15}s`,
-                "--op": (0.08 + Math.random() * 0.22).toFixed(2),
-                "--giro": `${Math.random() * 360 - 180}deg`,
-            },
-        };
-    });
-}
+const LluviaCasas = dynamic(() => import("@/components/LluviaCasas"), { ssr: false });
 
 export default function Home() {
-    const [casas, setCasas] = useState([]);
-
-    useEffect(() => {
-        setCasas(generarCasas());
-    }, []);
-
     return (
         <div
             className="relative m-0 min-h-screen flex flex-col bg-linear-to-b
         from-[#24557f] to-[#3b8bd9] text-white font-sans"
         >
-            <div aria-hidden="true" className="pointer-events-none fixed inset-0 overflow-hidden">
-                {casas.map((casa) => (
-                    <div key={casa.id} className="casa" style={casa.style}>
-                        <img src={casa.imagen} alt="" className="h-full w-full object-contain" />
-                    </div>
-                ))}
-            </div>
+            <LluviaCasas />
 
             <header className="relative z-10 bg-[#1e4a73]/80">
                 <nav className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 md:px-6">

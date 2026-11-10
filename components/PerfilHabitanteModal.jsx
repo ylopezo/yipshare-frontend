@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { LADAS, soloDigitos, telefonoValido } from "@/lib/datos";
 import { Icon } from "./Icon";
 import { ConfirmDialog, Modal } from "./Modal";
 
@@ -21,14 +22,15 @@ export function PerfilHabitanteModal({ perfil, recibidas, onActualizarAction, on
     const [confirmar, setConfirmar] = useState(null);
     const [verRecibidas, setVerRecibidas] = useState(false);
 
-    const valido = Object.values(datos).every((v) => v.trim() !== "");
+    const telefonoOk = telefonoValido(datos.telefono ?? "");
+    const valido = Object.values(datos).every((v) => v.trim() !== "") && telefonoOk;
 
     function cancelarEdicion() {
         setDatos(inicial);
         setEditando(false);
     }
 
-    function handleConfirmar() {
+    function manejarConfirmar() {
         if (confirmar === "guardar") {
             setEditando(false);
             onActualizarAction(datos);
@@ -106,6 +108,47 @@ export function PerfilHabitanteModal({ perfil, recibidas, onActualizarAction, on
                             {NOMBRE.map(campo)}
                             <p className="m-0 mt-5 text-xs font-bold uppercase text-[#1e4a73]">Dirección</p>
                             {DIRECCION.map(campo)}
+
+                            <div className="mt-3">
+                                <label htmlFor="perfil-telefono" className="text-xs font-bold text-[#1e4a73]">
+                                    Teléfono
+                                </label>
+                                <div className="mt-1 flex gap-2">
+                                    <label htmlFor="perfil-lada" className="sr-only">
+                                        Lada
+                                    </label>
+                                    <select
+                                        id="perfil-lada"
+                                        value={datos.lada ?? "MX"}
+                                        disabled={!editando}
+                                        onChange={(e) => setDatos({ ...datos, lada: e.target.value })}
+                                        className="w-40 shrink-0 cursor-pointer rounded-full border border-slate-500 bg-[#eeeeee] px-3 py-1.5 text-sm text-slate-700 outline-none disabled:cursor-default disabled:opacity-100"
+                                    >
+                                        {LADAS.map((l) => (
+                                            <option key={l.valor} value={l.valor}>
+                                                {l.texto}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <input
+                                        id="perfil-telefono"
+                                        type="tel"
+                                        inputMode="numeric"
+                                        maxLength={10}
+                                        value={datos.telefono ?? ""}
+                                        readOnly={!editando}
+                                        aria-invalid={editando && !telefonoOk}
+                                        aria-describedby="perfil-telefono-error"
+                                        onChange={(e) => setDatos({ ...datos, telefono: soloDigitos(e.target.value) })}
+                                        className="min-w-0 flex-1 rounded-full border border-slate-500 bg-[#eeeeee] px-4 py-1.5 text-sm text-slate-700 outline-none read-only:cursor-default"
+                                    />
+                                </div>
+                                {editando && !telefonoOk && (
+                                    <p id="perfil-telefono-error" className="m-0 mt-1 text-xs text-red-600">
+                                        El teléfono debe tener 10 dígitos.
+                                    </p>
+                                )}
+                            </div>
                         </div>
                     </div>
 
@@ -204,7 +247,7 @@ export function PerfilHabitanteModal({ perfil, recibidas, onActualizarAction, on
                     mensaje={
                         confirmar === "guardar" ? "Se actualizarán tus datos." : "Esta acción no se puede deshacer."
                     }
-                    onConfirmarAction={handleConfirmar}
+                    onConfirmarAction={manejarConfirmar}
                     onCancelarAction={() => setConfirmar(null)}
                 />
             )}

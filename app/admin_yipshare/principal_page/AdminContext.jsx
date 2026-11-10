@@ -25,7 +25,7 @@ export function AdminProvider({ children }) {
             setCondominios((prev) => [
                 ...prev,
                 {
-                    id: crypto.getRandomValues(new Uint32Array(1))[0], // ID numérico aleatorio y robusto
+                    id: crypto.getRandomValues(new Uint32Array(1))[0],
                     nombre: solicitud.nombre,
                     direccion: solicitud.direccion,
                     cantidad: solicitud.cantidad,
