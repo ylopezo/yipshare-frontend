@@ -42,7 +42,7 @@ export function PerfilHabitanteModal({ perfil, recibidas, onActualizarAction, on
 
     const campo = ([name, label]) => (
         <div key={name} className="mt-3">
-            <label htmlFor={`perfil-${name}`} className="text-xs font-bold text-[#1e4a73]">
+            <label htmlFor={`perfil-${name}`} className="text-xs font-bold text-azul">
                 {label}
             </label>
             <input
@@ -50,7 +50,7 @@ export function PerfilHabitanteModal({ perfil, recibidas, onActualizarAction, on
                 value={datos[name]}
                 readOnly={!editando}
                 onChange={(e) => setDatos({ ...datos, [name]: e.target.value })}
-                className="mt-1 w-full rounded-full border border-slate-500 bg-[#eeeeee] px-4 py-1.5
+                className="mt-1 w-full rounded-full border border-slate-500 bg-gris px-4 py-1.5
                 text-sm text-slate-700 outline-none read-only:cursor-default"
             />
         </div>
@@ -74,11 +74,11 @@ export function PerfilHabitanteModal({ perfil, recibidas, onActualizarAction, on
                             <span className="flex h-32 w-32 items-center justify-center rounded-full bg-[#e4e4e4] text-slate-500">
                                 <Icon name="user" size={80} />
                             </span>
-                            <p className="m-0 mt-4 wrap-break-word text-xl font-bold text-[#1e4a73]">
+                            <p className="m-0 mt-4 wrap-break-word text-xl font-bold text-azul">
                                 {inicial.nombres} {inicial.apellidoPaterno}
                             </p>
 
-                            <p className="m-0 mt-5 text-xs font-bold text-[#1e4a73]">Mi calificación</p>
+                            <p className="m-0 mt-5 text-xs font-bold text-azul">Mi calificación</p>
                             <div
                                 role="img"
                                 aria-label={`Calificación ${calificacion.toFixed(1)} de 5`}
@@ -106,11 +106,11 @@ export function PerfilHabitanteModal({ perfil, recibidas, onActualizarAction, on
 
                         <div>
                             {NOMBRE.map(campo)}
-                            <p className="m-0 mt-5 text-xs font-bold uppercase text-[#1e4a73]">Dirección</p>
+                            <p className="m-0 mt-5 text-xs font-bold uppercase text-azul">Dirección</p>
                             {DIRECCION.map(campo)}
 
                             <div className="mt-3">
-                                <label htmlFor="perfil-telefono" className="text-xs font-bold text-[#1e4a73]">
+                                <label htmlFor="perfil-telefono" className="text-xs font-bold text-azul">
                                     Teléfono
                                 </label>
                                 <div className="mt-1 flex gap-2">
@@ -122,7 +122,7 @@ export function PerfilHabitanteModal({ perfil, recibidas, onActualizarAction, on
                                         value={datos.lada ?? "MX"}
                                         disabled={!editando}
                                         onChange={(e) => setDatos({ ...datos, lada: e.target.value })}
-                                        className="w-40 shrink-0 cursor-pointer rounded-full border border-slate-500 bg-[#eeeeee] px-3 py-1.5 text-sm text-slate-700 outline-none disabled:cursor-default disabled:opacity-100"
+                                        className="w-40 shrink-0 cursor-pointer rounded-full border border-slate-500 bg-gris px-3 py-1.5 text-sm text-slate-700 outline-none disabled:cursor-default disabled:opacity-100"
                                     >
                                         {LADAS.map((l) => (
                                             <option key={l.valor} value={l.valor}>
@@ -139,12 +139,17 @@ export function PerfilHabitanteModal({ perfil, recibidas, onActualizarAction, on
                                         readOnly={!editando}
                                         aria-invalid={editando && !telefonoOk}
                                         aria-describedby="perfil-telefono-error"
-                                        onChange={(e) => setDatos({ ...datos, telefono: soloDigitos(e.target.value) })}
-                                        className="min-w-0 flex-1 rounded-full border border-slate-500 bg-[#eeeeee] px-4 py-1.5 text-sm text-slate-700 outline-none read-only:cursor-default"
+                                        onChange={(e) =>
+                                            setDatos({
+                                                ...datos,
+                                                telefono: soloDigitos(e.target.value),
+                                            })
+                                        }
+                                        className="min-w-0 flex-1 rounded-full border border-slate-500 bg-gris px-4 py-1.5 text-sm text-slate-700 outline-none read-only:cursor-default"
                                     />
                                 </div>
                                 {editando && !telefonoOk && (
-                                    <p id="perfil-telefono-error" className="m-0 mt-1 text-xs text-red-600">
+                                    <p id="perfil-telefono-error" className="m-0 mt-1 text-xs text-azul">
                                         El teléfono debe tener 10 dígitos.
                                     </p>
                                 )}
@@ -159,15 +164,15 @@ export function PerfilHabitanteModal({ perfil, recibidas, onActualizarAction, on
                                 disabled={!valido}
                                 onClick={() => setConfirmar("guardar")}
                                 className="mx-auto mt-8 block w-3/5 max-w-xs cursor-pointer
-                                rounded-full bg-[#1f2d47] py-2 text-sm font-semibold
-                                text-white transition hover:bg-[#2c4066] disabled:opacity-50"
+                                rounded-full bg-oscuro py-2 text-sm font-semibold
+                                text-white transition hover:bg-oscuro-hover disabled:opacity-50"
                             >
                                 Guardar cambios
                             </button>
                             <button
                                 type="button"
                                 onClick={cancelarEdicion}
-                                className="mx-auto mt-3 block w-3/5 max-w-xs cursor-pointer rounded-full border border-[#1f2d47] bg-white py-2 text-sm font-semibold text-[#1f2d47] transition hover:bg-slate-100"
+                                className="mx-auto mt-3 block w-3/5 max-w-xs cursor-pointer rounded-full border border-oscuro bg-white py-2 text-sm font-semibold text-oscuro transition hover:bg-slate-100"
                             >
                                 Cancelar
                             </button>
@@ -177,14 +182,14 @@ export function PerfilHabitanteModal({ perfil, recibidas, onActualizarAction, on
                             <button
                                 type="button"
                                 onClick={() => setEditando(true)}
-                                className="mx-auto mt-8 block w-3/5 max-w-xs cursor-pointer rounded-full bg-[#1f2d47] py-2 text-sm font-semibold text-white transition hover:bg-[#2c4066]"
+                                className="mx-auto mt-8 block w-3/5 max-w-xs cursor-pointer rounded-full bg-oscuro py-2 text-sm font-semibold text-white transition hover:bg-oscuro-hover"
                             >
                                 Actualizar datos
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setConfirmar("eliminar")}
-                                className="mx-auto mt-3 block w-3/5 max-w-xs cursor-pointer rounded-full border border-red-600 bg-white py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50"
+                                className="mx-auto mt-3 block w-3/5 max-w-xs cursor-pointer rounded-full border border-azul bg-white py-2 text-sm font-semibold text-azul transition hover:bg-slate-100"
                             >
                                 Eliminar cuenta
                             </button>
@@ -210,7 +215,7 @@ export function PerfilHabitanteModal({ perfil, recibidas, onActualizarAction, on
                                         className="rounded-xl border border-slate-300 px-4 py-3"
                                     >
                                         <div className="flex items-center justify-between gap-2">
-                                            <p className="m-0 text-sm font-bold text-[#1e4a73]">{c.de}</p>
+                                            <p className="m-0 text-sm font-bold text-azul">{c.de}</p>
                                             <span
                                                 role="img"
                                                 aria-label={`${c.estrellas} de 5 estrellas`}

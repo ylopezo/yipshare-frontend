@@ -7,11 +7,11 @@ import { Icon } from "./Icon";
 const COLOR = {
     disponible: "bg-[#b9f0c8] text-green-900",
     pendiente: "bg-[#fde9a8] text-amber-900",
-    no_disponible: "bg-[#f6b5b5] text-red-900",
+    no_disponible: "bg-azul text-white",
 };
 
-const BOTON_PELIGRO =
-    "cursor-pointer rounded-full border border-red-600 bg-white text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50";
+const BOTON_CLARO =
+    "cursor-pointer rounded-full border border-azul bg-white text-azul transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50";
 
 export function ArticuloTarjeta({ a, onVerAction, onEditarAction }) {
     return (
@@ -31,7 +31,7 @@ export function ArticuloTarjeta({ a, onVerAction, onEditarAction }) {
                     >
                         {ESTADOS[a.estado]}
                     </span>
-                    <p className="m-0 mt-1 wrap-break-word text-lg font-bold text-[#1e4a73]">{a.nombre}</p>
+                    <p className="m-0 mt-1 wrap-break-word text-lg font-bold text-azul">{a.nombre}</p>
                     <p className="m-0 text-[10px] text-slate-500">{a.duenio}</p>
                 </div>
             </button>
@@ -58,7 +58,7 @@ export function ArticuloFicha({ a, onVolverAction, onSolicitarAction, onEliminar
                 type="button"
                 aria-label="Volver"
                 onClick={onVolverAction}
-                className="cursor-pointer rounded-full p-2 text-[#1e4a73] transition hover:bg-white"
+                className="cursor-pointer rounded-full p-2 text-azul transition hover:bg-white"
             >
                 <Icon name="arrow" size={28} />
             </button>
@@ -72,7 +72,7 @@ export function ArticuloFicha({ a, onVolverAction, onSolicitarAction, onEliminar
                     {ESTADOS[a.estado]}
                 </span>
 
-                <h2 className="m-0 mt-2 break-words text-lg font-bold uppercase text-[#1e4a73]">{a.nombre}</h2>
+                <h2 className="m-0 mt-2 break-words text-lg font-bold uppercase text-azul">{a.nombre}</h2>
                 <p className="m-0 text-xs font-bold">{a.categoria}</p>
 
                 <p className="mb-0 mt-3 break-words text-xs font-semibold">{a.descripcion}</p>
@@ -88,7 +88,7 @@ export function ArticuloFicha({ a, onVolverAction, onSolicitarAction, onEliminar
                     </span>
 
                     <div className="min-w-0">
-                        <p className="m-0 break-words text-base font-bold text-[#1e4a73]">
+                        <p className="m-0 break-words text-base font-bold text-azul">
                             {a.duenio} - {a.direccion}
                         </p>
 
@@ -115,7 +115,7 @@ export function ArticuloFicha({ a, onVolverAction, onSolicitarAction, onEliminar
             {onSolicitarAction && (
                 <>
                     <div className="mx-auto mt-6 w-full max-w-xs text-center">
-                        <p className="m-0 text-xs font-bold text-[#1e4a73]">Tiempo de préstamo</p>
+                        <p className="m-0 text-xs font-bold text-azul">Tiempo de préstamo</p>
                         <div className="mt-2 flex flex-wrap justify-center gap-2">
                             {a.tiempos.map((t) => (
                                 <button
@@ -125,7 +125,7 @@ export function ArticuloFicha({ a, onVolverAction, onSolicitarAction, onEliminar
                                     onClick={() => setTiempo(t)}
                                     className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-semibold transition ${
                                         tiempo === t
-                                            ? "border-[#1e4a73] bg-[#1e4a73] text-white"
+                                            ? "border-azul bg-azul text-white"
                                             : "border-slate-500 bg-white text-slate-700 hover:bg-slate-100"
                                     }`}
                                 >
@@ -139,7 +139,7 @@ export function ArticuloFicha({ a, onVolverAction, onSolicitarAction, onEliminar
                         type="button"
                         disabled={a.estado !== "disponible"}
                         onClick={() => onSolicitarAction(tiempo)}
-                        className="mx-auto mt-4 block w-full max-w-xs cursor-pointer rounded-full bg-[#1e4a73] py-2 text-base font-bold text-white hover:bg-[#2a6aa8] disabled:cursor-not-allowed disabled:opacity-50"
+                        className="mx-auto mt-4 block w-full max-w-xs cursor-pointer rounded-full bg-azul py-2 text-base font-bold text-white hover:bg-azul-claro disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         Solicitar Artículo
                     </button>
@@ -153,7 +153,7 @@ export function ArticuloFicha({ a, onVolverAction, onSolicitarAction, onEliminar
                         type="button"
                         disabled={eliminarBloqueado}
                         onClick={onEliminarAction}
-                        className={`${BOTON_PELIGRO} mx-auto mt-3 block w-full max-w-xs py-2 text-sm font-bold`}
+                        className={`${BOTON_CLARO} mx-auto mt-3 block w-full max-w-xs py-2 text-sm font-bold`}
                     >
                         Eliminar publicación
                     </button>

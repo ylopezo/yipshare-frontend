@@ -35,6 +35,21 @@ export function Icon({ name, size = 24 }) {
                 <path d="M3 8h18M3 12h18M3 16h18" />
             </>
         ),
+        lock: (
+            <>
+                <rect x="4" y="11" width="16" height="10" rx="2" />
+                <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+            </>
+        ),
+        eye: (
+            <>
+                <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" />
+                <circle cx="12" cy="12" r="3" />
+            </>
+        ),
+        eyeOff: (
+            <path d="M2 12s3.6-7 10-7c2 0 3.8.7 5.3 1.7M22 12s-3.6 7-10 7c-2 0-3.8-.7-5.3-1.7M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18" />
+        ),
         alert: (
             <>
                 <circle cx="12" cy="12" r="9" />

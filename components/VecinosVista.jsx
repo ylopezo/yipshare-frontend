@@ -1,7 +1,7 @@
 "use client";
 
-const BOTON_PELIGRO =
-    "cursor-pointer rounded-full border border-red-600 bg-white text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50";
+const BOTON_CLARO =
+    "cursor-pointer rounded-full border border-azul bg-white text-azul transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50";
 
 function Interruptor({ activo, onCambiar, label }) {
     return (
@@ -11,7 +11,7 @@ function Interruptor({ activo, onCambiar, label }) {
             aria-checked={activo}
             aria-label={label}
             onClick={onCambiar}
-            className={`relative h-6 w-12 shrink-0 cursor-pointer rounded-full transition ${activo ? "bg-[#1e4a73]" : "bg-slate-300"}`}
+            className={`relative h-6 w-12 shrink-0 cursor-pointer rounded-full transition ${activo ? "bg-azul" : "bg-slate-300"}`}
         >
             <span
                 className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-all ${activo ? "left-7" : "left-1"}`}
@@ -34,7 +34,7 @@ export function VecinosVista({ vecinos, onPermisoAction, onExpulsarAction }) {
                 >
                     <div className="min-w-0 flex-1 basis-40">
                         <p className="m-0 break-words text-sm font-bold">{v.nombre}</p>
-                        <p className={`m-0 text-[11px] ${v.alCorriente ? "text-[#5aa0e8]" : "text-red-600"}`}>
+                        <p className={`m-0 text-[11px] ${v.alCorriente ? "text-[#5aa0e8]" : "text-azul"}`}>
                             {v.alCorriente ? "Al Corriente" : "Adeudo de Mantenimiento"}
                         </p>
                     </div>
@@ -50,7 +50,7 @@ export function VecinosVista({ vecinos, onPermisoAction, onExpulsarAction }) {
                         <button
                             type="button"
                             onClick={() => onExpulsarAction(v)}
-                            className={`${BOTON_PELIGRO} px-3 py-1 text-xs font-semibold`}
+                            className={`${BOTON_CLARO} px-3 py-1 text-xs font-semibold`}
                         >
                             Expulsar
                         </button>

@@ -45,13 +45,13 @@ export function CalificarModal({ vecino, onEnviarAction, onCancelarAction }) {
                     placeholder="Comentario (opcional)"
                     value={comentario}
                     onChange={(e) => setComentario(e.target.value)}
-                    className="mt-4 w-full resize-none rounded-2xl border border-slate-500 bg-[#eeeeee] px-4 py-2 text-sm text-slate-700 outline-none focus:border-[#1e4a73]"
+                    className="mt-4 w-full resize-none rounded-2xl border border-slate-500 bg-gris px-4 py-2 text-sm text-slate-700 outline-none focus:border-azul"
                 />
 
                 <button
                     type="submit"
                     disabled={estrellas === 0}
-                    className="mx-auto mt-4 block w-3/5 cursor-pointer rounded-full bg-[#1f2d47] py-2 text-sm font-semibold text-white transition hover:bg-[#2c4066] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="mx-auto mt-4 block w-3/5 cursor-pointer rounded-full bg-oscuro py-2 text-sm font-semibold text-white transition hover:bg-oscuro-hover disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     Enviar
                 </button>

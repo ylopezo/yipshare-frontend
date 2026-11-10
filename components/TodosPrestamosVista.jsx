@@ -6,7 +6,7 @@ import { Icon } from "./Icon";
 
 const DIA_MS = 86_400_000;
 const TD = "whitespace-nowrap px-3 py-2.5 align-middle";
-const FOCO = "outline-none focus-visible:ring-2 focus-visible:ring-[#2a6aa8]";
+const FOCO = "outline-none focus-visible:ring-2 focus-visible:ring-azul-claro";
 
 // "vencido" no viene del backend: es un préstamo en curso que ya pasó su fecha
 const ESTADOS = {
@@ -28,7 +28,12 @@ const COLUMNAS = [
     { id: "estado", texto: "Estado" },
 ];
 
-const fecha = (ms) => new Date(ms).toLocaleDateString("es-MX", { day: "2-digit", month: "short", year: "numeric" });
+const fecha = (ms) =>
+    new Date(ms).toLocaleDateString("es-MX", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+    });
 
 export function TodosPrestamosVista({ prestamos, personas = {}, yo, onRecordarAction }) {
     const [filtro, setFiltro] = useState("todos");
@@ -52,7 +57,10 @@ export function TodosPrestamosVista({ prestamos, personas = {}, yo, onRecordarAc
     const q = busqueda.trim().toLowerCase();
     const lista = prestamos
         .filter((p) => filtro === "todos" || estadoDe(p) === filtro)
-        .filter((p) => !q || [p.nombre, nombreDe(p.duenio), nombreDe(p.prestatario)].some((t) => t?.toLowerCase().includes(q)));
+        .filter(
+            (p) =>
+                !q || [p.nombre, nombreDe(p.duenio), nombreDe(p.prestatario)].some((t) => t?.toLowerCase().includes(q)),
+        );
 
     const filtros = [
         { valor: "todos", texto: "Todos", total: prestamos.length },
@@ -70,7 +78,7 @@ export function TodosPrestamosVista({ prestamos, personas = {}, yo, onRecordarAc
                     <h2 className="m-0 text-lg font-bold">Todos los préstamos</h2>
                     <p className="mb-0 mt-1 text-sm text-zinc-600">Registro de los préstamos del condominio.</p>
                 </div>
-                <label className="flex w-full items-center gap-2 rounded-md border border-zinc-300 bg-white px-3 py-2 text-zinc-500 focus-within:border-[#1e4a73] sm:w-72">
+                <label className="flex w-full items-center gap-2 rounded-md border border-zinc-300 bg-white px-3 py-2 text-zinc-500 focus-within:border-azul sm:w-72">
                     <Icon name="search" size={18} />
                     <span className="sr-only">Buscar préstamo</span>
                     <input
@@ -93,13 +101,13 @@ export function TodosPrestamosVista({ prestamos, personas = {}, yo, onRecordarAc
                             onClick={() => setFiltro(f.valor)}
                             className={`-mb-px shrink-0 cursor-pointer whitespace-nowrap border-b-2 px-3 py-2.5 text-sm font-semibold ${FOCO} ${
                                 filtro === f.valor
-                                    ? "border-[#1e4a73] text-[#1e4a73]"
+                                    ? "border-azul text-azul"
                                     : "border-transparent text-zinc-500 hover:text-zinc-800"
                             }`}
                         >
                             {f.texto}{" "}
                             <span
-                                className={`font-normal tabular-nums ${f.valor === "vencido" && f.total > 0 ? "font-semibold text-red-700" : "text-zinc-400"}`}
+                                className={`font-normal tabular-nums ${f.valor === "vencido" && f.total > 0 ? "font-semibold text-azul" : "text-zinc-400"}`}
                             >
                                 ({f.total})
                             </span>
@@ -115,7 +123,7 @@ export function TodosPrestamosVista({ prestamos, personas = {}, yo, onRecordarAc
                                 key={c.id}
                                 type="button"
                                 onClick={() => setOcultas((prev) => prev.filter((x) => x !== c.id))}
-                                className={`flex cursor-pointer items-center gap-1 rounded border border-zinc-300 bg-white px-2 py-0.5 font-semibold text-zinc-700 hover:border-[#1e4a73] hover:text-[#1e4a73] ${FOCO}`}
+                                className={`flex cursor-pointer items-center gap-1 rounded border border-zinc-300 bg-white px-2 py-0.5 font-semibold text-zinc-700 hover:border-azul hover:text-azul ${FOCO}`}
                             >
                                 <Icon name="plus" size={12} />
                                 {c.texto}
@@ -126,12 +134,14 @@ export function TodosPrestamosVista({ prestamos, personas = {}, yo, onRecordarAc
 
                 {lista.length === 0 ? (
                     <p className="m-0 px-4 py-10 text-center text-sm text-zinc-600">
-                        {q ? `Ningún préstamo coincide con “${busqueda.trim()}”. ` : "No hay préstamos en esta categoría."}
+                        {q
+                            ? `Ningún préstamo coincide con “${busqueda.trim()}”. `
+                            : "No hay préstamos en esta categoría."}
                         {q && (
                             <button
                                 type="button"
                                 onClick={() => setBusqueda("")}
-                                className={`cursor-pointer font-semibold text-[#1e4a73] underline ${FOCO}`}
+                                className={`cursor-pointer font-semibold text-azul underline ${FOCO}`}
                             >
                                 Limpiar búsqueda
                             </button>
@@ -150,7 +160,7 @@ export function TodosPrestamosVista({ prestamos, personas = {}, yo, onRecordarAc
                                                 aria-label={`Ocultar columna ${c.texto}`}
                                                 disabled={visibles.length === 1}
                                                 onClick={() => setOcultas((prev) => [...prev, c.id])}
-                                                className={`group flex w-full cursor-pointer items-center gap-1.5 px-3 py-2 text-left text-xs font-bold text-zinc-700 hover:text-[#1e4a73] disabled:cursor-default disabled:hover:text-zinc-700 ${FOCO}`}
+                                                className={`group flex w-full cursor-pointer items-center gap-1.5 px-3 py-2 text-left text-xs font-bold text-zinc-700 hover:text-azul disabled:cursor-default disabled:hover:text-zinc-700 ${FOCO}`}
                                             >
                                                 {c.texto}
                                                 <span className="opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 group-disabled:hidden">
@@ -173,7 +183,10 @@ export function TodosPrestamosVista({ prestamos, personas = {}, yo, onRecordarAc
                                     return (
                                         <tr key={p.id} className="hover:bg-zinc-50">
                                             {ver("articulo") && (
-                                                <td className={`${TD} max-w-56 truncate font-semibold`} title={p.nombre}>
+                                                <td
+                                                    className={`${TD} max-w-56 truncate font-semibold`}
+                                                    title={p.nombre}
+                                                >
                                                     {p.nombre}
                                                 </td>
                                             )}
@@ -181,17 +194,29 @@ export function TodosPrestamosVista({ prestamos, personas = {}, yo, onRecordarAc
                                             {ver("recibe") && <td className={TD}>{persona(p.prestatario)}</td>}
                                             {ver("inicio") && (
                                                 <td className={`${TD} tabular-nums text-zinc-700`}>
-                                                    {inicio !== null ? fecha(inicio) : <span className="text-zinc-400">Sin entregar</span>}
+                                                    {inicio !== null ? (
+                                                        fecha(inicio)
+                                                    ) : (
+                                                        <span className="text-zinc-400">Sin entregar</span>
+                                                    )}
                                                 </td>
                                             )}
                                             {ver("duracion") && <td className={`${TD} text-zinc-700`}>{p.tiempo}</td>}
                                             {ver("vence") && (
-                                                <td className={`${TD} tabular-nums ${vencido ? "font-semibold text-red-700" : "text-zinc-700"}`}>
-                                                    {p.fin !== null ? fecha(p.fin) : <span className="text-zinc-400">No definida</span>}
+                                                <td
+                                                    className={`${TD} tabular-nums ${vencido ? "font-semibold text-azul" : "text-zinc-700"}`}
+                                                >
+                                                    {p.fin !== null ? (
+                                                        fecha(p.fin)
+                                                    ) : (
+                                                        <span className="text-zinc-400">No definida</span>
+                                                    )}
                                                 </td>
                                             )}
                                             {ver("estado") && (
-                                                <td className={`${TD} ${vencido ? "font-semibold text-red-700" : "text-zinc-700"}`}>
+                                                <td
+                                                    className={`${TD} ${vencido ? "font-semibold text-azul" : "text-zinc-700"}`}
+                                                >
                                                     {ESTADOS[estado]}
                                                 </td>
                                             )}
@@ -199,12 +224,14 @@ export function TodosPrestamosVista({ prestamos, personas = {}, yo, onRecordarAc
                                                 {vencido &&
                                                     onRecordarAction &&
                                                     (p.recordado ? (
-                                                        <span className="text-xs text-zinc-500">Recordatorio enviado</span>
+                                                        <span className="text-xs text-zinc-500">
+                                                            Recordatorio enviado
+                                                        </span>
                                                     ) : (
                                                         <button
                                                             type="button"
                                                             onClick={() => onRecordarAction(p)}
-                                                            className={`cursor-pointer rounded border border-zinc-300 bg-white px-2 py-0.5 text-xs font-semibold text-zinc-700 hover:border-[#1e4a73] hover:text-[#1e4a73] ${FOCO}`}
+                                                            className={`cursor-pointer rounded border border-zinc-300 bg-white px-2 py-0.5 text-xs font-semibold text-zinc-700 hover:border-azul hover:text-azul ${FOCO}`}
                                                         >
                                                             Recordar
                                                         </button>

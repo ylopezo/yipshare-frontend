@@ -27,8 +27,8 @@ export const CONDICIONES = ["Excelente estado", "Buen estado", "Estado intermedi
 export const TIEMPOS = Object.keys(DIAS);
 
 const INPUT =
-    "w-full rounded-xl border border-slate-600 bg-[#eeeeee] px-4 py-2 text-sm text-slate-700 outline-none focus:border-[#1e4a73]";
-const ETIQUETA = "mb-1 mt-4 block text-xs font-bold text-[#1e4a73]";
+    "w-full rounded-xl border border-slate-600 bg-gris px-4 py-2 text-sm text-slate-700 outline-none focus:border-azul";
+const ETIQUETA = "mb-1 mt-4 block text-xs font-bold text-azul";
 
 export function ArticuloModal({ articulo, onGuardarAction, onCancelarAction }) {
     const [nombre, setNombre] = useState(articulo?.nombre ?? "");
@@ -166,8 +166,8 @@ export function ArticuloModal({ articulo, onGuardarAction, onCancelarAction }) {
                                         onClick={() => alternarTiempo(t)}
                                         className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-semibold transition ${
                                             activo
-                                                ? "border-[#1f2d47] bg-[#1f2d47] text-white"
-                                                : "border-slate-500 bg-[#eeeeee] text-slate-700 hover:bg-[#e2e2e2]"
+                                                ? "border-oscuro bg-oscuro text-white"
+                                                : "border-slate-500 bg-gris text-slate-700 hover:bg-[#e2e2e2]"
                                         }`}
                                     >
                                         {t}
@@ -181,7 +181,7 @@ export function ArticuloModal({ articulo, onGuardarAction, onCancelarAction }) {
                 <button
                     type="submit"
                     disabled={!valido}
-                    className="mx-auto mt-8 block w-3/5 max-w-xs cursor-pointer rounded-xl bg-[#1f2d47] py-2 text-sm font-semibold text-white hover:bg-[#2c4066] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="mx-auto mt-8 block w-3/5 max-w-xs cursor-pointer rounded-xl bg-oscuro py-2 text-sm font-semibold text-white hover:bg-oscuro-hover disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     Guardar
                 </button>

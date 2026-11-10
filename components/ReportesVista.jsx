@@ -4,13 +4,25 @@ import { useState } from "react";
 import { BOTON_OSCURO } from "./Modal";
 
 export const REPORTE_ESTADOS = [
-    { valor: "en_revision", texto: "En revisión", clase: "bg-[#dbe7f5] text-[#1e4a73]" },
-    { valor: "pendiente", texto: "Pendiente", clase: "bg-[#fde9a8] text-amber-900" },
-    { valor: "finalizado", texto: "Finalizado", clase: "bg-[#b9f0c8] text-green-900" },
+    {
+        valor: "en_revision",
+        texto: "En revisión",
+        clase: "bg-[#dbe7f5] text-azul",
+    },
+    {
+        valor: "pendiente",
+        texto: "Pendiente",
+        clase: "bg-[#fde9a8] text-amber-900",
+    },
+    {
+        valor: "finalizado",
+        texto: "Finalizado",
+        clase: "bg-[#b9f0c8] text-green-900",
+    },
 ];
 
 const INPUT_LECTURA =
-    "w-full rounded-full border border-slate-500 bg-[#eeeeee] px-4 py-2 text-sm text-slate-700 outline-none read-only:cursor-default";
+    "w-full rounded-full border border-slate-500 bg-gris px-4 py-2 text-sm text-slate-700 outline-none read-only:cursor-default";
 
 export function ReportesVista({ reportes, onCambiarEstadoAction }) {
     const [seleccionId, setSeleccionId] = useState(null);
@@ -60,10 +72,10 @@ export function ReportesVista({ reportes, onCambiarEstadoAction }) {
                         rows={3}
                         placeholder="Detalles del reporte"
                         value={seleccionado?.detalles ?? ""}
-                        className="mt-3 w-full resize-none rounded-2xl border border-slate-500 bg-[#eeeeee] px-4 py-2 text-sm text-slate-700 outline-none read-only:cursor-default"
+                        className="mt-3 w-full resize-none rounded-2xl border border-slate-500 bg-gris px-4 py-2 text-sm text-slate-700 outline-none read-only:cursor-default"
                     />
 
-                    <p className="mb-2 mt-4 text-xs font-bold text-[#1e4a73]">Estado del reporte</p>
+                    <p className="mb-2 mt-4 text-xs font-bold text-azul">Estado del reporte</p>
                     <div className="flex flex-wrap gap-2">
                         {REPORTE_ESTADOS.map((e) => (
                             <button
@@ -74,7 +86,7 @@ export function ReportesVista({ reportes, onCambiarEstadoAction }) {
                                 onClick={() => setEstado(e.valor)}
                                 className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${
                                     estado === e.valor
-                                        ? "border-[#1e4a73] bg-[#1e4a73] text-white"
+                                        ? "border-azul bg-azul text-white"
                                         : "border-slate-500 bg-white text-slate-700 hover:bg-slate-100"
                                 }`}
                             >

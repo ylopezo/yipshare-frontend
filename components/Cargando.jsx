@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
 
 export function Cargando() {
     return (
@@ -21,20 +20,4 @@ export function Cargando() {
             <span className="sr-only">Cargando…</span>
         </div>
     );
-}
-
-export function useCargando(ms = 800) {
-    const [cargando, setCargando] = useState(false);
-
-    const conCarga =
-        (accion) =>
-        (...args) => {
-            setCargando(true);
-            setTimeout(() => {
-                accion(...args);
-                setCargando(false);
-            }, ms);
-        };
-
-    return { cargando, conCarga };
 }

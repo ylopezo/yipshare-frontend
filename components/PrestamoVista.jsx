@@ -7,11 +7,14 @@ import { REPORTE_ESTADOS } from "./ReportesVista";
 import { BOTON_OSCURO, Modal } from "./Modal";
 
 export const ESTADO_PRESTAMO = {
-    pendiente: { texto: "Pendiente de conformación", clase: "bg-[#fde9a8] text-amber-900" },
-    aceptado: { texto: "Reservado", clase: "bg-[#dbe7f5] text-[#1e4a73]" },
+    pendiente: {
+        texto: "Pendiente de conformación",
+        clase: "bg-[#fde9a8] text-amber-900",
+    },
+    aceptado: { texto: "Reservado", clase: "bg-[#dbe7f5] text-azul" },
     en_curso: { texto: "En préstamo", clase: "bg-[#b9f0c8] text-green-900" },
     finalizado: { texto: "Finalizado", clase: "bg-slate-200 text-slate-700" },
-    rechazado: { texto: "Rechazado", clase: "bg-[#f6b5b5] text-red-900" },
+    rechazado: { texto: "Rechazado", clase: "bg-azul text-white" },
 };
 
 function CodigoModal({ fase, codigoInicial, onConfirmarAction, onCancelarAction }) {
@@ -58,10 +61,10 @@ function CodigoModal({ fase, codigoInicial, onConfirmarAction, onCancelarAction 
                         setEscrito(e.target.value);
                         setError(false);
                     }}
-                    className="mt-5 w-full rounded-xl border border-slate-600 bg-[#eeeeee] px-4 py-2 text-center text-lg tracking-widest text-slate-700 outline-none focus:border-[#1e4a73]"
+                    className="mt-5 w-full rounded-xl border border-slate-600 bg-gris px-4 py-2 text-center text-lg tracking-widest text-slate-700 outline-none focus:border-azul"
                 />
                 {error && (
-                    <p role="alert" className="mb-0 mt-2 text-sm text-red-600">
+                    <p role="alert" className="mb-0 mt-2 text-sm text-azul">
                         Código incorrecto o vencido.
                     </p>
                 )}
@@ -75,8 +78,8 @@ function CodigoModal({ fase, codigoInicial, onConfirmarAction, onCancelarAction 
                 </button>
 
                 <div className="mt-6 border-t border-slate-300 pt-4">
-                    <p className="m-0 text-xs font-bold text-[#1e4a73]">Tu código</p>
-                    <p className="m-0 mt-1 font-mono text-3xl font-bold tracking-widest text-[#1e4a73]">{cod.valor}</p>
+                    <p className="m-0 text-xs font-bold text-azul">Tu código</p>
+                    <p className="m-0 mt-1 font-mono text-3xl font-bold tracking-widest text-azul">{cod.valor}</p>
                     <p className="m-0 mt-1 text-xs text-slate-500">
                         Vence en {Math.floor(restante / 60)}:{String(restante % 60).padStart(2, "0")}
                     </p>
@@ -109,7 +112,10 @@ export function PrestamosVista({
 
     const accion = (p, rol) => {
         if (p.estado === "pendiente" && rol === "duenio") {
-            return { texto: "Confirmar Petición", abrir: () => setVentana({ tipo: "peticion", p }) };
+            return {
+                texto: "Confirmar Petición",
+                abrir: () => setVentana({ tipo: "peticion", p }),
+            };
         }
         if (p.estado === "aceptado" || p.estado === "en_curso") {
             return {
@@ -119,7 +125,10 @@ export function PrestamosVista({
         }
         // Las dos personas califican, no solo la que escribió el código de devolución
         if (p.estado === "finalizado" && !calificaciones.some((c) => c.prestamoId === p.id && c.de === usuario)) {
-            return { texto: "Calificar", abrir: () => setVentana({ tipo: "calificar", p }) };
+            return {
+                texto: "Calificar",
+                abrir: () => setVentana({ tipo: "calificar", p }),
+            };
         }
         return null;
     };
@@ -133,12 +142,15 @@ export function PrestamosVista({
                 </div>
 
                 <div className="px-3 pb-3 pt-2">
-                    <p className="m-0 break-words text-base font-bold text-[#1e4a73]">{p.nombre}</p>
+                    <p className="m-0 break-words text-base font-bold text-azul">{p.nombre}</p>
                     <p className="m-0 text-[10px] text-slate-500">{rol === "prestatario" ? p.duenio : p.prestatario}</p>
                     {p.estado === "en_curso" && p.fin && (
                         <p className="m-0 mt-1 text-[10px] text-slate-500">
                             Vence:{" "}
-                            {new Date(p.fin).toLocaleString("es-MX", { dateStyle: "medium", timeStyle: "short" })}
+                            {new Date(p.fin).toLocaleString("es-MX", {
+                                dateStyle: "medium",
+                                timeStyle: "short",
+                            })}
                         </p>
                     )}
 
@@ -205,7 +217,7 @@ export function PrestamosVista({
                                 <p className="mb-0 mt-3 text-xs text-slate-500">Este vecino no tiene reportes.</p>
                             ) : (
                                 <details className="mt-3 text-left">
-                                    <summary className="cursor-pointer text-center text-xs font-bold text-red-700">
+                                    <summary className="cursor-pointer text-center text-xs font-bold text-azul">
                                         Ver reportes del vecino ({contra.length})
                                     </summary>
                                     <ul className="m-0 mt-2 flex max-h-48 list-none flex-col gap-2 overflow-y-auto p-0">
@@ -245,7 +257,7 @@ export function PrestamosVista({
                                 onResponderAction(ventana.p, false);
                                 cerrar();
                             }}
-                            className="mx-auto mt-3 block w-3/5 cursor-pointer rounded-full border border-red-600 bg-white py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50"
+                            className="mx-auto mt-3 block w-3/5 cursor-pointer rounded-full border border-azul bg-white py-2 text-sm font-semibold text-azul transition hover:bg-slate-100"
                         >
                             Denegar
                         </button>

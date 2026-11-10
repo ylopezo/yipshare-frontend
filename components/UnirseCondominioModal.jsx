@@ -17,7 +17,7 @@ function validarDireccion(valor, nombre) {
 
 function MensajeError({ id, texto }) {
     return texto ? (
-        <p id={id} role="alert" className="mb-0 mt-1 px-1 text-xs text-red-600">
+        <p id={id} role="alert" className="mb-0 mt-1 px-1 text-xs text-azul">
             {texto}
         </p>
     ) : null;
@@ -43,7 +43,7 @@ export function UnirseCondominioModal({ onEntrarAction, onCancelarAction }) {
     const mostrar = (campo) => (tocados[campo] ? errores[campo] : "");
 
     const inputClase =
-        "w-full rounded-xl border border-slate-600 bg-[#eeeeee] px-4 py-2 text-sm text-slate-700 outline-none placeholder:text-slate-500 focus:border-[#1e4a73] aria-[invalid=true]:border-red-500";
+        "w-full rounded-xl border border-slate-600 bg-gris px-4 py-2 text-sm text-slate-700 outline-none placeholder:text-slate-500 focus:border-azul aria-[invalid=true]:border-azul";
 
     function manejarEnvio(e) {
         e.preventDefault();
@@ -84,7 +84,7 @@ export function UnirseCondominioModal({ onEntrarAction, onCancelarAction }) {
                 />
                 <MensajeError id="err-codigo" texto={mostrar("codigo")} />
 
-                <p className="mb-2 mt-5 text-sm font-bold uppercase text-[#1e4a73]">Dirección</p>
+                <p className="mb-2 mt-5 text-sm font-bold uppercase text-azul">Dirección</p>
 
                 <input
                     type="text"
@@ -116,7 +116,7 @@ export function UnirseCondominioModal({ onEntrarAction, onCancelarAction }) {
 
                 <button
                     type="submit"
-                    className="mx-auto mt-6 block w-3/5 cursor-pointer rounded-xl bg-[#1f2d47] py-2 text-sm font-semibold text-white transition hover:bg-[#2c4066]"
+                    className="mx-auto mt-6 block w-3/5 cursor-pointer rounded-xl bg-oscuro py-2 text-sm font-semibold text-white transition hover:bg-oscuro-hover"
                 >
                     Entrar
                 </button>

@@ -8,7 +8,6 @@ import { useState } from "react";
 import { ArticuloModal } from "@/components/ArticuloModal";
 import { ArticuloFicha, ArticuloTarjeta } from "@/components/ArticuloVista";
 import { Icon } from "@/components/Icon";
-import { Cargando, useCargando } from "@/components/Cargando";
 import { ConfirmDialog } from "@/components/Modal";
 import { PerfilHabitanteModal } from "@/components/PerfilHabitanteModal";
 import { PrestamosVista } from "@/components/PrestamoVista";
@@ -35,14 +34,42 @@ const PERFIL_EJEMPLO = {
 };
 
 const VECINOS_EJEMPLO = [
-    { id: 1, nombre: "Ana Martínez", usuario: "vecino_ana", depto: "Edificio 1, Dpto 3", alCorriente: true },
-    { id: 2, nombre: "Luis Hernández", usuario: "vecino_luis", depto: "Edificio 1, Dpto 8", alCorriente: true },
-    { id: 3, nombre: "Marta Ruiz", usuario: "vecino_marta", depto: "Edificio 3, Dpto 5", alCorriente: false },
+    {
+        id: 1,
+        nombre: "Ana Martínez",
+        usuario: "vecino_ana",
+        depto: "Edificio 1, Dpto 3",
+        alCorriente: true,
+    },
+    {
+        id: 2,
+        nombre: "Luis Hernández",
+        usuario: "vecino_luis",
+        depto: "Edificio 1, Dpto 8",
+        alCorriente: true,
+    },
+    {
+        id: 3,
+        nombre: "Marta Ruiz",
+        usuario: "vecino_marta",
+        depto: "Edificio 3, Dpto 5",
+        alCorriente: false,
+    },
 ];
 
 const ASPIRANTES_EJEMPLO = [
-    { id: 10, nombre: "Pedro Sánchez", usuario: "vecino_pedro", depto: "Edificio 2, Dpto 6" },
-    { id: 11, nombre: "Laura Gómez", usuario: "vecino_laura", depto: "Edificio 4, Dpto 12" },
+    {
+        id: 10,
+        nombre: "Pedro Sánchez",
+        usuario: "vecino_pedro",
+        depto: "Edificio 2, Dpto 6",
+    },
+    {
+        id: 11,
+        nombre: "Laura Gómez",
+        usuario: "vecino_laura",
+        depto: "Edificio 4, Dpto 12",
+    },
 ];
 
 const REPORTES_EJEMPLO = [
@@ -212,7 +239,6 @@ const ICONO_HEADER = "cursor-pointer rounded-full p-1 text-white hover:bg-white/
 export default function CondominioAdminPage() {
     const { id } = useParams();
     const router = useRouter();
-    const { cargando, conCarga } = useCargando();
 
     const [articulos, setArticulos] = useState(ARTICULOS_EJEMPLO);
     const [prestamos, setPrestamos] = useState(PRESTAMOS_EJEMPLO);
@@ -241,7 +267,7 @@ export default function CondominioAdminPage() {
             <main className="p-10">
                 <p>No se encontró el condominio.</p>
 
-                <Link href="/habitante_yipshare/principal_page" className="font-bold text-[#2a6aa8] hover:underline">
+                <Link href="/habitante_yipshare/principal_page" className="font-bold text-azul-claro hover:underline">
                     Volver
                 </Link>
             </main>
@@ -377,7 +403,13 @@ export default function CondominioAdminPage() {
         if (aceptar) {
             setVecinos((prev) => [
                 ...prev,
-                { id: a.id, nombre: a.nombre, usuario: a.usuario, depto: a.depto, alCorriente: true },
+                {
+                    id: a.id,
+                    nombre: a.nombre,
+                    usuario: a.usuario,
+                    depto: a.depto,
+                    alCorriente: true,
+                },
             ]);
         }
     }
@@ -410,8 +442,8 @@ export default function CondominioAdminPage() {
         `${ITEM} cursor-pointer ${activo ? "text-white" : "text-white/40 hover:text-white/80"}`;
 
     return (
-        <div className="flex h-screen flex-col overflow-hidden bg-[#e9eef3] font-sans text-black">
-            <header className="flex h-25 shrink-0 items-center gap-4 bg-[#1e4a73] px-4 text-white md:px-6">
+        <div className="flex h-screen flex-col overflow-hidden bg-fondo font-sans text-black">
+            <header className="flex h-25 shrink-0 items-center gap-4 bg-azul px-4 text-white md:px-6">
                 <Link href="/habitante_yipshare/principal_page" aria-label="Volver a mis condominios">
                     <Image
                         src="/img/logo_yipshare_icono.png"
@@ -425,7 +457,7 @@ export default function CondominioAdminPage() {
 
                 <div className="ml-2 min-w-0 md:ml-14">
                     <h1 className="m-0 truncate text-2xl font-bold md:text-3xl">Hola, {NOMBRE_USUARIO}</h1>
-                    <p className="m-0 truncate text-sm font-semibold text-[#78b0ea]">{condominio.nombre}</p>
+                    <p className="m-0 truncate text-sm font-semibold text-celeste">{condominio.nombre}</p>
                 </div>
 
                 <div className="ml-auto flex flex-col items-end gap-2">
@@ -477,7 +509,7 @@ export default function CondominioAdminPage() {
 
             <div className="flex min-h-0 flex-1">
                 {seccion !== "notificaciones" && (
-                    <aside className="flex w-16 shrink-0 flex-col space-y-3 bg-[#1e4a73] px-1 pt-8 md:w-56 md:px-3">
+                    <aside className="flex w-16 shrink-0 flex-col space-y-3 bg-azul px-1 pt-8 md:w-56 md:px-3">
                         {SECCIONES.map(({ id, label, icon }) => (
                             <button
                                 key={id}
@@ -491,7 +523,7 @@ export default function CondominioAdminPage() {
                                 {id === "solicitudes" && aspirantes.length > 0 && (
                                     <span
                                         aria-label={`${aspirantes.length} solicitudes pendientes`}
-                                        className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white md:right-3 md:top-3"
+                                        className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-white px-1 text-[9px] font-bold text-azul md:right-3 md:top-3"
                                     >
                                         {aspirantes.length}
                                     </span>
@@ -526,41 +558,43 @@ export default function CondominioAdminPage() {
                                 <h2 className="m-0 text-base font-bold">Notificaciones</h2>
                             </div>
 
-                            <p className="mt-24 text-center text-xl font-bold text-[#78b0ea]">
+                            <p className="mt-24 text-center text-xl font-bold text-celeste">
                                 No tienes notificaciones por el momento
                             </p>
                         </>
                     ) : seccion === "solicitudes" ? (
-                        <SolicitudesVista aspirantes={aspirantes} onResponderAction={conCarga(responderAspirante)} />
+                        <SolicitudesVista aspirantes={aspirantes} onResponderAction={responderAspirante} />
                     ) : seccion === "prestamos" ? (
                         <PrestamosVista
                             prestamos={prestamos}
                             usuario={YO}
-                            onResponderAction={conCarga(responder)}
-                            onCodigoAction={(p) => conCarga(registrarCodigo)(p)}
+                            onResponderAction={responder}
+                            onCodigoAction={registrarCodigo}
                             reportes={reportes}
                             calificaciones={calificaciones}
-                            onCalificarAction={conCarga(calificar)}
+                            onCalificarAction={calificar}
                         />
                     ) : seccion === "todos" ? (
                         <TodosPrestamosVista
                             prestamos={prestamos}
                             personas={PERSONAS_EJEMPLO}
                             yo={YO}
-                            onRecordarAction={conCarga((p) => {
+                            onRecordarAction={(p) => {
                                 // TODO: enviar el recordatorio de devolución desde el backend
-                                setPrestamos((prev) => prev.map((x) => (x.id === p.id ? { ...x, recordado: true } : x)));
-                            })}
+                                setPrestamos((prev) =>
+                                    prev.map((x) => (x.id === p.id ? { ...x, recordado: true } : x)),
+                                );
+                            }}
                         />
                     ) : seccion === "reportes" ? (
-                        <ReportesVista reportes={reportes} onCambiarEstadoAction={conCarga(cambiarEstadoReporte)} />
+                        <ReportesVista reportes={reportes} onCambiarEstadoAction={cambiarEstadoReporte} />
                     ) : detalle ? (
                         <ArticuloFicha
                             key={detalle.id}
                             a={detalle}
                             onVolverAction={() => setDetalleId(null)}
                             onSolicitarAction={
-                                detalle.duenio !== YO ? (tiempo) => conCarga(solicitar)(detalle, tiempo) : undefined
+                                detalle.duenio !== YO ? (tiempo) => solicitar(detalle, tiempo) : undefined
                             }
                             onEliminarAction={() => setConfirmar({ tipo: "eliminar", articulo: detalle })}
                             eliminarBloqueado={enCurso(detalle.id)}
@@ -576,7 +610,7 @@ export default function CondominioAdminPage() {
                                         onClick={() => cambiarPestana(p)}
                                         className={`w-32 cursor-pointer rounded-xl border px-4 py-1.5 text-sm font-bold transition ${
                                             pestana === p
-                                                ? "border-[#1e4a73] bg-[#1e4a73] text-white"
+                                                ? "border-azul bg-azul text-white"
                                                 : "border-slate-400 bg-[#d3d6da] text-slate-500 hover:bg-[#c5c9ce]"
                                         }`}
                                     >
@@ -589,7 +623,7 @@ export default function CondominioAdminPage() {
                                 <div className="mt-6">
                                     <VecinosVista
                                         vecinos={vecinosVisibles}
-                                        onPermisoAction={conCarga(alternarPermiso)}
+                                        onPermisoAction={alternarPermiso}
                                         onExpulsarAction={(v) => setConfirmar({ tipo: "expulsar", vecino: v })}
                                     />
                                 </div>
@@ -615,7 +649,7 @@ export default function CondominioAdminPage() {
                                             type="button"
                                             aria-label="Agregar artículo"
                                             onClick={() => setModal("nuevo")}
-                                            className="ml-4 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-[#1e4a73] text-white shadow-md hover:bg-[#2a6aa8]"
+                                            className="ml-4 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-azul text-white shadow-md hover:bg-azul-claro"
                                         >
                                             <Icon name="plus" size={26} />
                                         </button>
@@ -643,11 +677,11 @@ export default function CondominioAdminPage() {
                 <PerfilHabitanteModal
                     perfil={{ ...datosPerfil, calificacion: miCalificacion }}
                     recibidas={recibidas}
-                    onActualizarAction={conCarga((datos) => {
+                    onActualizarAction={(datos) => {
                         // TODO: guardar `datos` en el backend
                         setDatosPerfil({ ...datosPerfil, ...datos });
                         setPerfil(false);
-                    })}
+                    }}
                     onEliminarAction={() => {
                         // TODO: borrar la cuenta en el backend
                         router.replace("/login");
@@ -660,7 +694,7 @@ export default function CondominioAdminPage() {
                 <ArticuloModal
                     key={modal === "nuevo" ? "nuevo" : modal.id}
                     articulo={modal === "nuevo" ? null : modal}
-                    onGuardarAction={conCarga(guardar)}
+                    onGuardarAction={guardar}
                     onCancelarAction={() => setModal(null)}
                 />
             )}
@@ -673,7 +707,7 @@ export default function CondominioAdminPage() {
                             ? `Se eliminará «${confirmar.articulo.nombre}» de ${confirmar.articulo.duenio} y se cancelarán sus solicitudes pendientes.`
                             : `${confirmar.vecino.nombre} saldrá del condominio y se eliminarán sus artículos y préstamos pendientes.`
                     }
-                    onConfirmarAction={conCarga(manejarConfirmar)}
+                    onConfirmarAction={manejarConfirmar}
                     onCancelarAction={() => setConfirmar(null)}
                 />
             )}
@@ -689,8 +723,6 @@ export default function CondominioAdminPage() {
                     onCancelarAction={() => setSalir(false)}
                 />
             )}
-
-            {cargando && <Cargando />}
         </div>
     );
 }

@@ -21,11 +21,11 @@ export function PerfilModal({ onCloseAction, titulo = "Admin", usuario = USUARIO
                     <span className="text-slate-500">
                         <Icon name="user" size={58} />
                     </span>
-                    <p className="m-0 text-base font-bold text-[#1e4a73]">{titulo}</p>
+                    <p className="m-0 text-base font-bold text-azul">{titulo}</p>
                 </div>
 
                 <div className="mt-6">
-                    <label htmlFor="perfil-usuario" className="text-xs font-bold text-[#1e4a73]">
+                    <label htmlFor="perfil-usuario" className="text-xs font-bold text-azul">
                         Nombre Usuario
                     </label>
                     <input
@@ -33,12 +33,12 @@ export function PerfilModal({ onCloseAction, titulo = "Admin", usuario = USUARIO
                         type="text"
                         readOnly
                         value={usuario}
-                        className="mt-1 w-full rounded-full border border-slate-500 bg-[#eeeeee] px-4 py-1.5 text-sm text-slate-700 outline-none"
+                        className="mt-1 w-full rounded-full border border-slate-500 bg-gris px-4 py-1.5 text-sm text-slate-700 outline-none"
                     />
                 </div>
 
                 <div className="mt-4">
-                    <label htmlFor="perfil-contrasena" className="text-xs font-bold text-[#1e4a73]">
+                    <label htmlFor="perfil-contrasena" className="text-xs font-bold text-azul">
                         Contraseña
                     </label>
                     <input
@@ -46,7 +46,7 @@ export function PerfilModal({ onCloseAction, titulo = "Admin", usuario = USUARIO
                         type="password"
                         readOnly
                         value={CONTRASENA_OCULTA}
-                        className="mt-1 w-full rounded-full border border-slate-500 bg-[#eeeeee] px-4 py-1.5 text-sm text-slate-700 outline-none"
+                        className="mt-1 w-full rounded-full border border-slate-500 bg-gris px-4 py-1.5 text-sm text-slate-700 outline-none"
                     />
                 </div>
             </div>

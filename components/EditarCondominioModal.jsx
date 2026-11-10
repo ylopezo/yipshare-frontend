@@ -36,8 +36,8 @@ export function EditarCondominioModal({ condominio, onGuardarAction, onCancelarA
     }
 
     const inputClase =
-        "mt-1 w-full rounded-full border border-slate-500 bg-[#eeeeee] px-4 py-1.5 text-sm text-slate-700 outline-none focus:border-[#1e4a73]";
-    const labelClase = "text-xs font-bold text-[#1e4a73]";
+        "mt-1 w-full rounded-full border border-slate-500 bg-gris px-4 py-1.5 text-sm text-slate-700 outline-none focus:border-azul";
+    const labelClase = "text-xs font-bold text-azul";
 
     return (
         <Modal label="Editar condominio" onCloseAction={onCancelarAction}>
@@ -54,7 +54,7 @@ export function EditarCondominioModal({ condominio, onGuardarAction, onCancelarA
                     <Icon name="close" size={18} />
                 </button>
 
-                <h2 className="m-0 text-center text-lg font-bold text-[#1e4a73]">Editar condominio</h2>
+                <h2 className="m-0 text-center text-lg font-bold text-azul">Editar condominio</h2>
 
                 <div className="mt-5">
                     <label htmlFor="edit-nombre" className={labelClase}>
@@ -117,7 +117,7 @@ export function EditarCondominioModal({ condominio, onGuardarAction, onCancelarA
                     <button
                         type="button"
                         onClick={onCancelarAction}
-                        className="flex-1 cursor-pointer rounded-full border border-[#1e4a73] bg-white py-2 text-sm font-semibold text-[#1e4a73] transition hover:bg-slate-100"
+                        className="flex-1 cursor-pointer rounded-full border border-azul bg-white py-2 text-sm font-semibold text-azul transition hover:bg-slate-100"
                     >
                         Cancelar
                     </button>
@@ -125,7 +125,7 @@ export function EditarCondominioModal({ condominio, onGuardarAction, onCancelarA
                     <button
                         type="submit"
                         disabled={!valido}
-                        className="flex-1 cursor-pointer rounded-full bg-[#1e4a73] py-2 text-sm font-semibold text-white transition hover:bg-[#2a6aa8] disabled:opacity-50"
+                        className="flex-1 cursor-pointer rounded-full bg-azul py-2 text-sm font-semibold text-white transition hover:bg-azul-claro disabled:opacity-50"
                     >
                         Guardar
                     </button>

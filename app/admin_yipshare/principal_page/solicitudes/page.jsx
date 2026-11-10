@@ -30,7 +30,7 @@ export default function SolicitudesPage() {
             <h2 className="m-0 text-lg font-bold">Solicitudes de Condominios</h2>
 
             <div className="mt-4 min-h-0 flex-1 overflow-y-auto pr-1">
-                <div className="sticky top-0 z-10 bg-[#e9eef3] px-4 pb-3">
+                <div className="sticky top-0 z-10 bg-fondo px-4 pb-3">
                     <div className={`${GRID} text-center text-xs font-bold md:text-sm`}>
                         {COLUMNAS.map((columna) => (
                             <span key={columna}>{columna}</span>
@@ -54,7 +54,7 @@ export default function SolicitudesPage() {
                                     <button
                                         type="button"
                                         onClick={() => setVerDocumentos(solicitud)}
-                                        className="cursor-pointer text-[11px] font-semibold uppercase text-[#2a6aa8] hover:underline md:text-xs"
+                                        className="cursor-pointer text-[11px] font-semibold uppercase text-azul-claro hover:underline md:text-xs"
                                     >
                                         Ver documentos
                                     </button>
@@ -65,14 +65,14 @@ export default function SolicitudesPage() {
                                         <button
                                             type="button"
                                             onClick={() => setConfirmacion({ accion: "aceptar", solicitud })}
-                                            className="w-full cursor-pointer rounded-full bg-[#1e4a73] py-0.5 text-[11px] text-white transition hover:bg-[#2a6aa8]"
+                                            className="w-full cursor-pointer rounded-full bg-azul py-0.5 text-[11px] text-white transition hover:bg-azul-claro"
                                         >
                                             Aceptar
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => setConfirmacion({ accion: "denegar", solicitud })}
-                                            className="w-full cursor-pointer rounded-full border border-[#1e4a73] bg-white py-0.5 text-[11px] text-[#1e4a73] transition hover:bg-slate-100"
+                                            className="w-full cursor-pointer rounded-full border border-azul bg-white py-0.5 text-[11px] text-azul transition hover:bg-slate-100"
                                         >
                                             Denegar
                                         </button>

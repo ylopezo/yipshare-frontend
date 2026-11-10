@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Icon } from "@/components/Icon";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LADAS, soloDigitos, telefonoValido } from "@/lib/datos";
@@ -15,15 +16,23 @@ const MENSAJES_ERROR = {
 };
 
 const CAMPOS_NOMBRE = [
-    { name: "apellidoPaterno", placeholder: "Apellido Paterno", autoComplete: "family-name" },
-    { name: "apellidoMaterno", placeholder: "Apellido materno", autoComplete: "additional-name" },
+    {
+        name: "apellidoPaterno",
+        placeholder: "Apellido Paterno",
+        autoComplete: "family-name",
+    },
+    {
+        name: "apellidoMaterno",
+        placeholder: "Apellido materno",
+        autoComplete: "additional-name",
+    },
     { name: "nombres", placeholder: "Nombre(s)", autoComplete: "given-name" },
 ];
 
 const RUTA_DESPUES_DE_REGISTRO = "/login";
 
 const CLASE_INPUT =
-    "w-full rounded-lg border border-slate-600 bg-[#eeeeee] py-2 pr-3 text-lg text-slate-700 placeholder:text-slate-500 outline-none focus:border-slate-900";
+    "w-full rounded-lg border border-slate-600 bg-gris py-2 pr-3 text-lg text-slate-700 placeholder:text-slate-500 outline-none focus:border-slate-900";
 
 export default function RegistroPage() {
     const router = useRouter();
@@ -43,7 +52,10 @@ export default function RegistroPage() {
 
     function manejarCambio(e) {
         const { name, value } = e.target;
-        setDatos((prev) => ({ ...prev, [name]: name === "telefono" ? soloDigitos(value) : value }));
+        setDatos((prev) => ({
+            ...prev,
+            [name]: name === "telefono" ? soloDigitos(value) : value,
+        }));
     }
 
     function manejarEnvio(e) {
@@ -71,7 +83,7 @@ export default function RegistroPage() {
     }
 
     return (
-        <div className="grid min-h-screen font-sans text-[#1e2b45] md:grid-cols-2">
+        <div className="grid min-h-screen font-sans text-oscuro md:grid-cols-2">
             <aside
                 aria-hidden="true"
                 className="hidden items-center justify-center bg-cover bg-center md:flex"
@@ -89,11 +101,11 @@ export default function RegistroPage() {
                     <img
                         src="/img/logo_yipshare_icono.png"
                         alt="Logo de YipShare"
-                        className="h-24 w-auto rounded-xl bg-[#1e4a73] p-2"
+                        className="h-24 w-auto rounded-xl bg-azul p-2"
                     />
                 </Link>
 
-                <form id="form-registro" noValidate onSubmit={manejarEnvio} className="w-full max-w-md">
+                <form noValidate onSubmit={manejarEnvio} className="w-full max-w-md">
                     <h1 className="m-0 text-center text-3xl font-black uppercase tracking-wide">Registrarse</h1>
 
                     <div className="mt-8">
@@ -115,7 +127,7 @@ export default function RegistroPage() {
                                     className={`${CLASE_INPUT} pl-5`}
                                 />
 
-                                <span className="mt-1 block min-h-5 text-sm text-red-600">{errores[name]}</span>
+                                <span className="mt-1 block min-h-5 text-sm text-azul">{errores[name]}</span>
                             </div>
                         ))}
                     </div>
@@ -161,7 +173,7 @@ export default function RegistroPage() {
                             />
                         </div>
 
-                        <span id="telefono-error" className="mt-1 block min-h-5 text-sm text-red-600">
+                        <span id="telefono-error" className="mt-1 block min-h-5 text-sm text-azul">
                             {errores.telefono}
                         </span>
                     </div>
@@ -172,20 +184,9 @@ export default function RegistroPage() {
                         </label>
 
                         <div className="relative">
-                            <svg
-                                className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth={1.8}
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                aria-hidden="true"
-                            >
-                                <circle cx="12" cy="8" r="4" />
-                                <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
-                            </svg>
+                            <span className="pointer-events-none absolute left-3 top-1/2 flex -translate-y-1/2 text-slate-500">
+                                <Icon name="user" size={20} />
+                            </span>
 
                             <input
                                 type="text"
@@ -200,7 +201,7 @@ export default function RegistroPage() {
                             />
                         </div>
 
-                        <span className="mt-1 block min-h-5 text-sm text-red-600">{errores.usuario}</span>
+                        <span className="mt-1 block min-h-5 text-sm text-azul">{errores.usuario}</span>
                     </div>
 
                     <div className="mt-2">
@@ -209,20 +210,9 @@ export default function RegistroPage() {
                         </label>
 
                         <div className="relative">
-                            <svg
-                                className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth={1.8}
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                aria-hidden="true"
-                            >
-                                <rect x="4" y="11" width="16" height="10" rx="2" />
-                                <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-                            </svg>
+                            <span className="pointer-events-none absolute left-3 top-1/2 flex -translate-y-1/2 text-slate-500">
+                                <Icon name="lock" size={20} />
+                            </span>
 
                             <input
                                 type={mostrarContrasena ? "text" : "password"}
@@ -241,50 +231,19 @@ export default function RegistroPage() {
                                 aria-label={mostrarContrasena ? "Ocultar contraseña" : "Mostrar contraseña"}
                                 aria-pressed={mostrarContrasena}
                                 onClick={() => setMostrarContrasena((v) => !v)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-slate-500 hover:text-[#2a6aa8]"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-slate-500 hover:text-azul-claro"
                             >
-                                {mostrarContrasena ? (
-                                    <svg
-                                        className="h-5 w-5"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth={1.8}
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        aria-hidden="true"
-                                    >
-                                        <path d="M2 12s3.6-7 10-7c2 0 3.8.7 5.3 1.7M22 12s-3.6 7-10 7c-2 0-3.8-.7-5.3-1.7" />
-                                        <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
-                                        <path d="M3 3l18 18" />
-                                    </svg>
-                                ) : (
-                                    <svg
-                                        className="h-5 w-5"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth={1.8}
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        aria-hidden="true"
-                                    >
-                                        <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" />
-                                        <circle cx="12" cy="12" r="3" />
-                                    </svg>
-                                )}
+                                {mostrarContrasena ? <Icon name="eyeOff" size={20} /> : <Icon name="eye" size={20} />}
                             </button>
                         </div>
 
-                        <span className="mt-1 block min-h-5 text-sm text-red-600">{errores.contrasena}</span>
+                        <span className="mt-1 block min-h-5 text-sm text-azul">{errores.contrasena}</span>
                     </div>
 
                     <div className="mt-4 flex justify-center">
                         <button
                             type="submit"
-                            className="w-3/4 cursor-pointer rounded-lg bg-[#1e2b45] py-2 text-white shadow-md transition hover:bg-[#2f4268]"
+                            className="w-3/4 cursor-pointer rounded-lg bg-oscuro py-2 text-white shadow-md transition hover:bg-oscuro-hover"
                         >
                             Registrarse
                         </button>
@@ -292,7 +251,7 @@ export default function RegistroPage() {
 
                     <p className="mt-6 text-center text-xs text-slate-600">
                         ¿Ya tienes cuenta?
-                        <Link href="/login" className="ml-1 font-bold text-[#2a6aa8] hover:underline">
+                        <Link href="/login" className="ml-1 font-bold text-azul-claro hover:underline">
                             Iniciar Sesión
                         </Link>
                     </p>

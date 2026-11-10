@@ -27,8 +27,8 @@ function AdminShell({ children }) {
     const placeholderBusqueda = enSolicitudes ? "Buscar solicitud..." : "Buscar condominio...";
 
     return (
-        <div className="flex h-screen flex-col overflow-hidden bg-[#e9eef3] font-sans text-black">
-            <header className="flex h-25 shrink-0 items-center gap-4 bg-[#1e4a73] px-4 text-white md:px-6">
+        <div className="flex h-screen flex-col overflow-hidden bg-fondo font-sans text-black">
+            <header className="flex h-25 shrink-0 items-center gap-4 bg-azul px-4 text-white md:px-6">
                 <Image
                     src="/img/logo_yipshare_icono.png"
                     alt="YipShare"
@@ -40,7 +40,7 @@ function AdminShell({ children }) {
 
                 <div className="ml-2 min-w-0 md:ml-14">
                     <h1 className="m-0 truncate text-2xl font-bold md:text-3xl">Hola, Administrador</h1>
-                    <p className="m-0 truncate text-sm font-semibold text-[#78b0ea]">Administrador Global</p>
+                    <p className="m-0 truncate text-sm font-semibold text-celeste">Administrador Global</p>
                 </div>
 
                 <div className="ml-auto flex flex-col items-end gap-2">
@@ -85,7 +85,7 @@ function AdminShell({ children }) {
             </header>
 
             <div className="flex min-h-0 flex-1">
-                <aside className="flex w-16 shrink-0 flex-col bg-[#1e4a73] pt-8 md:w-56">
+                <aside className="flex w-16 shrink-0 flex-col bg-azul pt-8 md:w-56">
                     <nav className="space-y-3 px-1 md:px-3">
                         {MENU.map(({ href, label, icon }) => {
                             const activo = pathname.startsWith(href);

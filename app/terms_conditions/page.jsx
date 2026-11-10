@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import dynamic from "next/dynamic";
+import { FondoVideo } from "@/components/FondoVideo";
 
 const INDICE = [
     { id: "aceptacion", label: "Aceptación de los términos" },
@@ -20,14 +20,12 @@ const INDICE = [
     { id: "ley", label: "Ley aplicable" },
 ];
 
-const LluviaCasas = dynamic(() => import("@/components/LluviaCasas"), { ssr: false });
-
 export default function TermsConditionsPage() {
     return (
         <div className="relative flex min-h-screen scroll-smooth flex-col bg-linear-to-b from-[#24557f] to-[#3b8bd9] font-sans text-white">
-            <LluviaCasas />
+            <FondoVideo />
 
-            <header className="sticky top-0 z-20 bg-[#1e4a73]/90 backdrop-blur">
+            <header className="sticky top-0 z-20 bg-azul/90 backdrop-blur">
                 <nav className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 md:px-6">
                     <div className="flex items-center gap-6 md:gap-8">
                         <Link href="/" aria-label="YipShare - inicio">
@@ -46,14 +44,14 @@ export default function TermsConditionsPage() {
                     <div className="flex items-center gap-3">
                         <Link
                             href="/login"
-                            className="w-32 rounded-full bg-[#2a6aa8] py-1 text-center text-sm font-bold text-white transition hover:bg-[#3b86cc]"
+                            className="w-32 rounded-full bg-azul-claro py-1 text-center text-sm font-bold text-white transition hover:bg-[#3b86cc]"
                         >
                             Iniciar Sesión
                         </Link>
 
                         <Link
                             href="/register_account"
-                            className="w-32 rounded-full bg-white py-1 text-center text-sm font-bold text-[#1e4a73] transition hover:bg-sky-200"
+                            className="w-32 rounded-full bg-white py-1 text-center text-sm font-bold text-azul transition hover:bg-sky-200"
                         >
                             Registrarse
                         </Link>
@@ -73,19 +71,21 @@ export default function TermsConditionsPage() {
                         <p className="mt-1 text-sm text-sky-100">Última actualización: octubre de 2026</p>
                     </div>
 
-                    <article className="rounded-3xl bg-white px-6 py-8 text-[#1e2b45] shadow-xl md:px-10">
+                    <article className="rounded-3xl bg-white px-6 py-8 text-oscuro shadow-xl md:px-10">
                         <p className="m-0 text-slate-600">
                             Bienvenido a <strong>YipShare</strong>. Al crear una cuenta o usar la plataforma aceptas los
                             Términos y Condiciones.
                         </p>
 
                         <nav aria-label="Índice" className="mt-6 rounded-2xl border border-slate-200 bg-[#f3f7fb] p-5">
-                            <h2 className="m-0 text-sm font-black uppercase tracking-wide text-[#2a6aa8]">Contenido</h2>
+                            <h2 className="m-0 text-sm font-black uppercase tracking-wide text-azul-claro">
+                                Contenido
+                            </h2>
 
                             <ol className="mt-3 grid list-decimal gap-x-8 gap-y-1 pl-5 text-sm sm:grid-cols-2">
                                 {INDICE.map((item) => (
                                     <li key={item.id}>
-                                        <a href={`#${item.id}`} className="text-[#1e4a73] hover:underline">
+                                        <a href={`#${item.id}`} className="text-azul hover:underline">
                                             {item.label}
                                         </a>
                                     </li>
@@ -94,9 +94,7 @@ export default function TermsConditionsPage() {
                         </nav>
 
                         <section id="aceptacion" className="scroll-mt-24">
-                            <h2 className="mb-2 mt-8 text-xl font-black text-[#1e4a73]">
-                                1. Aceptación de los términos
-                            </h2>
+                            <h2 className="mb-2 mt-8 text-xl font-black text-azul">1. Aceptación de los términos</h2>
 
                             <p className="m-0 text-slate-700">
                                 Al registrarte, iniciar sesión o utilizar cualquier función de YipShare, confirmas que
@@ -107,7 +105,7 @@ export default function TermsConditionsPage() {
                         </section>
 
                         <section id="que-es" className="scroll-mt-24">
-                            <h2 className="mb-2 mt-8 text-xl font-black text-[#1e4a73]">2. Qué es YipShare</h2>
+                            <h2 className="mb-2 mt-8 text-xl font-black text-azul">2. Qué es YipShare</h2>
 
                             <p className="m-0 text-slate-700">
                                 YipShare es una plataforma que conecta a personas de una misma comunidad para compartir,
@@ -124,7 +122,7 @@ export default function TermsConditionsPage() {
                         </section>
 
                         <section id="cuenta" className="scroll-mt-24">
-                            <h2 className="mb-2 mt-8 text-xl font-black text-[#1e4a73]">3. Registro y cuenta</h2>
+                            <h2 className="mb-2 mt-8 text-xl font-black text-azul">3. Registro y cuenta</h2>
 
                             <ul className="m-0 list-disc space-y-1 pl-6 text-slate-700">
                                 <li>
@@ -142,7 +140,7 @@ export default function TermsConditionsPage() {
                         </section>
 
                         <section id="publicaciones" className="scroll-mt-24">
-                            <h2 className="mb-2 mt-8 text-xl font-black text-[#1e4a73]">4. Publicación de artículos</h2>
+                            <h2 className="mb-2 mt-8 text-xl font-black text-azul">4. Publicación de artículos</h2>
 
                             <p className="m-0 text-slate-700">Al publicar un artículo declaras y aceptas que:</p>
 
@@ -165,9 +163,7 @@ export default function TermsConditionsPage() {
                         </section>
 
                         <section id="prestamos" className="scroll-mt-24">
-                            <h2 className="mb-2 mt-8 text-xl font-black text-[#1e4a73]">
-                                5. Préstamos y uso compartido
-                            </h2>
+                            <h2 className="mb-2 mt-8 text-xl font-black text-azul">5. Préstamos y uso compartido</h2>
 
                             <ul className="m-0 list-disc space-y-1 pl-6 text-slate-700">
                                 <li>
@@ -190,9 +186,7 @@ export default function TermsConditionsPage() {
                         </section>
 
                         <section id="responsabilidades" className="scroll-mt-24">
-                            <h2 className="mb-2 mt-8 text-xl font-black text-[#1e4a73]">
-                                6. Responsabilidades del usuario
-                            </h2>
+                            <h2 className="mb-2 mt-8 text-xl font-black text-azul">6. Responsabilidades del usuario</h2>
 
                             <p className="m-0 text-slate-700">Como usuario de YipShare te comprometes a:</p>
 
@@ -209,9 +203,7 @@ export default function TermsConditionsPage() {
                         </section>
 
                         <section id="danos" className="scroll-mt-24">
-                            <h2 className="mb-2 mt-8 text-xl font-black text-[#1e4a73]">
-                                7. Daños, pérdidas y disputas
-                            </h2>
+                            <h2 className="mb-2 mt-8 text-xl font-black text-azul">7. Daños, pérdidas y disputas</h2>
 
                             <p className="m-0 text-slate-700">
                                 Quien recibe un artículo es responsable de repararlo o reponerlo si se daña, se pierde o
@@ -228,7 +220,7 @@ export default function TermsConditionsPage() {
                         </section>
 
                         <section id="prohibido" className="scroll-mt-24">
-                            <h2 className="mb-2 mt-8 text-xl font-black text-[#1e4a73]">8. Conductas prohibidas</h2>
+                            <h2 className="mb-2 mt-8 text-xl font-black text-azul">8. Conductas prohibidas</h2>
 
                             <ul className="m-0 list-disc space-y-1 pl-6 text-slate-700">
                                 <li>
@@ -249,9 +241,7 @@ export default function TermsConditionsPage() {
                         </section>
 
                         <section id="privacidad" className="scroll-mt-24">
-                            <h2 className="mb-2 mt-8 text-xl font-black text-[#1e4a73]">
-                                9. Privacidad y datos personales
-                            </h2>
+                            <h2 className="mb-2 mt-8 text-xl font-black text-azul">9. Privacidad y datos personales</h2>
 
                             <p className="m-0 text-slate-700">
                                 Recopilamos y tratamos tus datos personales (como nombre, correo electrónico y la
@@ -269,7 +259,7 @@ export default function TermsConditionsPage() {
                         </section>
 
                         <section id="propiedad" className="scroll-mt-24">
-                            <h2 className="mb-2 mt-8 text-xl font-black text-[#1e4a73]">10. Propiedad intelectual</h2>
+                            <h2 className="mb-2 mt-8 text-xl font-black text-azul">10. Propiedad intelectual</h2>
 
                             <p className="m-0 text-slate-700">
                                 El nombre, el logotipo, el diseño y el código de YipShare pertenecen a sus creadores y
@@ -280,7 +270,7 @@ export default function TermsConditionsPage() {
                         </section>
 
                         <section id="limitacion" className="scroll-mt-24">
-                            <h2 className="mb-2 mt-8 text-xl font-black text-[#1e4a73]">
+                            <h2 className="mb-2 mt-8 text-xl font-black text-azul">
                                 11. Limitación de responsabilidad
                             </h2>
 
@@ -294,9 +284,7 @@ export default function TermsConditionsPage() {
                         </section>
 
                         <section id="suspension" className="scroll-mt-24">
-                            <h2 className="mb-2 mt-8 text-xl font-black text-[#1e4a73]">
-                                12. Suspensión y cancelación
-                            </h2>
+                            <h2 className="mb-2 mt-8 text-xl font-black text-azul">12. Suspensión y cancelación</h2>
 
                             <p className="m-0 text-slate-700">
                                 Podemos suspender o cancelar tu cuenta si incumples estos términos, si pones en riesgo a
@@ -306,9 +294,7 @@ export default function TermsConditionsPage() {
                         </section>
 
                         <section id="cambios" className="scroll-mt-24">
-                            <h2 className="mb-2 mt-8 text-xl font-black text-[#1e4a73]">
-                                13. Cambios a estos términos
-                            </h2>
+                            <h2 className="mb-2 mt-8 text-xl font-black text-azul">13. Cambios a estos términos</h2>
 
                             <p className="m-0 text-slate-700">
                                 Podemos actualizar estos términos cuando sea necesario. Publicaremos la versión vigente
@@ -318,7 +304,7 @@ export default function TermsConditionsPage() {
                         </section>
 
                         <section id="ley" className="scroll-mt-24">
-                            <h2 className="mb-2 mt-8 text-xl font-black text-[#1e4a73]">14. Ley aplicable</h2>
+                            <h2 className="mb-2 mt-8 text-xl font-black text-azul">14. Ley aplicable</h2>
 
                             <p className="m-0 text-slate-700">
                                 Estos términos se rigen por las leyes de los Estados Unidos Mexicanos. Para cualquier
@@ -330,12 +316,12 @@ export default function TermsConditionsPage() {
                         <div className="mt-10 flex flex-col items-center gap-3 border-t border-slate-200 pt-6 sm:flex-row sm:justify-between">
                             <Link
                                 href="/"
-                                className="rounded-lg bg-[#1e2b45] px-8 py-2 text-white no-underline shadow-md transition hover:bg-[#2f4268]"
+                                className="rounded-lg bg-oscuro px-8 py-2 text-white no-underline shadow-md transition hover:bg-oscuro-hover"
                             >
                                 Volver al Inicio
                             </Link>
 
-                            <a href="#" className="text-sm font-bold text-[#2a6aa8] hover:underline">
+                            <a href="#" className="text-sm font-bold text-azul-claro hover:underline">
                                 Volver arriba
                             </a>
                         </div>

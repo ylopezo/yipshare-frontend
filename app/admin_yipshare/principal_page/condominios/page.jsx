@@ -21,7 +21,7 @@ export default function CondominiosPage() {
             <h2 className="m-0 text-lg font-bold">Condominios Registrados</h2>
 
             <div className="mt-4 min-h-0 flex-1 overflow-y-auto pr-1">
-                <div className="sticky top-0 z-10 bg-[#e9eef3] px-4 pb-3">
+                <div className="sticky top-0 z-10 bg-fondo px-4 pb-3">
                     <div className={`${GRID} text-center text-xs font-bold md:text-sm`}>
                         {COLUMNAS.map((columna) => (
                             <span key={columna}>{columna}</span>
@@ -39,21 +39,21 @@ export default function CondominiosPage() {
                                     <span className="break-words">{condominio.nombre}</span>
                                     <span className="break-words">{condominio.direccion}</span>
                                     <span>{condominio.cantidad}</span>
-                                    <span className="break-words text-[#1e4a73]">{condominio.admin}</span>
+                                    <span className="break-words text-azul">{condominio.admin}</span>
                                 </div>
 
                                 <div className={`${GRID} mt-2`}>
                                     <button
                                         type="button"
                                         onClick={() => setDialogo({ tipo: "editar", condominio })}
-                                        className="col-start-2 mx-auto w-20 cursor-pointer rounded-full bg-[#1e4a73] py-0.5 text-[11px] text-white transition hover:bg-[#2a6aa8] md:w-24"
+                                        className="col-start-2 mx-auto w-20 cursor-pointer rounded-full bg-azul py-0.5 text-[11px] text-white transition hover:bg-azul-claro md:w-24"
                                     >
                                         Editar
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setDialogo({ tipo: "eliminar", condominio })}
-                                        className="col-start-3 mx-auto w-20 cursor-pointer rounded-full border border-[#1e4a73] bg-white py-0.5 text-[11px] text-[#1e4a73] transition hover:bg-slate-100 md:w-24"
+                                        className="col-start-3 mx-auto w-20 cursor-pointer rounded-full border border-azul bg-white py-0.5 text-[11px] text-azul transition hover:bg-slate-100 md:w-24"
                                     >
                                         Eliminar
                                     </button>

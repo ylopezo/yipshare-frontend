@@ -89,11 +89,11 @@ export default function HabitantePrincipalPage() {
     };
 
     const botonPrincipal =
-        "w-56 cursor-pointer rounded-lg bg-[#1f2d47] py-2 text-xs font-semibold text-white transition hover:bg-[#2c4066]";
+        "w-56 cursor-pointer rounded-lg bg-oscuro py-2 text-xs font-semibold text-white transition hover:bg-oscuro-hover";
 
     return (
-        <div className="flex h-screen flex-col overflow-hidden bg-[#e9eef3] font-sans text-black">
-            <header className="flex h-25 shrink-0 items-center gap-4 bg-[#1e4a73] px-4 text-white md:px-6">
+        <div className="flex h-screen flex-col overflow-hidden bg-fondo font-sans text-black">
+            <header className="flex h-25 shrink-0 items-center gap-4 bg-azul px-4 text-white md:px-6">
                 <LogoMenuSesion />
 
                 <h1 className="m-0 ml-2 min-w-0 truncate text-2xl font-bold md:ml-14 md:text-3xl">
@@ -174,7 +174,7 @@ export default function HabitantePrincipalPage() {
                 {aviso && (
                     <div
                         role="status"
-                        className="mb-6 flex items-center justify-between gap-4 rounded-lg border border-[#78b0ea] bg-[#dbe7f5] px-4 py-2 text-sm text-[#1e4a73]"
+                        className="mb-6 flex items-center justify-between gap-4 rounded-lg border border-celeste bg-[#dbe7f5] px-4 py-2 text-sm text-azul"
                     >
                         <span>{aviso}</span>
 
@@ -196,7 +196,7 @@ export default function HabitantePrincipalPage() {
                         <h2 className="m-0 mt-6 text-base font-bold">Condominios Unidos</h2>
 
                         <div className="mt-12 flex flex-col items-center gap-3">
-                            <p className="m-0 text-xs font-bold text-[#78b0ea]">No hay condominios disponibles</p>
+                            <p className="m-0 text-xs font-bold text-celeste">No hay condominios disponibles</p>
 
                             <button type="button" onClick={() => setModal("crear")} className={botonPrincipal}>
                                 Crear Condominio

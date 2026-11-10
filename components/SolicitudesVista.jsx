@@ -32,7 +32,7 @@ export function SolicitudesVista({ aspirantes, onResponderAction }) {
                                 <button
                                     type="button"
                                     onClick={() => setPendiente({ a, aceptar: false })}
-                                    className="cursor-pointer rounded-full border border-[#1f2d47] bg-white px-4 py-1 text-xs font-semibold text-[#1f2d47] transition hover:bg-slate-100"
+                                    className="cursor-pointer rounded-full border border-oscuro bg-white px-4 py-1 text-xs font-semibold text-oscuro transition hover:bg-slate-100"
                                 >
                                     Denegar
                                 </button>

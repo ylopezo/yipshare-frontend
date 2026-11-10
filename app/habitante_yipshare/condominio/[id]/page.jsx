@@ -8,7 +8,6 @@ import { useState } from "react";
 import { ArticuloModal } from "@/components/ArticuloModal";
 import { ArticuloFicha, ArticuloTarjeta } from "@/components/ArticuloVista";
 import { Icon } from "@/components/Icon";
-import { Cargando, useCargando } from "@/components/Cargando";
 import { ConfirmDialog } from "@/components/Modal";
 import { PrestamosVista } from "@/components/PrestamoVista";
 import { ReportarVista } from "@/components/ReportarVista";
@@ -35,7 +34,6 @@ const ICONO_HEADER = "cursor-pointer rounded-full p-1 text-white hover:bg-white/
 export default function InicioPage() {
     const { id } = useParams();
     const router = useRouter();
-    const { cargando, conCarga } = useCargando();
 
     const [articulos, setArticulos] = useState([]);
     const [busqueda, setBusqueda] = useState("");
@@ -59,7 +57,7 @@ export default function InicioPage() {
             <main className="p-10">
                 <p>No se encontró el condominio.</p>
 
-                <Link href="/habitante_yipshare/principal_page" className="font-bold text-[#2a6aa8] hover:underline">
+                <Link href="/habitante_yipshare/principal_page" className="font-bold text-azul-claro hover:underline">
                     Volver
                 </Link>
             </main>
@@ -160,8 +158,8 @@ export default function InicioPage() {
     ];
 
     return (
-        <div className="flex h-screen flex-col overflow-hidden bg-[#e9eef3] font-sans text-black">
-            <header className="flex h-25 shrink-0 items-center gap-4 bg-[#1e4a73] px-4 text-white md:px-6">
+        <div className="flex h-screen flex-col overflow-hidden bg-fondo font-sans text-black">
+            <header className="flex h-25 shrink-0 items-center gap-4 bg-azul px-4 text-white md:px-6">
                 <Link href="/habitante_yipshare/principal_page" aria-label="Volver a mis condominios">
                     <Image
                         src="/img/logo_yipshare_icono.png"
@@ -176,7 +174,7 @@ export default function InicioPage() {
                 <div className="ml-2 min-w-0 md:ml-14">
                     <h1 className="m-0 truncate text-2xl font-bold md:text-3xl">Hola, {NOMBRE_USUARIO}</h1>
 
-                    <p className="m-0 truncate text-sm font-semibold text-[#78b0ea]">{condominio.nombre}</p>
+                    <p className="m-0 truncate text-sm font-semibold text-celeste">{condominio.nombre}</p>
                 </div>
 
                 <div className="ml-auto flex flex-col items-end gap-2">
@@ -224,7 +222,7 @@ export default function InicioPage() {
             </header>
 
             <div className="flex min-h-0 flex-1">
-                <aside className="flex w-16 shrink-0 flex-col space-y-3 bg-[#1e4a73] px-1 pt-8 md:w-56 md:px-3">
+                <aside className="flex w-16 shrink-0 flex-col space-y-3 bg-azul px-1 pt-8 md:w-56 md:px-3">
                     {secciones.map(({ id, label, icon }) => (
                         <button
                             key={id}
@@ -265,24 +263,24 @@ export default function InicioPage() {
                         <PrestamosVista
                             prestamos={prestamos}
                             usuario={YO}
-                            onResponderAction={conCarga(responder)}
-                            onCodigoAction={(p) => conCarga(registrarCodigo)(p)}
+                            onResponderAction={responder}
+                            onCodigoAction={registrarCodigo}
                             reportes={reportes}
                             calificaciones={calificaciones}
-                            onCalificarAction={conCarga((c) => {
+                            onCalificarAction={(c) => {
                                 // TODO: guardar la calificación en el backend
                                 setCalificaciones((prev) => [...prev, c]);
-                            })}
+                            }}
                         />
                     ) : seccion === "reportes" ? (
-                        <ReportarVista prestamos={prestamos} usuario={YO} onEnviarAction={conCarga(reportar)} />
+                        <ReportarVista prestamos={prestamos} usuario={YO} onEnviarAction={reportar} />
                     ) : detalle ? (
                         <ArticuloFicha
                             key={detalle.id}
                             a={detalle}
                             onVolverAction={() => setDetalleId(null)}
                             onSolicitarAction={
-                                detalle.duenio !== YO ? (tiempo) => conCarga(solicitar)(detalle, tiempo) : undefined
+                                detalle.duenio !== YO ? (tiempo) => solicitar(detalle, tiempo) : undefined
                             }
                         />
                     ) : (
@@ -305,7 +303,7 @@ export default function InicioPage() {
                                     type="button"
                                     aria-label="Agregar artículo"
                                     onClick={() => setModal("nuevo")}
-                                    className="ml-4 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-[#1e4a73] text-white shadow-md hover:bg-[#2a6aa8]"
+                                    className="ml-4 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-azul text-white shadow-md hover:bg-azul-claro"
                                 >
                                     <Icon name="plus" size={26} />
                                 </button>
@@ -331,11 +329,11 @@ export default function InicioPage() {
                 <PerfilHabitanteModal
                     perfil={{ ...datosPerfil, calificacion: miCalificacion }}
                     recibidas={recibidas}
-                    onActualizarAction={conCarga((datos) => {
+                    onActualizarAction={(datos) => {
                         // TODO: guardar `datos` en el backend
                         setDatosPerfil({ ...datosPerfil, ...datos });
                         setPerfil(false);
-                    })}
+                    }}
                     onEliminarAction={() => {
                         // TODO: borrar la cuenta en el backend
                         router.replace("/login");
@@ -348,7 +346,7 @@ export default function InicioPage() {
                 <ArticuloModal
                     key={modal === "nuevo" ? "nuevo" : modal.id}
                     articulo={modal === "nuevo" ? null : modal}
-                    onGuardarAction={conCarga(guardar)}
+                    onGuardarAction={guardar}
                     onCancelarAction={() => setModal(null)}
                 />
             )}
@@ -364,8 +362,6 @@ export default function InicioPage() {
                     onCancelarAction={() => setSalir(false)}
                 />
             )}
-
-            {cargando && <Cargando />}
         </div>
     );
 }

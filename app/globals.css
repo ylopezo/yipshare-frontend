@@ -1,36 +1,11 @@
 @import "tailwindcss";
 
-@property --op {
-  syntax: "<number>";
-  inherits: false;
-  initial-value: 0.2;
-}
-
-@property --giro {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 180deg;
-}
-
-@keyframes caer {
-  0%   { transform: translateY(-15vh) translateX(0) rotate(0deg); opacity: 0; }
-  10%  { opacity: var(--op, 0.2); }
-  50%  { transform: translateY(50vh) translateX(20px) rotate(calc(var(--giro, 180deg) / 2)); }
-  90%  { opacity: var(--op, 0.2); }
-  100% { transform: translateY(115vh) translateX(0) rotate(var(--giro, 180deg)); opacity: 0; }
-}
-
-.casa {
-  position: absolute;
-  top: 0;
-  color: white;
-  animation: caer linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .casa {
-    animation: none;
-    opacity: 0.1;
-    top: 20vh;
-  }
+@theme {
+  --color-azul: #1e4a73;
+  --color-azul-claro: #2a6aa8;
+  --color-oscuro: #1f2d47;
+  --color-oscuro-hover: #2c4066;
+  --color-celeste: #78b0ea;
+  --color-fondo: #e9eef3;
+  --color-gris: #eeeeee;
 }

@@ -19,9 +19,9 @@ const DOCUMENTOS = [
 ];
 
 const INPUT =
-    "w-full rounded-xl border border-slate-600 bg-[#eeeeee] px-4 " +
+    "w-full rounded-xl border border-slate-600 bg-gris px-4 " +
     "py-2 text-sm text-slate-700 outline-none placeholder:text-slate-500 " +
-    "focus:border-[#1e4a73]";
+    "focus:border-azul";
 
 export function CrearCondominioModal({ onCrearAction, onCancelarAction }) {
     const [nombre, setNombre] = useState("");
@@ -90,7 +90,7 @@ export function CrearCondominioModal({ onCrearAction, onCancelarAction }) {
                     className={`${INPUT} mt-6`}
                 />
 
-                <p className="mb-0 mt-5 text-sm font-bold uppercase text-[#1e4a73]">Dirección</p>
+                <p className="mb-0 mt-5 text-sm font-bold uppercase text-azul">Dirección</p>
                 {DIRECCION.map(([clave, etiqueta]) => (
                     <input
                         key={clave}
@@ -114,13 +114,13 @@ export function CrearCondominioModal({ onCrearAction, onCancelarAction }) {
                     className={`${INPUT} mt-5`}
                 />
 
-                <p className="mb-0 mt-5 text-sm font-bold uppercase text-[#1e4a73]">Documentos (PDF)</p>
+                <p className="mb-0 mt-5 text-sm font-bold uppercase text-azul">Documentos (PDF)</p>
                 {DOCUMENTOS.map(([clave, etiqueta]) => (
                     <div key={clave} className="mt-3">
-                        <span className="text-xs font-bold text-[#1e4a73]">{etiqueta}</span>
+                        <span className="text-xs font-bold text-azul">{etiqueta}</span>
                         <label
                             className="mt-1 flex cursor-pointer items-center justify-between gap-2 rounded-xl
-                         border border-slate-600 bg-[#eeeeee] px-4 py-2 text-sm text-slate-700 hover:bg-[#e2e2e2]"
+                         border border-slate-600 bg-gris px-4 py-2 text-sm text-slate-700 hover:bg-[#e2e2e2]"
                         >
                             <span className="truncate">{docs[clave]?.name ?? "Elegir PDF"}</span>
                             <input
@@ -134,7 +134,7 @@ export function CrearCondominioModal({ onCrearAction, onCancelarAction }) {
                 ))}
 
                 {error && (
-                    <p role="alert" className="mb-0 mt-3 text-sm text-red-600">
+                    <p role="alert" className="mb-0 mt-3 text-sm text-azul">
                         {error}
                     </p>
                 )}
@@ -142,7 +142,7 @@ export function CrearCondominioModal({ onCrearAction, onCancelarAction }) {
                 <button
                     type="submit"
                     disabled={!valido}
-                    className="mx-auto mt-6 block w-3/5 cursor-pointer rounded-xl bg-[#1f2d47] py-2 text-sm font-semibold text-white transition hover:bg-[#2c4066] disabled:opacity-50"
+                    className="mx-auto mt-6 block w-3/5 cursor-pointer rounded-xl bg-oscuro py-2 text-sm font-semibold text-white transition hover:bg-oscuro-hover disabled:opacity-50"
                 >
                     Crear condominio
                 </button>

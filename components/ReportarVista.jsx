@@ -4,7 +4,7 @@ import { useState } from "react";
 import { BOTON_OSCURO } from "./Modal";
 
 const INPUT =
-    "w-full rounded-full border border-slate-500 bg-[#eeeeee] px-4 py-2 text-sm text-slate-700 outline-none focus:border-[#1e4a73]";
+    "w-full rounded-full border border-slate-500 bg-gris px-4 py-2 text-sm text-slate-700 outline-none focus:border-azul";
 
 export function ReportarVista({ prestamos, usuario, onEnviarAction }) {
     const [prestamoId, setPrestamoId] = useState("");
@@ -91,7 +91,7 @@ export function ReportarVista({ prestamos, usuario, onEnviarAction }) {
                             setEnviado(false);
                         }}
                         className="mt-3 w-full resize-none rounded-2xl border border-slate-500
-                        bg-[#eeeeee] px-4 py-2 text-sm text-slate-700 outline-none"
+                        bg-gris px-4 py-2 text-sm text-slate-700 outline-none"
                     />
 
                     <button
