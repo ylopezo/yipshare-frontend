@@ -32,7 +32,6 @@ export default function LoginPage() {
         return () => window.removeEventListener("pageshow", alMostrarPagina);
     }, []);
 
-    // Manda usuario y contraseña; si son correctos el servidor responde con Set-Cookie y el navegador la guarda
     async function manejarEnvio(e) {
         e.preventDefault();
 
@@ -46,7 +45,6 @@ export default function LoginPage() {
 
         const { status, datos } = await iniciarSesion(usuario.trim(), contrasena);
         if (status !== 200) {
-            // 401: usuario o contraseña incorrectos; 0: no hay servidor
             setErrorContrasena(datos.error || "Usuario o contraseña incorrectos.");
             return;
         }
