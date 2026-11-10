@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { FondoVideo } from "@/components/FondoVideo";
 
 const INDICE = [
     { id: "aceptacion", label: "Aceptación de los términos" },
@@ -23,7 +22,6 @@ const INDICE = [
 export default function TermsConditionsPage() {
     return (
         <div className="relative flex min-h-screen scroll-smooth flex-col bg-linear-to-b from-[#24557f] to-[#3b8bd9] font-sans text-white">
-            <FondoVideo />
 
             <header className="sticky top-0 z-20 bg-azul/90 backdrop-blur">
                 <nav className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 md:px-6">

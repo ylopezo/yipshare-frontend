@@ -120,7 +120,8 @@ export default function LoginPage() {
                             autoComplete="current-password"
                             value={contrasena}
                             onChange={(e) => setContrasena(e.target.value)}
-                            className="w-full rounded-lg border border-slate-600 bg-gris py-2 pl-11 pr-11 text-lg text-slate-700 outline-none focus:border-slate-900"
+                            className="w-full rounded-lg border border-slate-600 bg-gris py-2 pl-11 pr-11 text-lg text-slate-700 outline-none
+                             focus:border-slate-900"
                         />
 
                         <button
