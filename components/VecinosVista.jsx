@@ -1,7 +1,6 @@
 "use client";
 
-const BOTON_CLARO =
-    "cursor-pointer rounded-full border border-azul bg-white text-azul transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50";
+import { BOTON_CLARO } from "./Modal";
 
 function Interruptor({ activo, onCambiar, label }) {
     return (

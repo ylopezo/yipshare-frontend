@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ESTADOS } from "./ArticuloModal";
+import { BOTON_CLARO } from "./Modal";
 import { Icon } from "./Icon";
 
 const COLOR = {
@@ -9,9 +10,6 @@ const COLOR = {
     pendiente: "bg-[#fde9a8] text-amber-900",
     no_disponible: "bg-azul text-white",
 };
-
-const BOTON_CLARO =
-    "cursor-pointer rounded-full border border-azul bg-white text-azul transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50";
 
 export function ArticuloTarjeta({ a, onVerAction, onEditarAction }) {
     return (

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Icon } from "@/components/Icon";
+import { Campo } from "@/components/Campo";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LADAS, soloDigitos, telefonoValido } from "@/lib/datos";
@@ -48,7 +48,6 @@ export default function RegistroPage() {
     });
 
     const [errores, setErrores] = useState({});
-    const [mostrarContrasena, setMostrarContrasena] = useState(false);
 
     function manejarCambio(e) {
         const { name, value } = e.target;
@@ -178,67 +177,27 @@ export default function RegistroPage() {
                         </span>
                     </div>
 
-                    <div className="mt-6">
-                        <label htmlFor="usuario" className="sr-only">
-                            Usuario
-                        </label>
-
-                        <div className="relative">
-                            <span className="pointer-events-none absolute left-3 top-1/2 flex -translate-y-1/2 text-slate-500">
-                                <Icon name="user" size={20} />
-                            </span>
-
-                            <input
-                                type="text"
-                                id="usuario"
-                                name="usuario"
-                                placeholder="Usuario"
-                                required
-                                autoComplete="username"
-                                value={datos.usuario}
-                                onChange={manejarCambio}
-                                className={`${CLASE_INPUT} pl-11`}
-                            />
-                        </div>
-
-                        <span className="mt-1 block min-h-5 text-sm text-azul">{errores.usuario}</span>
-                    </div>
-
-                    <div className="mt-2">
-                        <label htmlFor="contrasena" className="sr-only">
-                            Contraseña
-                        </label>
-
-                        <div className="relative">
-                            <span className="pointer-events-none absolute left-3 top-1/2 flex -translate-y-1/2 text-slate-500">
-                                <Icon name="lock" size={20} />
-                            </span>
-
-                            <input
-                                type={mostrarContrasena ? "text" : "password"}
-                                id="contrasena"
-                                name="contrasena"
-                                placeholder="Contraseña"
-                                required
-                                autoComplete="new-password"
-                                value={datos.contrasena}
-                                onChange={manejarCambio}
-                                className={`${CLASE_INPUT} pl-11 pr-11`}
-                            />
-
-                            <button
-                                type="button"
-                                aria-label={mostrarContrasena ? "Ocultar contraseña" : "Mostrar contraseña"}
-                                aria-pressed={mostrarContrasena}
-                                onClick={() => setMostrarContrasena((v) => !v)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-slate-500 hover:text-azul-claro"
-                            >
-                                {mostrarContrasena ? <Icon name="eyeOff" size={20} /> : <Icon name="eye" size={20} />}
-                            </button>
-                        </div>
-
-                        <span className="mt-1 block min-h-5 text-sm text-azul">{errores.contrasena}</span>
-                    </div>
+                    <Campo
+                        className="mt-6"
+                        id="usuario"
+                        icono="user"
+                        placeholder="Usuario"
+                        autoComplete="username"
+                        value={datos.usuario}
+                        onChange={manejarCambio}
+                        error={errores.usuario}
+                    />
+                    <Campo
+                        className="mt-2"
+                        id="contrasena"
+                        icono="lock"
+                        placeholder="Contraseña"
+                        contrasena
+                        autoComplete="new-password"
+                        value={datos.contrasena}
+                        onChange={manejarCambio}
+                        error={errores.contrasena}
+                    />
 
                     <div className="mt-4 flex justify-center">
                         <button

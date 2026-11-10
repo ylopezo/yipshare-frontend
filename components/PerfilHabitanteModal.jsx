@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { LADAS, soloDigitos, telefonoValido } from "@/lib/datos";
 import { Icon } from "./Icon";
-import { ConfirmDialog, Modal } from "./Modal";
+import { BOTON_CLARO, ConfirmDialog, Modal } from "./Modal";
 
 const NOMBRE = [
     ["apellidoPaterno", "Apellido paterno"],
@@ -189,7 +189,7 @@ export function PerfilHabitanteModal({ perfil, recibidas, onActualizarAction, on
                             <button
                                 type="button"
                                 onClick={() => setConfirmar("eliminar")}
-                                className="mx-auto mt-3 block w-3/5 max-w-xs cursor-pointer rounded-full border border-azul bg-white py-2 text-sm font-semibold text-azul transition hover:bg-slate-100"
+                                className={`${BOTON_CLARO} mx-auto mt-3 block w-3/5 max-w-xs py-2 text-sm font-semibold`}
                             >
                                 Eliminar cuenta
                             </button>

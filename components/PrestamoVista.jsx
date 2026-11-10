@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { codigoValido, nuevoCodigo, SEGUNDOS_CODIGO } from "@/lib/prestamos";
 import { CalificarModal } from "./CalificarModal";
 import { REPORTE_ESTADOS } from "./ReportesVista";
-import { BOTON_OSCURO, Modal } from "./Modal";
+import { BOTON_CLARO, BOTON_OSCURO, Modal } from "./Modal";
 
 export const ESTADO_PRESTAMO = {
     pendiente: {
@@ -257,7 +257,7 @@ export function PrestamosVista({
                                 onResponderAction(ventana.p, false);
                                 cerrar();
                             }}
-                            className="mx-auto mt-3 block w-3/5 cursor-pointer rounded-full border border-azul bg-white py-2 text-sm font-semibold text-azul transition hover:bg-slate-100"
+                            className={`${BOTON_CLARO} mx-auto mt-3 block w-3/5 py-2 text-sm font-semibold`}
                         >
                             Denegar
                         </button>

@@ -5,6 +5,9 @@ import { useEffect, useRef } from "react";
 export const BOTON_OSCURO =
     "cursor-pointer rounded-full bg-oscuro text-white transition hover:bg-oscuro-hover disabled:cursor-not-allowed disabled:opacity-50";
 
+export const BOTON_CLARO =
+    "cursor-pointer rounded-full border border-azul bg-white text-azul transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50";
+
 export function Modal({ children, onCloseAction, label }) {
     const ref = useRef(null);
 
@@ -37,7 +40,7 @@ export function ConfirmDialog({ titulo, mensaje, onConfirmarAction, onCancelarAc
                     <button
                         type="button"
                         onClick={onCancelarAction}
-                        className="flex-1 cursor-pointer rounded-full border border-azul bg-white py-2 text-sm font-semibold text-azul transition hover:bg-slate-100"
+                        className={`${BOTON_CLARO} flex-1 py-2 text-sm font-semibold`}
                     >
                         Cancelar
                     </button>
