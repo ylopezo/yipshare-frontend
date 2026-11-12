@@ -3,19 +3,20 @@
 import { useState } from "react";
 import { Modal } from "./Modal";
 
-const DIRECCION = [
-    ["calle", "Calle"],
-    ["colonia", "Colonia"],
-    ["cp", "C.P."],
-    ["municipio", "Alcaldía / Municipio"],
-    ["ciudad", "Ciudad"],
+const ADDRESS = [
+    ["street", "Calle"],
+    ["neighborhood", "Colonia"],
+    ["postalCode", "C.P."],
+    ["municipality", "Alcaldía / Municipio"],
+    ["city", "Ciudad"],
+    ["state", "Estado"],
 ];
 
-const DOCUMENTOS = [
-    ["escritura", "Escritura Constitutiva del Régimen de Propiedad en Condominio"],
-    ["acta", "Acta de Asamblea de Nombramiento del Administrador"],
+const DOCUMENTS = [
+    ["deed", "Escritura Constitutiva del Régimen de Propiedad en Condominio"],
+    ["minutes", "Acta de Asamblea de Nombramiento del Administrador"],
     ["rfc", "RFC del Condominio"],
-    ["identificacion", "Identificación oficial del Administrador"],
+    ["idDocument", "Identificación oficial del Administrador"],
 ];
 
 const INPUT =
@@ -23,57 +24,58 @@ const INPUT =
     "py-2 text-sm text-slate-700 outline-none placeholder:text-slate-500 " +
     "focus:border-azul";
 
-export function CrearCondominioModal({ onCrearAction, onCancelarAction }) {
-    const [nombre, setNombre] = useState("");
-    const [direccion, setDireccion] = useState({
-        calle: "",
-        colonia: "",
-        cp: "",
-        municipio: "",
-        ciudad: "",
+export function CreateCondominiumModal({ onCreateAction, onCancelAction }) {
+    const [name, setName] = useState("");
+    const [address, setAddress] = useState({
+        street: "",
+        neighborhood: "",
+        postalCode: "",
+        municipality: "",
+        city: "",
+        state: "",
     });
-    const [cantidad, setCantidad] = useState("");
+    const [unitCount, setUnitCount] = useState("");
     const [docs, setDocs] = useState({});
     const [error, setError] = useState("");
 
-    const cantidadNum = Number(cantidad);
-    const completo = (d) => DOCUMENTOS.every(([clave]) => d[clave]);
+    const unitCountNum = Number(unitCount);
+    const isComplete = (d) => DOCUMENTS.every(([fieldKey]) => d[fieldKey]);
 
-    const valido =
-        nombre.trim() !== "" &&
-        Object.values(direccion).every((v) => v.trim() !== "") &&
-        /^\d{5}$/.test(direccion.cp.trim()) &&
-        Number.isInteger(cantidadNum) &&
-        cantidadNum > 0 &&
-        completo(docs);
+    const isValid =
+        name.trim() !== "" &&
+        Object.values(address).every((v) => v.trim() !== "") &&
+        /^\d{5}$/.test(address.postalCode.trim()) &&
+        Number.isInteger(unitCountNum) &&
+        unitCountNum > 0 &&
+        isComplete(docs);
 
-    function elegirPdf(clave, e) {
-        const archivo = e.target.files?.[0];
-        if (archivo && archivo.type !== "application/pdf") {
+    function choosePdf(fieldKey, e) {
+        const selectedFile = e.target.files?.[0];
+        if (selectedFile && selectedFile.type !== "application/pdf") {
             e.target.value = "";
             setError("Solo se aceptan archivos PDF.");
             return;
         }
         setError("");
-        setDocs((prev) => ({ ...prev, [clave]: archivo }));
+        setDocs((prev) => ({ ...prev, [fieldKey]: selectedFile }));
     }
 
-    function manejarEnvio(e) {
+    function handleSubmit(e) {
         e.preventDefault();
-        if (!valido || !completo(docs)) return;
+        if (!isValid || !isComplete(docs)) return;
 
-        onCrearAction({
-            nombre: nombre.trim(),
-            direccion,
-            cantidad: cantidadNum,
-            documentos: docs,
+        onCreateAction({
+            name: name.trim(),
+            address,
+            unitCount: unitCountNum,
+            documents: docs,
         });
     }
 
     return (
-        <Modal label="Crear condominio" onCloseAction={onCancelarAction}>
+        <Modal label="Crear condominio" onCloseAction={onCancelAction}>
             <form
-                onSubmit={manejarEnvio}
+                onSubmit={handleSubmit}
                 className="max-h-[90vh] w-[min(92vw,400px)] overflow-y-auto rounded-4xl bg-white px-8 py-8 shadow-xl"
             >
                 <h2 className="m-0 text-center text-xl font-extrabold uppercase tracking-wide text-black">
@@ -85,21 +87,21 @@ export function CrearCondominioModal({ onCrearAction, onCancelarAction }) {
                 <input
                     aria-label="Nombre del condominio"
                     placeholder="Nombre del condominio"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     className={`${INPUT} mt-6`}
                 />
 
                 <p className="mb-0 mt-5 text-sm font-bold uppercase text-azul">Dirección</p>
-                {DIRECCION.map(([clave, etiqueta]) => (
+                {ADDRESS.map(([fieldKey, label]) => (
                     <input
-                        key={clave}
-                        aria-label={etiqueta}
-                        placeholder={etiqueta}
-                        inputMode={clave === "cp" ? "numeric" : undefined}
-                        maxLength={clave === "cp" ? 5 : undefined}
-                        value={direccion[clave]}
-                        onChange={(e) => setDireccion({ ...direccion, [clave]: e.target.value })}
+                        key={fieldKey}
+                        aria-label={label}
+                        placeholder={label}
+                        inputMode={fieldKey === "postalCode" ? "numeric" : undefined}
+                        maxLength={fieldKey === "postalCode" ? 5 : undefined}
+                        value={address[fieldKey]}
+                        onChange={(e) => setAddress({ ...address, [fieldKey]: e.target.value })}
                         className={`${INPUT} mt-3`}
                     />
                 ))}
@@ -109,25 +111,25 @@ export function CrearCondominioModal({ onCrearAction, onCancelarAction }) {
                     min={1}
                     aria-label="Cantidad de unidades"
                     placeholder="Cantidad de unidades"
-                    value={cantidad}
-                    onChange={(e) => setCantidad(e.target.value)}
+                    value={unitCount}
+                    onChange={(e) => setUnitCount(e.target.value)}
                     className={`${INPUT} mt-5`}
                 />
 
                 <p className="mb-0 mt-5 text-sm font-bold uppercase text-azul">Documentos (PDF)</p>
-                {DOCUMENTOS.map(([clave, etiqueta]) => (
-                    <div key={clave} className="mt-3">
-                        <span className="text-xs font-bold text-azul">{etiqueta}</span>
+                {DOCUMENTS.map(([fieldKey, label]) => (
+                    <div key={fieldKey} className="mt-3">
+                        <span className="text-xs font-bold text-azul">{label}</span>
                         <label
                             className="mt-1 flex cursor-pointer items-center justify-between gap-2 rounded-xl
                          border border-slate-600 bg-gris px-4 py-2 text-sm text-slate-700 hover:bg-[#e2e2e2]"
                         >
-                            <span className="truncate">{docs[clave]?.name ?? "Elegir PDF"}</span>
+                            <span className="truncate">{docs[fieldKey]?.name ?? "Elegir PDF"}</span>
                             <input
                                 type="file"
                                 accept="application/pdf"
                                 className="sr-only"
-                                onChange={(e) => elegirPdf(clave, e)}
+                                onChange={(e) => choosePdf(fieldKey, e)}
                             />
                         </label>
                     </div>
@@ -141,7 +143,7 @@ export function CrearCondominioModal({ onCrearAction, onCancelarAction }) {
 
                 <button
                     type="submit"
-                    disabled={!valido}
+                    disabled={!isValid}
                     className="mx-auto mt-6 block w-3/5 cursor-pointer rounded-xl bg-oscuro py-2 text-sm font-semibold text-white transition hover:bg-oscuro-hover disabled:opacity-50"
                 >
                     Crear condominio
@@ -149,7 +151,7 @@ export function CrearCondominioModal({ onCrearAction, onCancelarAction }) {
 
                 <button
                     type="button"
-                    onClick={onCancelarAction}
+                    onClick={onCancelAction}
                     className="mx-auto mt-3 block cursor-pointer text-sm font-bold text-[#2a5a88] hover:underline"
                 >
                     Cancelar

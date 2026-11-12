@@ -1,211 +1,203 @@
 "use client";
 
 import Image from "next/image";
-import { cerrarSesion } from "@/lib/sesion";
+import { signOut } from "@/lib/session";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
-import { ArticuloModal } from "@/components/ArticuloModal";
-import { ArticuloFicha, ArticuloTarjeta } from "@/components/ArticuloVista";
+import { useEffect, useState } from "react";
+import { ArticleModal } from "@/components/ArticleModal";
+import { ArticleDetail, ArticleCard } from "@/components/ArticleView";
 import { Icon } from "@/components/Icon";
+import { useUser } from "@/components/RequireSession";
 import { ConfirmDialog } from "@/components/Modal";
-import { PerfilHabitanteModal } from "@/components/PerfilHabitanteModal";
-import { PrestamosVista } from "@/components/PrestamoVista";
-import { ReportesVista } from "@/components/ReportesVista";
-import { SolicitudesVista } from "@/components/SolicitudesVista";
-import { TodosPrestamosVista } from "@/components/TodosPrestamosVista";
-import { VecinosVista } from "@/components/VecinosVista";
-import { NOMBRE_USUARIO, REGISTRADOS_INICIALES } from "@/lib/datosHabitante";
-import { avanzar, promedio } from "@/lib/prestamos";
+import { ResidentProfileModal } from "@/components/ResidentProfileModal";
+import { LoansView } from "@/components/LoansView";
+import { ReportsView } from "@/components/ReportsView";
+import { RequestsView } from "@/components/RequestsView";
+import { AllLoansView } from "@/components/AllLoansView";
+import { NeighborsView } from "@/components/NeighborsView";
+import { useCondominium } from "@/lib/condominiums";
+import { advance, average } from "@/lib/loans";
+import { changeReportStatus as saveReportStatus, getCondominiumReports } from "@/lib/reports";
 
-const YO = "mi_usuario";
+const ME = "mi_usuario";
 
 // -Datos de ejemplo
 
-const PERFIL_EJEMPLO = {
-    apellidoPaterno: "Pérez",
-    apellidoMaterno: "López",
-    nombres: "Juan Carlos",
-    edificio: "Edificio 2",
-    departamento: "Departamento 14",
-    lada: "MX",
-    telefono: "5512345678",
-    calificacion: 4.2,
+const SAMPLE_PROFILE = {
+    paternalSurname: "Pérez",
+    maternalSurname: "López",
+    givenNames: "Juan Carlos",
+    building: "Edificio 2",
+    apartment: "Departamento 14",
+    dialCode: "MX",
+    phone: "5512345678",
+    rating: 4.2,
 };
 
-const VECINOS_EJEMPLO = [
+const SAMPLE_NEIGHBORS = [
     {
         id: 1,
-        nombre: "Ana Martínez",
-        usuario: "vecino_ana",
-        depto: "Edificio 1, Dpto 3",
-        alCorriente: true,
+        name: "Ana Martínez",
+        user: "vecino_ana",
+        unit: "Edificio 1, Dpto 3",
+        upToDate: true,
     },
     {
         id: 2,
-        nombre: "Luis Hernández",
-        usuario: "vecino_luis",
-        depto: "Edificio 1, Dpto 8",
-        alCorriente: true,
+        name: "Luis Hernández",
+        user: "vecino_luis",
+        unit: "Edificio 1, Dpto 8",
+        upToDate: true,
     },
     {
         id: 3,
-        nombre: "Marta Ruiz",
-        usuario: "vecino_marta",
-        depto: "Edificio 3, Dpto 5",
-        alCorriente: false,
+        name: "Marta Ruiz",
+        user: "vecino_marta",
+        unit: "Edificio 3, Dpto 5",
+        upToDate: false,
     },
 ];
 
-const ASPIRANTES_EJEMPLO = [
+const SAMPLE_APPLICANTS = [
     {
         id: 10,
-        nombre: "Pedro Sánchez",
-        usuario: "vecino_pedro",
-        depto: "Edificio 2, Dpto 6",
+        name: "Pedro Sánchez",
+        user: "vecino_pedro",
+        unit: "Edificio 2, Dpto 6",
     },
     {
         id: 11,
-        nombre: "Laura Gómez",
-        usuario: "vecino_laura",
-        depto: "Edificio 4, Dpto 12",
+        name: "Laura Gómez",
+        user: "vecino_laura",
+        unit: "Edificio 4, Dpto 12",
     },
 ];
 
-const REPORTES_EJEMPLO = [
-    {
-        id: 1,
-        involucrado: "vecino_luis",
-        reporto: "vecino_ana",
-        detalles: "No devolvió el artículo en la fecha acordada.",
-        estado: "pendiente",
-    },
-    {
-        id: 2,
-        involucrado: "vecino_marta",
-        reporto: "vecino_pedro",
-        detalles: "El artículo se entregó dañado.",
-        estado: "en_revision",
-    },
-];
-
-const ARTICULOS_EJEMPLO = [
+const SAMPLE_ARTICLES = [
     {
         id: 101,
-        nombre: "Taladro",
-        categoria: "Herramientas",
-        descripcion: "Taladro inalámbrico con juego de brocas.",
-        condicion: "Buen estado",
-        tiempos: ["1 día", "2 días"],
-        estado: "disponible",
-        imagen: null,
-        duenio: "vecino_ana",
-        direccion: "Edificio 1, Departamento 3",
-        calificacion: 4.5,
+        name: "Taladro",
+        category: "Herramientas",
+        description: "Taladro inalámbrico con juego de brocas.",
+        condition: "Buen estado",
+        durations: ["1 día", "2 días"],
+        status: "available",
+        image: null,
+        owner: "vecino_ana",
+        address: "Edificio 1, Departamento 3",
+        rating: 4.5,
     },
     {
         id: 102,
-        nombre: "Escalera",
-        categoria: "Herramientas",
-        descripcion: "Escalera de aluminio de 3 metros.",
-        condicion: "Excelente estado",
-        tiempos: ["1 día", "3 días"],
-        estado: "disponible",
-        imagen: null,
-        duenio: "vecino_luis",
-        direccion: "Edificio 1, Departamento 8",
-        calificacion: 3.8,
+        name: "Escalera",
+        category: "Herramientas",
+        description: "Escalera de aluminio de 3 metros.",
+        condition: "Excelente estado",
+        durations: ["1 día", "3 días"],
+        status: "available",
+        image: null,
+        owner: "vecino_luis",
+        address: "Edificio 1, Departamento 8",
+        rating: 3.8,
     },
 ];
 
 // (id, nombre, dueño, prestatario, tiempo, estado, fin)
-const prestamo = (id, nombre, duenio, prestatario, tiempo, estado, fin = null) => ({
+const loan = (id, name, owner, borrower, duration, status, end = null) => ({
     id,
-    articuloId: -id,
-    nombre,
-    imagen: null,
-    duenio,
-    prestatario,
-    tiempo,
-    estado,
-    fin: fin && Date.parse(fin),
+    articleId: -id,
+    name,
+    image: null,
+    owner,
+    borrower,
+    duration,
+    status,
+    end: end && Date.parse(end),
 });
 
-const PRESTAMOS_EJEMPLO = [
-    prestamo(1, "Taladro percutor inalámbrico Bosch 18V", "vecino_ana", YO, "2 días", "pendiente"),
-    prestamo(2, "Escalera de tijera de aluminio, 3 m", YO, "vecino_luis", "1 día", "pendiente"),
-    prestamo(3, "Bocina JBL Charge 5", "vecino_marta", YO, "3 días", "aceptado"),
-    prestamo(4, "Podadora eléctrica Truper", YO, "vecino_pedro", "1 semana", "aceptado"),
-    prestamo(5, "Carpa plegable 3 × 3 m", "vecino_ana", "vecino_luis", "1 día", "en_curso", "2026-11-06T12:00"),
-    prestamo(6, "Bicicleta de montaña R26", "vecino_marta", "vecino_ana", "2 días", "finalizado", "2026-11-02T12:00"),
-    prestamo(7, "Hidrolavadora Kärcher K2", "vecino_luis", "vecino_marta", "1 semana", "en_curso", "2026-11-14T18:00"),
+const SAMPLE_LOANS = [
+    loan(1, "Taladro percutor inalámbrico Bosch 18V", "vecino_ana", ME, "2 días", "pending"),
+    loan(2, "Escalera de tijera de aluminio, 3 m", ME, "vecino_luis", "1 día", "pending"),
+    loan(3, "Bocina JBL Charge 5", "vecino_marta", ME, "3 días", "accepted"),
+    loan(4, "Podadora eléctrica Truper", ME, "vecino_pedro", "1 semana", "accepted"),
+    loan(5, "Carpa plegable 3 × 3 m", "vecino_ana", "vecino_luis", "1 día", "in_progress", "2026-11-06T12:00"),
+    loan(6, "Bicicleta de montaña R26", "vecino_marta", "vecino_ana", "2 días", "finished", "2026-11-02T12:00"),
+    loan(7, "Hidrolavadora Kärcher K2", "vecino_luis", "vecino_marta", "1 semana", "in_progress", "2026-11-14T18:00"),
 ];
 
 // Nombre y departamento de cada usuario, para mostrar personas en lugar de "vecino_ana"
-const PERSONAS_EJEMPLO = Object.fromEntries(
+const SAMPLE_PEOPLE = Object.fromEntries(
     [
-        ...VECINOS_EJEMPLO,
-        ...ASPIRANTES_EJEMPLO,
+        ...SAMPLE_NEIGHBORS,
+        ...SAMPLE_APPLICANTS,
         {
-            usuario: YO,
-            nombre: `${PERFIL_EJEMPLO.nombres} ${PERFIL_EJEMPLO.apellidoPaterno}`,
-            depto: "Edificio 2, Dpto 14",
+            user: ME,
+            name: `${SAMPLE_PROFILE.givenNames} ${SAMPLE_PROFILE.paternalSurname}`,
+            unit: "Edificio 2, Dpto 14",
         },
-    ].map((v) => [v.usuario, { nombre: v.nombre, depto: v.depto }]),
+    ].map((v) => [v.user, { name: v.name, unit: v.unit }]),
 );
 
-const CALIFICACIONES_EJEMPLO = [
+const SAMPLE_RATINGS = [
     {
-        prestamoId: 90,
-        de: "vecino_ana",
-        para: YO,
-        estrellas: 5,
-        comentario: "Muy puntual y el artículo llegó en perfecto estado.",
+        loanId: 90,
+        from: "vecino_ana",
+        to: ME,
+        stars: 5,
+        comment: "Muy puntual y el artículo llegó en perfecto estado.",
     },
-    { prestamoId: 91, de: "vecino_luis", para: YO, estrellas: 4, comentario: "" },
+    { loanId: 91, from: "vecino_luis", to: ME, stars: 4, comment: "" },
 ];
 
-const SECCIONES = [
-    { id: "inicio", label: "Inicio", icon: "house" },
-    { id: "solicitudes", label: "Solicitudes", icon: "bell" },
-    { id: "prestamos", label: "Préstamos", icon: "calendar" },
-    { id: "todos", label: "Todos los préstamos", icon: "file" },
-    { id: "reportes", label: "Reportes", icon: "alert" },
+const SECTIONS = [
+    { id: "home", label: "Inicio", icon: "house" },
+    { id: "requests", label: "Solicitudes", icon: "bell" },
+    { id: "loans", label: "Préstamos", icon: "calendar" },
+    { id: "all", label: "Todos los préstamos", icon: "file" },
+    { id: "reports", label: "Reportes", icon: "alert" },
 ];
 
 const ITEM =
     "flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-bold uppercase tracking-wide [&>svg]:shrink-0";
-const ICONO_HEADER = "cursor-pointer rounded-full p-1 text-white hover:bg-white/10";
+const HEADER_ICON = "cursor-pointer rounded-full p-1 text-white hover:bg-white/10";
 
 // -Página
 
-export default function CondominioAdminPage() {
+export default function CondominiumAdminPage() {
+    const user = useUser();
     const { id } = useParams();
     const router = useRouter();
 
-    const [articulos, setArticulos] = useState(ARTICULOS_EJEMPLO);
-    const [prestamos, setPrestamos] = useState(PRESTAMOS_EJEMPLO);
-    const [vecinos, setVecinos] = useState(VECINOS_EJEMPLO);
-    const [aspirantes, setAspirantes] = useState(ASPIRANTES_EJEMPLO);
-    const [reportes, setReportes] = useState(REPORTES_EJEMPLO);
-    const [calificaciones, setCalificaciones] = useState(CALIFICACIONES_EJEMPLO);
-    const recibidas = calificaciones.filter((c) => c.para === YO);
-    const miCalificacion = promedio(recibidas);
+    const [articles, setArticles] = useState(SAMPLE_ARTICLES);
+    const [loans, setLoans] = useState(SAMPLE_LOANS);
+    const [neighbors, setNeighbors] = useState(SAMPLE_NEIGHBORS);
+    const [applicants, setApplicants] = useState(SAMPLE_APPLICANTS);
+    const [reports, setReports] = useState([]);
 
-    const [seccion, setSeccion] = useState("inicio");
-    const [previa, setPrevia] = useState("inicio");
-    const [pestana, setPestana] = useState("articulos");
-    const [busqueda, setBusqueda] = useState("");
-    const [perfil, setPerfil] = useState(false);
-    const [salir, setSalir] = useState(false);
-    const [datosPerfil, setDatosPerfil] = useState(PERFIL_EJEMPLO);
+    useEffect(() => {
+        getCondominiumReports(id).then(({ reports }) => setReports(reports));
+    }, [id]);
+    const [ratings, setRatings] = useState(SAMPLE_RATINGS);
+    const received = ratings.filter((c) => c.to === ME);
+    const myRating = average(received);
+
+    const [section, setSection] = useState("home");
+    const [previous, setPrevious] = useState("home");
+    const [tab, setTab] = useState("articles");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [profile, setProfile] = useState(false);
+    const [leaving, setLeaving] = useState(false);
+    const [profileData, setProfileData] = useState(SAMPLE_PROFILE);
     const [modal, setModal] = useState(null);
-    const [detalleId, setDetalleId] = useState(null);
-    const [confirmar, setConfirmar] = useState(null);
+    const [detailId, setDetailId] = useState(null);
+    const [confirm, setConfirm] = useState(null);
 
-    const condominio = REGISTRADOS_INICIALES.find((c) => String(c.id) === id);
+    const { loading, condominium } = useCondominium(id);
 
-    if (!condominio) {
+    if (loading) return null;
+
+    if (!condominium) {
         return (
             <main className="p-10">
                 <p>No se encontró el condominio.</p>
@@ -217,172 +209,173 @@ export default function CondominioAdminPage() {
         );
     }
 
-    function irA(destino) {
-        setSeccion(destino);
-        setDetalleId(null);
-        setBusqueda("");
+    function goTo(destination) {
+        setSection(destination);
+        setDetailId(null);
+        setSearchQuery("");
     }
 
-    function abrirNotificaciones() {
-        setPrevia(seccion);
-        setSeccion("notificaciones");
-        setDetalleId(null);
+    function openNotifications() {
+        setPrevious(section);
+        setSection("notifications");
+        setDetailId(null);
     }
 
-    function cambiarPestana(p) {
-        setPestana(p);
-        setBusqueda("");
-        setDetalleId(null);
+    function changeTab(p) {
+        setTab(p);
+        setSearchQuery("");
+        setDetailId(null);
     }
 
     // -Artículos
 
-    function guardar(datos) {
-        if (modal === "nuevo") {
+    function save(data) {
+        if (modal === "new") {
             const randomId = crypto.getRandomValues(new Uint32Array(1))[0];
 
-            setArticulos((prev) => [
+            setArticles((prev) => [
                 ...prev,
                 {
-                    ...datos,
+                    ...data,
                     id: randomId,
-                    duenio: YO,
-                    direccion: `${datosPerfil.edificio}, ${datosPerfil.departamento}`,
-                    calificacion: miCalificacion,
+                    owner: ME,
+                    address: `${profileData.building}, ${profileData.apartment}`,
+                    rating: myRating,
                 },
             ]);
         } else if (modal) {
-            const editado = modal.id;
-            setArticulos((prev) => prev.map((a) => (a.id === editado ? { ...a, ...datos } : a)));
+            const edited = modal.id;
+            setArticles((prev) => prev.map((a) => (a.id === edited ? { ...a, ...data } : a)));
         }
 
         setModal(null);
     }
 
-    function cambiarEstadoArticulo(idArticulo, estado) {
-        setArticulos((prev) => prev.map((a) => (a.id === idArticulo ? { ...a, estado } : a)));
+    function changeArticleStatus(targetArticleId, status) {
+        setArticles((prev) => prev.map((a) => (a.id === targetArticleId ? { ...a, status } : a)));
     }
 
-    function eliminarArticulo(a) {
+    function deleteArticle(a) {
         // TODO: borrar la publicación en el backend y avisar al dueño
-        setArticulos((prev) => prev.filter((x) => x.id !== a.id));
-        setPrestamos((prev) =>
-            prev.filter((p) => !(p.articuloId === a.id && (p.estado === "pendiente" || p.estado === "aceptado"))),
+        setArticles((prev) => prev.filter((x) => x.id !== a.id));
+        setLoans((prev) =>
+            prev.filter((p) => !(p.articleId === a.id && (p.status === "pending" || p.status === "accepted"))),
         );
-        setDetalleId(null);
+        setDetailId(null);
     }
 
     // -Préstamos
 
-    function solicitar(a, tiempo) {
+    function requestLoan(a, duration) {
         // TODO: enviar la solicitud al backend
-        const nuevo = {
+        const newItem = {
             id: crypto.getRandomValues(new Uint32Array(1))[0],
-            articuloId: a.id,
-            nombre: a.nombre,
-            imagen: a.imagen,
-            duenio: a.duenio,
-            prestatario: YO,
-            tiempo,
-            estado: "pendiente",
-            fin: null,
+            articleId: a.id,
+            name: a.name,
+            image: a.image,
+            owner: a.owner,
+            borrower: ME,
+            duration,
+            status: "pending",
+            end: null,
         };
 
-        setPrestamos((prev) => [...prev, nuevo]);
-        cambiarEstadoArticulo(a.id, "pendiente");
+        setLoans((prev) => [...prev, newItem]);
+        changeArticleStatus(a.id, "pending");
     }
 
-    function responder(p, aceptar) {
+    function respond(p, accept) {
         // TODO: avisar al backend
-        const estado = aceptar ? "aceptado" : "rechazado";
+        const status = accept ? "accepted" : "rejected";
 
-        setPrestamos((prev) => prev.map((x) => (x.id === p.id ? { ...x, estado } : x)));
-        if (!aceptar) cambiarEstadoArticulo(p.articuloId, "disponible");
+        setLoans((prev) => prev.map((x) => (x.id === p.id ? { ...x, status } : x)));
+        if (!accept) changeArticleStatus(p.articleId, "available");
     }
 
-    function registrarCodigo(p) {
+    function registerCode(p) {
         // TODO: validar el código en el backend
-        const actualizado = avanzar(p, Date.now());
+        const updated = advance(p, Date.now());
 
-        setPrestamos((prev) => prev.map((x) => (x.id === p.id ? actualizado : x)));
-        if (actualizado.estado === "en_curso") cambiarEstadoArticulo(p.articuloId, "no_disponible");
-        if (actualizado.estado === "finalizado") cambiarEstadoArticulo(p.articuloId, "disponible");
+        setLoans((prev) => prev.map((x) => (x.id === p.id ? updated : x)));
+        if (updated.status === "in_progress") changeArticleStatus(p.articleId, "unavailable");
+        if (updated.status === "finished") changeArticleStatus(p.articleId, "available");
     }
 
-    function calificar(c) {
+    function rate(c) {
         // TODO: guardar la calificación en el backend
-        setCalificaciones((prev) => [...prev, c]);
+        setRatings((prev) => [...prev, c]);
     }
 
     // -Vecinos
 
-    function alternarPermiso(v) {
+    function togglePermission(v) {
         // TODO: guardar el permiso en el backend (si es false, no puede pedir artículos)
-        setVecinos((prev) => prev.map((x) => (x.id === v.id ? { ...x, alCorriente: !x.alCorriente } : x)));
+        setNeighbors((prev) => prev.map((x) => (x.id === v.id ? { ...x, upToDate: !x.upToDate } : x)));
     }
 
-    function expulsar(v) {
+    function kickOut(v) {
         // TODO: sacar al vecino del condominio en el backend
-        const quitados = prestamos.filter(
+        const removed = loans.filter(
             (p) =>
-                (p.duenio === v.usuario || p.prestatario === v.usuario) &&
-                (p.estado === "pendiente" || p.estado === "aceptado"),
+                (p.owner === v.user || p.borrower === v.user) &&
+                (p.status === "pending" || p.status === "accepted"),
         );
-        const idsQuitados = new Set(quitados.map((p) => p.id));
-        const articulosLiberados = new Set(quitados.map((p) => p.articuloId));
+        const removedIds = new Set(removed.map((p) => p.id));
+        const releasedArticles = new Set(removed.map((p) => p.articleId));
 
-        setPrestamos((prev) => prev.filter((p) => !idsQuitados.has(p.id)));
-        setArticulos((prev) =>
+        setLoans((prev) => prev.filter((p) => !removedIds.has(p.id)));
+        setArticles((prev) =>
             prev
-                .filter((a) => a.duenio !== v.usuario)
-                .map((a) => (articulosLiberados.has(a.id) ? { ...a, estado: "disponible" } : a)),
+                .filter((a) => a.owner !== v.user)
+                .map((a) => (releasedArticles.has(a.id) ? { ...a, status: "available" } : a)),
         );
-        setVecinos((prev) => prev.filter((x) => x.id !== v.id));
+        setNeighbors((prev) => prev.filter((x) => x.id !== v.id));
     }
 
-    function responderAspirante(a, aceptar) {
+    function respondApplicant(a, accept) {
         // TODO: avisar al backend
-        setAspirantes((prev) => prev.filter((x) => x.id !== a.id));
-        if (aceptar) {
-            setVecinos((prev) => [
+        setApplicants((prev) => prev.filter((x) => x.id !== a.id));
+        if (accept) {
+            setNeighbors((prev) => [
                 ...prev,
                 {
                     id: a.id,
-                    nombre: a.nombre,
-                    usuario: a.usuario,
-                    depto: a.depto,
-                    alCorriente: true,
+                    name: a.name,
+                    user: a.user,
+                    unit: a.unit,
+                    upToDate: true,
                 },
             ]);
         }
     }
 
-    function cambiarEstadoReporte(idReporte, estado) {
-        // TODO: guardar en el backend
-        setReportes((prev) => prev.map((r) => (r.id === idReporte ? { ...r, estado } : r)));
+    async function changeReportStatus(targetReportId, status) {
+        const { status: httpStatus } = await saveReportStatus(id, targetReportId, status);
+        if (httpStatus !== 200) return alert("No se pudo cambiar el estado del reporte.");
+        setReports((prev) => prev.map((r) => (r.id === targetReportId ? { ...r, status } : r)));
     }
 
-    function manejarConfirmar() {
-        if (confirmar?.tipo === "eliminar") eliminarArticulo(confirmar.articulo);
-        if (confirmar?.tipo === "expulsar") expulsar(confirmar.vecino);
-        setConfirmar(null);
+    function handleConfirm() {
+        if (confirm?.type === "delete") deleteArticle(confirm.article);
+        if (confirm?.type === "kickOut") kickOut(confirm.neighbor);
+        setConfirm(null);
     }
 
     // - Datos derivados
 
-    const texto = busqueda.trim().toLowerCase();
+    const text = searchQuery.trim().toLowerCase();
 
-    const detalle = articulos.find((a) => a.id === detalleId);
-    const visibles = articulos.filter((a) => a.nombre.toLowerCase().includes(texto));
-    const mios = visibles.filter((a) => a.duenio === YO);
-    const deOtros = visibles.filter((a) => a.duenio !== YO);
+    const detail = articles.find((a) => a.id === detailId);
+    const visibleItems = articles.filter((a) => a.name.toLowerCase().includes(text));
+    const mine = visibleItems.filter((a) => a.owner === ME);
+    const fromOthers = visibleItems.filter((a) => a.owner !== ME);
 
-    const vecinosVisibles = vecinos.filter((v) => `${v.nombre} ${v.usuario}`.toLowerCase().includes(texto));
+    const visibleNeighbors = neighbors.filter((v) => `${v.name} ${v.user}`.toLowerCase().includes(text));
 
-    const enCurso = (articuloId) => prestamos.some((p) => p.articuloId === articuloId && p.estado === "en_curso");
+    const inProgress = (articleId) => loans.some((p) => p.articleId === articleId && p.status === "in_progress");
 
-    const claseItem = (activo) =>
-        `${ITEM} cursor-pointer ${activo ? "text-white" : "text-white/40 hover:text-white/80"}`;
+    const itemClass = (active) =>
+        `${ITEM} cursor-pointer ${active ? "text-white" : "text-white/40 hover:text-white/80"}`;
 
     return (
         <div className="flex h-screen flex-col overflow-hidden bg-fondo font-sans text-black">
@@ -399,8 +392,8 @@ export default function CondominioAdminPage() {
                 </Link>
 
                 <div className="ml-2 min-w-0 md:ml-14">
-                    <h1 className="m-0 truncate text-2xl font-bold md:text-3xl">Hola, {NOMBRE_USUARIO}</h1>
-                    <p className="m-0 truncate text-sm font-semibold text-celeste">{condominio.nombre}</p>
+                    <h1 className="m-0 truncate text-2xl font-bold md:text-3xl">Hola, {user?.name}</h1>
+                    <p className="m-0 truncate text-sm font-semibold text-celeste">{condominium.name}</p>
                 </div>
 
                 <div className="ml-auto flex flex-col items-end gap-2">
@@ -408,8 +401,8 @@ export default function CondominioAdminPage() {
                         <button
                             type="button"
                             aria-label="Agregar artículo"
-                            onClick={() => setModal("nuevo")}
-                            className={ICONO_HEADER}
+                            onClick={() => setModal("new")}
+                            className={HEADER_ICON}
                         >
                             <Icon name="plus" size={28} />
                         </button>
@@ -417,8 +410,8 @@ export default function CondominioAdminPage() {
                         <button
                             type="button"
                             aria-label="Notificaciones"
-                            onClick={abrirNotificaciones}
-                            className={ICONO_HEADER}
+                            onClick={openNotifications}
+                            className={HEADER_ICON}
                         >
                             <Icon name="bell" size={28} />
                         </button>
@@ -426,20 +419,20 @@ export default function CondominioAdminPage() {
                         <button
                             type="button"
                             aria-label="Perfil"
-                            onClick={() => setPerfil(true)}
-                            className={ICONO_HEADER}
+                            onClick={() => setProfile(true)}
+                            className={HEADER_ICON}
                         >
                             <Icon name="user" size={30} />
                         </button>
                     </div>
 
-                    {seccion === "inicio" && !detalle && (
+                    {section === "home" && !detail && (
                         <div className="relative hidden sm:block">
                             <input
-                                aria-label={pestana === "articulos" ? "Buscar artículo" : "Buscar vecino"}
-                                value={busqueda}
-                                onChange={(e) => setBusqueda(e.target.value)}
-                                placeholder={pestana === "articulos" ? "Buscar artículo..." : "Buscar vecino..."}
+                                aria-label={tab === "articles" ? "Buscar artículo" : "Buscar vecino"}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder={tab === "articles" ? "Buscar artículo..." : "Buscar vecino..."}
                                 className="w-72 rounded-full bg-white/10 py-1.5 pl-4 pr-10 text-sm text-white outline-none placeholder:text-white/70 focus:bg-white/20 lg:w-80"
                             />
                             <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
@@ -451,35 +444,35 @@ export default function CondominioAdminPage() {
             </header>
 
             <div className="flex min-h-0 flex-1">
-                {seccion !== "notificaciones" && (
+                {section !== "notifications" && (
                     <aside className="flex w-16 shrink-0 flex-col space-y-3 bg-azul px-1 pt-8 md:w-56 md:px-3">
-                        {SECCIONES.map(({ id, label, icon }) => (
+                        {SECTIONS.map(({ id, label, icon }) => (
                             <button
                                 key={id}
                                 type="button"
-                                onClick={() => irA(id)}
-                                aria-current={seccion === id ? "page" : undefined}
-                                className={`${claseItem(seccion === id)} relative`}
+                                onClick={() => goTo(id)}
+                                aria-current={section === id ? "page" : undefined}
+                                className={`${itemClass(section === id)} relative`}
                             >
                                 <Icon name={icon} size={26} />
                                 <span className="hidden md:inline">{label}</span>
-                                {id === "solicitudes" && aspirantes.length > 0 && (
+                                {id === "requests" && applicants.length > 0 && (
                                     <span
-                                        aria-label={`${aspirantes.length} solicitudes pendientes`}
+                                        aria-label={`${applicants.length} solicitudes pendientes`}
                                         className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-white px-1 text-[9px] font-bold text-azul md:right-3 md:top-3"
                                     >
-                                        {aspirantes.length}
+                                        {applicants.length}
                                     </span>
                                 )}
                             </button>
                         ))}
 
-                        <button type="button" onClick={() => setPerfil(true)} className={claseItem(false)}>
+                        <button type="button" onClick={() => setProfile(true)} className={itemClass(false)}>
                             <Icon name="user" size={26} />
                             <span className="hidden md:inline">Perfil</span>
                         </button>
 
-                        <button type="button" onClick={() => setSalir(true)} className={claseItem(false)}>
+                        <button type="button" onClick={() => setLeaving(true)} className={itemClass(false)}>
                             <Icon name="logout" size={26} />
                             <span className="hidden md:inline">Cerrar sesión</span>
                         </button>
@@ -487,13 +480,13 @@ export default function CondominioAdminPage() {
                 )}
 
                 <main className="min-w-0 flex-1 overflow-y-auto px-4 pb-8 pt-6 md:px-10">
-                    {seccion === "notificaciones" ? (
+                    {section === "notifications" ? (
                         <>
                             <div className="flex items-center gap-3">
                                 <button
                                     type="button"
                                     aria-label="Volver"
-                                    onClick={() => setSeccion(previa)}
+                                    onClick={() => setSection(previous)}
                                     className="cursor-pointer rounded-full p-1 text-black transition hover:bg-white"
                                 >
                                     <Icon name="arrow" size={24} />
@@ -505,93 +498,93 @@ export default function CondominioAdminPage() {
                                 No tienes notificaciones por el momento
                             </p>
                         </>
-                    ) : seccion === "solicitudes" ? (
-                        <SolicitudesVista aspirantes={aspirantes} onResponderAction={responderAspirante} />
-                    ) : seccion === "prestamos" ? (
-                        <PrestamosVista
-                            prestamos={prestamos}
-                            usuario={YO}
-                            onResponderAction={responder}
-                            onCodigoAction={registrarCodigo}
-                            reportes={reportes}
-                            calificaciones={calificaciones}
-                            onCalificarAction={calificar}
+                    ) : section === "requests" ? (
+                        <RequestsView applicants={applicants} onRespondAction={respondApplicant} />
+                    ) : section === "loans" ? (
+                        <LoansView
+                            loans={loans}
+                            user={ME}
+                            onRespondAction={respond}
+                            onCodeAction={registerCode}
+                            reports={reports}
+                            ratings={ratings}
+                            onRateAction={rate}
                         />
-                    ) : seccion === "todos" ? (
-                        <TodosPrestamosVista
-                            prestamos={prestamos}
-                            personas={PERSONAS_EJEMPLO}
-                            yo={YO}
-                            onRecordarAction={(p) => {
+                    ) : section === "all" ? (
+                        <AllLoansView
+                            loans={loans}
+                            people={SAMPLE_PEOPLE}
+                            me={ME}
+                            onRemindAction={(p) => {
                                 // TODO: enviar el recordatorio de devolución desde el backend
-                                setPrestamos((prev) =>
-                                    prev.map((x) => (x.id === p.id ? { ...x, recordado: true } : x)),
+                                setLoans((prev) =>
+                                    prev.map((x) => (x.id === p.id ? { ...x, reminded: true } : x)),
                                 );
                             }}
                         />
-                    ) : seccion === "reportes" ? (
-                        <ReportesVista reportes={reportes} onCambiarEstadoAction={cambiarEstadoReporte} />
-                    ) : detalle ? (
-                        <ArticuloFicha
-                            key={detalle.id}
-                            a={detalle}
-                            onVolverAction={() => setDetalleId(null)}
-                            onSolicitarAction={
-                                detalle.duenio !== YO ? (tiempo) => solicitar(detalle, tiempo) : undefined
+                    ) : section === "reports" ? (
+                        <ReportsView reports={reports} onChangeStatusAction={changeReportStatus} />
+                    ) : detail ? (
+                        <ArticleDetail
+                            key={detail.id}
+                            a={detail}
+                            onBackAction={() => setDetailId(null)}
+                            onRequestAction={
+                                detail.owner !== ME ? (duration) => requestLoan(detail, duration) : undefined
                             }
-                            onEliminarAction={() => setConfirmar({ tipo: "eliminar", articulo: detalle })}
-                            eliminarBloqueado={enCurso(detalle.id)}
+                            onDeleteAction={() => setConfirm({ type: "delete", article: detail })}
+                            deleteBlocked={inProgress(detail.id)}
                         />
                     ) : (
                         <>
                             <div className="flex justify-center gap-6">
-                                {["articulos", "vecinos"].map((p) => (
+                                {["articles", "neighbors"].map((p) => (
                                     <button
                                         key={p}
                                         type="button"
-                                        aria-pressed={pestana === p}
-                                        onClick={() => cambiarPestana(p)}
+                                        aria-pressed={tab === p}
+                                        onClick={() => changeTab(p)}
                                         className={`w-32 cursor-pointer rounded-xl border px-4 py-1.5 text-sm font-bold transition ${
-                                            pestana === p
+                                            tab === p
                                                 ? "border-azul bg-azul text-white"
                                                 : "border-slate-400 bg-[#d3d6da] text-slate-500 hover:bg-[#c5c9ce]"
                                         }`}
                                     >
-                                        {p === "articulos" ? "Artículos" : "Vecinos"}
+                                        {p === "articles" ? "Artículos" : "Vecinos"}
                                     </button>
                                 ))}
                             </div>
 
-                            {pestana === "vecinos" ? (
+                            {tab === "neighbors" ? (
                                 <div className="mt-6">
-                                    <VecinosVista
-                                        vecinos={vecinosVisibles}
-                                        onPermisoAction={alternarPermiso}
-                                        onExpulsarAction={(v) => setConfirmar({ tipo: "expulsar", vecino: v })}
+                                    <NeighborsView
+                                        neighbors={visibleNeighbors}
+                                        onPermissionAction={togglePermission}
+                                        onKickOutAction={(v) => setConfirm({ type: "kickOut", neighbor: v })}
                                     />
                                 </div>
                             ) : (
                                 <>
                                     <h2 className="m-0 mt-4 text-base font-bold">Mis Artículos</h2>
 
-                                    {mios.length === 0 && (
+                                    {mine.length === 0 && (
                                         <p className="mb-0 mt-3 text-sm text-slate-500">No hay artículos.</p>
                                     )}
 
                                     <div className="mt-4 flex flex-wrap items-center gap-4">
-                                        {mios.map((a) => (
-                                            <ArticuloTarjeta
+                                        {mine.map((a) => (
+                                            <ArticleCard
                                                 key={a.id}
                                                 a={a}
-                                                onVerAction={() => setDetalleId(a.id)}
-                                                onEditarAction={() => setModal(a)}
+                                                onViewAction={() => setDetailId(a.id)}
+                                                onEditAction={() => setModal(a)}
                                             />
                                         ))}
 
                                         <button
                                             type="button"
                                             aria-label="Agregar artículo"
-                                            onClick={() => setModal("nuevo")}
+                                            onClick={() => setModal("new")}
                                             className="ml-4 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-azul text-white shadow-md hover:bg-azul-claro"
                                         >
                                             <Icon name="plus" size={26} />
@@ -600,13 +593,13 @@ export default function CondominioAdminPage() {
 
                                     <h2 className="m-0 mt-10 text-base font-bold">Artículos Disponibles</h2>
 
-                                    {deOtros.length === 0 && (
+                                    {fromOthers.length === 0 && (
                                         <p className="mb-0 mt-3 text-sm text-slate-500">No hay artículos.</p>
                                     )}
 
                                     <div className="mt-4 flex flex-wrap gap-4">
-                                        {deOtros.map((a) => (
-                                            <ArticuloTarjeta key={a.id} a={a} onVerAction={() => setDetalleId(a.id)} />
+                                        {fromOthers.map((a) => (
+                                            <ArticleCard key={a.id} a={a} onViewAction={() => setDetailId(a.id)} />
                                         ))}
                                     </div>
                                 </>
@@ -616,54 +609,54 @@ export default function CondominioAdminPage() {
                 </main>
             </div>
 
-            {perfil && (
-                <PerfilHabitanteModal
-                    perfil={{ ...datosPerfil, calificacion: miCalificacion }}
-                    recibidas={recibidas}
-                    onActualizarAction={(datos) => {
+            {profile && (
+                <ResidentProfileModal
+                    profile={{ ...profileData, rating: myRating }}
+                    received={received}
+                    onUpdateAction={(data) => {
                         // TODO: guardar `datos` en el backend
-                        setDatosPerfil({ ...datosPerfil, ...datos });
-                        setPerfil(false);
+                        setProfileData({ ...profileData, ...data });
+                        setProfile(false);
                     }}
-                    onEliminarAction={() => {
+                    onDeleteAction={() => {
                         // TODO: borrar la cuenta en el backend
                         router.replace("/login");
                     }}
-                    onCloseAction={() => setPerfil(false)}
+                    onCloseAction={() => setProfile(false)}
                 />
             )}
 
             {modal && (
-                <ArticuloModal
-                    key={modal === "nuevo" ? "nuevo" : modal.id}
-                    articulo={modal === "nuevo" ? null : modal}
-                    onGuardarAction={guardar}
-                    onCancelarAction={() => setModal(null)}
+                <ArticleModal
+                    key={modal === "new" ? "new" : modal.id}
+                    article={modal === "new" ? null : modal}
+                    onSaveAction={save}
+                    onCancelAction={() => setModal(null)}
                 />
             )}
 
-            {confirmar && (
+            {confirm && (
                 <ConfirmDialog
-                    titulo={confirmar.tipo === "eliminar" ? "¿Eliminar publicación?" : "¿Expulsar vecino?"}
-                    mensaje={
-                        confirmar.tipo === "eliminar"
-                            ? `Se eliminará «${confirmar.articulo.nombre}» de ${confirmar.articulo.duenio} y se cancelarán sus solicitudes pendientes.`
-                            : `${confirmar.vecino.nombre} saldrá del condominio y se eliminarán sus artículos y préstamos pendientes.`
+                    title={confirm.type === "delete" ? "¿Eliminar publicación?" : "¿Expulsar vecino?"}
+                    message={
+                        confirm.type === "delete"
+                            ? `Se eliminará «${confirm.article.name}» de ${confirm.article.owner} y se cancelarán sus solicitudes pendientes.`
+                            : `${confirm.neighbor.name} saldrá del condominio y se eliminarán sus artículos y préstamos pendientes.`
                     }
-                    onConfirmarAction={manejarConfirmar}
-                    onCancelarAction={() => setConfirmar(null)}
+                    onConfirmAction={handleConfirm}
+                    onCancelAction={() => setConfirm(null)}
                 />
             )}
 
-            {salir && (
+            {leaving && (
                 <ConfirmDialog
-                    titulo="¿Estás seguro?"
-                    mensaje="Se cerrará tu sesión."
-                    onConfirmarAction={async () => {
-                        await cerrarSesion();
+                    title="¿Estás seguro?"
+                    message="Se cerrará tu sesión."
+                    onConfirmAction={async () => {
+                        await signOut();
                         router.replace("/login");
                     }}
-                    onCancelarAction={() => setSalir(false)}
+                    onCancelAction={() => setLeaving(false)}
                 />
             )}
         </div>

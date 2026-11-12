@@ -1,73 +1,73 @@
 "use client";
 
 import { useState } from "react";
-import { DIAS } from "@/lib/prestamos";
+import { DAYS } from "@/lib/loans";
 import { Icon } from "./Icon";
 
-const DIA_MS = 86_400_000;
+const DAY_MS = 86_400_000;
 const TD = "whitespace-nowrap px-3 py-2.5 align-middle";
-const FOCO = "outline-none focus-visible:ring-2 focus-visible:ring-azul-claro";
+const FOCUSABLE = "outline-none focus-visible:ring-2 focus-visible:ring-azul-claro";
 
 // "vencido" no viene del backend: es un préstamo en curso que ya pasó su fecha
-const ESTADOS = {
-    pendiente: "Pendiente",
-    aceptado: "Reservado",
-    en_curso: "En préstamo",
-    vencido: "Vencido",
-    finalizado: "Finalizado",
-    rechazado: "Rechazado",
+const STATUSES = {
+    pending: "Pendiente",
+    accepted: "Reservado",
+    in_progress: "En préstamo",
+    overdue: "Vencido",
+    finished: "Finalizado",
+    rejected: "Rechazado",
 };
 
-const COLUMNAS = [
-    { id: "articulo", texto: "Artículo" },
-    { id: "presta", texto: "Presta" },
-    { id: "recibe", texto: "Recibe" },
-    { id: "inicio", texto: "Inicio" },
-    { id: "duracion", texto: "Duración" },
-    { id: "vence", texto: "Vence" },
-    { id: "estado", texto: "Estado" },
+const COLUMNS = [
+    { id: "article", text: "Artículo" },
+    { id: "lends", text: "Presta" },
+    { id: "borrows", text: "Recibe" },
+    { id: "start", text: "Inicio" },
+    { id: "duration", text: "Duración" },
+    { id: "due", text: "Vence" },
+    { id: "status", text: "Estado" },
 ];
 
-const fecha = (ms) =>
+const date = (ms) =>
     new Date(ms).toLocaleDateString("es-MX", {
         day: "2-digit",
         month: "short",
         year: "numeric",
     });
 
-export function TodosPrestamosVista({ prestamos, personas = {}, yo, onRecordarAction }) {
-    const [filtro, setFiltro] = useState("todos");
-    const [busqueda, setBusqueda] = useState("");
-    const [ahora] = useState(() => Date.now());
-    const [ocultas, setOcultas] = useState([]);
+export function AllLoansView({ loans, people = {}, me, onRemindAction }) {
+    const [filterValue, setFilterValue] = useState("all");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [now] = useState(() => Date.now());
+    const [hiddenIds, setHiddenIds] = useState([]);
 
-    const visibles = COLUMNAS.filter((c) => !ocultas.includes(c.id));
-    const ver = (id) => !ocultas.includes(id);
+    const visibleItems = COLUMNS.filter((c) => !hiddenIds.includes(c.id));
+    const view = (id) => !hiddenIds.includes(id);
 
-    const estadoDe = (p) => (p.estado === "en_curso" && p.fin !== null && p.fin < ahora ? "vencido" : p.estado);
-    const nombreDe = (usuario) => (usuario === yo ? "Tú" : (personas[usuario]?.nombre ?? usuario));
+    const statusOf = (p) => (p.status === "in_progress" && p.end !== null && p.end < now ? "overdue" : p.status);
+    const nameOf = (user) => (user === me ? "Tú" : (people[user]?.name ?? user));
 
-    const persona = (usuario) => (
+    const person = (user) => (
         <>
-            {nombreDe(usuario)}
-            {personas[usuario]?.depto && <span className="text-zinc-500"> · {personas[usuario].depto}</span>}
+            {nameOf(user)}
+            {people[user]?.unit && <span className="text-zinc-500"> · {people[user].unit}</span>}
         </>
     );
 
-    const q = busqueda.trim().toLowerCase();
-    const lista = prestamos
-        .filter((p) => filtro === "todos" || estadoDe(p) === filtro)
+    const q = searchQuery.trim().toLowerCase();
+    const list = loans
+        .filter((p) => filterValue === "all" || statusOf(p) === filterValue)
         .filter(
             (p) =>
-                !q || [p.nombre, nombreDe(p.duenio), nombreDe(p.prestatario)].some((t) => t?.toLowerCase().includes(q)),
+                !q || [p.name, nameOf(p.owner), nameOf(p.borrower)].some((t) => t?.toLowerCase().includes(q)),
         );
 
-    const filtros = [
-        { valor: "todos", texto: "Todos", total: prestamos.length },
-        ...Object.entries(ESTADOS).map(([e, texto]) => ({
-            valor: e,
-            texto,
-            total: prestamos.filter((p) => estadoDe(p) === e).length,
+    const filters = [
+        { value: "all", text: "Todos", total: loans.length },
+        ...Object.entries(STATUSES).map(([e, text]) => ({
+            value: e,
+            text,
+            total: loans.filter((p) => statusOf(p) === e).length,
         })),
     ];
 
@@ -83,8 +83,8 @@ export function TodosPrestamosVista({ prestamos, personas = {}, yo, onRecordarAc
                     <span className="sr-only">Buscar préstamo</span>
                     <input
                         type="search"
-                        value={busqueda}
-                        onChange={(e) => setBusqueda(e.target.value)}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Artículo o vecino"
                         className="w-full bg-transparent text-sm text-zinc-800 outline-none placeholder:text-zinc-500"
                     />
@@ -93,21 +93,21 @@ export function TodosPrestamosVista({ prestamos, personas = {}, yo, onRecordarAc
 
             <div className="mt-5 overflow-hidden rounded-md border border-zinc-300 bg-white">
                 <div className="flex overflow-x-auto border-b border-zinc-300 px-2">
-                    {filtros.map((f) => (
+                    {filters.map((f) => (
                         <button
-                            key={f.valor}
+                            key={f.value}
                             type="button"
-                            aria-pressed={filtro === f.valor}
-                            onClick={() => setFiltro(f.valor)}
-                            className={`-mb-px shrink-0 cursor-pointer whitespace-nowrap border-b-2 px-3 py-2.5 text-sm font-semibold ${FOCO} ${
-                                filtro === f.valor
+                            aria-pressed={filterValue === f.value}
+                            onClick={() => setFilterValue(f.value)}
+                            className={`-mb-px shrink-0 cursor-pointer whitespace-nowrap border-b-2 px-3 py-2.5 text-sm font-semibold ${FOCUSABLE} ${
+                                filterValue === f.value
                                     ? "border-azul text-azul"
                                     : "border-transparent text-zinc-500 hover:text-zinc-800"
                             }`}
                         >
-                            {f.texto}{" "}
+                            {f.text}{" "}
                             <span
-                                className={`font-normal tabular-nums ${f.valor === "vencido" && f.total > 0 ? "font-semibold text-azul" : "text-zinc-400"}`}
+                                className={`font-normal tabular-nums ${f.value === "overdue" && f.total > 0 ? "font-semibold text-azul" : "text-zinc-400"}`}
                             >
                                 ({f.total})
                             </span>
@@ -115,33 +115,33 @@ export function TodosPrestamosVista({ prestamos, personas = {}, yo, onRecordarAc
                     ))}
                 </div>
 
-                {ocultas.length > 0 && (
+                {hiddenIds.length > 0 && (
                     <div className="flex flex-wrap items-center gap-2 border-b border-zinc-300 bg-zinc-50 px-3 py-2 text-xs text-zinc-600">
                         Columnas ocultas:
-                        {COLUMNAS.filter((c) => ocultas.includes(c.id)).map((c) => (
+                        {COLUMNS.filter((c) => hiddenIds.includes(c.id)).map((c) => (
                             <button
                                 key={c.id}
                                 type="button"
-                                onClick={() => setOcultas((prev) => prev.filter((x) => x !== c.id))}
-                                className={`flex cursor-pointer items-center gap-1 rounded border border-zinc-300 bg-white px-2 py-0.5 font-semibold text-zinc-700 hover:border-azul hover:text-azul ${FOCO}`}
+                                onClick={() => setHiddenIds((prev) => prev.filter((x) => x !== c.id))}
+                                className={`flex cursor-pointer items-center gap-1 rounded border border-zinc-300 bg-white px-2 py-0.5 font-semibold text-zinc-700 hover:border-azul hover:text-azul ${FOCUSABLE}`}
                             >
                                 <Icon name="plus" size={12} />
-                                {c.texto}
+                                {c.text}
                             </button>
                         ))}
                     </div>
                 )}
 
-                {lista.length === 0 ? (
+                {list.length === 0 ? (
                     <p className="m-0 px-4 py-10 text-center text-sm text-zinc-600">
                         {q
-                            ? `Ningún préstamo coincide con “${busqueda.trim()}”. `
+                            ? `Ningún préstamo coincide con “${searchQuery.trim()}”. `
                             : "No hay préstamos en esta categoría."}
                         {q && (
                             <button
                                 type="button"
-                                onClick={() => setBusqueda("")}
-                                className={`cursor-pointer font-semibold text-azul underline ${FOCO}`}
+                                onClick={() => setSearchQuery("")}
+                                className={`cursor-pointer font-semibold text-azul underline ${FOCUSABLE}`}
                             >
                                 Limpiar búsqueda
                             </button>
@@ -152,17 +152,17 @@ export function TodosPrestamosVista({ prestamos, personas = {}, yo, onRecordarAc
                         <table className="w-full min-w-[900px] border-collapse text-left text-sm">
                             <thead className="bg-zinc-100">
                                 <tr>
-                                    {visibles.map((c) => (
+                                    {visibleItems.map((c) => (
                                         <th key={c.id} className="border-b border-zinc-300 p-0 font-normal">
                                             <button
                                                 type="button"
                                                 title="Ocultar columna"
-                                                aria-label={`Ocultar columna ${c.texto}`}
-                                                disabled={visibles.length === 1}
-                                                onClick={() => setOcultas((prev) => [...prev, c.id])}
-                                                className={`group flex w-full cursor-pointer items-center gap-1.5 px-3 py-2 text-left text-xs font-bold text-zinc-700 hover:text-azul disabled:cursor-default disabled:hover:text-zinc-700 ${FOCO}`}
+                                                aria-label={`Ocultar columna ${c.text}`}
+                                                disabled={visibleItems.length === 1}
+                                                onClick={() => setHiddenIds((prev) => [...prev, c.id])}
+                                                className={`group flex w-full cursor-pointer items-center gap-1.5 px-3 py-2 text-left text-xs font-bold text-zinc-700 hover:text-azul disabled:cursor-default disabled:hover:text-zinc-700 ${FOCUSABLE}`}
                                             >
-                                                {c.texto}
+                                                {c.text}
                                                 <span className="opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 group-disabled:hidden">
                                                     <Icon name="close" size={12} />
                                                 </span>
@@ -175,63 +175,63 @@ export function TodosPrestamosVista({ prestamos, personas = {}, yo, onRecordarAc
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-zinc-200">
-                                {lista.map((p) => {
-                                    const estado = estadoDe(p);
-                                    const vencido = estado === "vencido";
+                                {list.map((p) => {
+                                    const status = statusOf(p);
+                                    const overdue = status === "overdue";
                                     // El plazo corre desde la entrega: inicio = vence - duración
-                                    const inicio = p.fin !== null ? p.fin - DIAS[p.tiempo] * DIA_MS : null;
+                                    const home = p.end !== null ? p.end - DAYS[p.duration] * DAY_MS : null;
                                     return (
                                         <tr key={p.id} className="hover:bg-zinc-50">
-                                            {ver("articulo") && (
+                                            {view("article") && (
                                                 <td
                                                     className={`${TD} max-w-56 truncate font-semibold`}
-                                                    title={p.nombre}
+                                                    title={p.name}
                                                 >
-                                                    {p.nombre}
+                                                    {p.name}
                                                 </td>
                                             )}
-                                            {ver("presta") && <td className={TD}>{persona(p.duenio)}</td>}
-                                            {ver("recibe") && <td className={TD}>{persona(p.prestatario)}</td>}
-                                            {ver("inicio") && (
+                                            {view("lends") && <td className={TD}>{person(p.owner)}</td>}
+                                            {view("borrows") && <td className={TD}>{person(p.borrower)}</td>}
+                                            {view("start") && (
                                                 <td className={`${TD} tabular-nums text-zinc-700`}>
-                                                    {inicio !== null ? (
-                                                        fecha(inicio)
+                                                    {home !== null ? (
+                                                        date(home)
                                                     ) : (
                                                         <span className="text-zinc-400">Sin entregar</span>
                                                     )}
                                                 </td>
                                             )}
-                                            {ver("duracion") && <td className={`${TD} text-zinc-700`}>{p.tiempo}</td>}
-                                            {ver("vence") && (
+                                            {view("duration") && <td className={`${TD} text-zinc-700`}>{p.duration}</td>}
+                                            {view("due") && (
                                                 <td
-                                                    className={`${TD} tabular-nums ${vencido ? "font-semibold text-azul" : "text-zinc-700"}`}
+                                                    className={`${TD} tabular-nums ${overdue ? "font-semibold text-azul" : "text-zinc-700"}`}
                                                 >
-                                                    {p.fin !== null ? (
-                                                        fecha(p.fin)
+                                                    {p.end !== null ? (
+                                                        date(p.end)
                                                     ) : (
                                                         <span className="text-zinc-400">No definida</span>
                                                     )}
                                                 </td>
                                             )}
-                                            {ver("estado") && (
+                                            {view("status") && (
                                                 <td
-                                                    className={`${TD} ${vencido ? "font-semibold text-azul" : "text-zinc-700"}`}
+                                                    className={`${TD} ${overdue ? "font-semibold text-azul" : "text-zinc-700"}`}
                                                 >
-                                                    {ESTADOS[estado]}
+                                                    {STATUSES[status]}
                                                 </td>
                                             )}
                                             <td className={TD}>
-                                                {vencido &&
-                                                    onRecordarAction &&
-                                                    (p.recordado ? (
+                                                {overdue &&
+                                                    onRemindAction &&
+                                                    (p.reminded ? (
                                                         <span className="text-xs text-zinc-500">
                                                             Recordatorio enviado
                                                         </span>
                                                     ) : (
                                                         <button
                                                             type="button"
-                                                            onClick={() => onRecordarAction(p)}
-                                                            className={`cursor-pointer rounded border border-zinc-300 bg-white px-2 py-0.5 text-xs font-semibold text-zinc-700 hover:border-azul hover:text-azul ${FOCO}`}
+                                                            onClick={() => onRemindAction(p)}
+                                                            className={`cursor-pointer rounded border border-zinc-300 bg-white px-2 py-0.5 text-xs font-semibold text-zinc-700 hover:border-azul hover:text-azul ${FOCUSABLE}`}
                                                         >
                                                             Recordar
                                                         </button>
@@ -246,9 +246,9 @@ export function TodosPrestamosVista({ prestamos, personas = {}, yo, onRecordarAc
                 )}
             </div>
 
-            {lista.length > 0 && (
+            {list.length > 0 && (
                 <p className="mb-0 mt-2 text-right text-xs tabular-nums text-zinc-500">
-                    Mostrando {lista.length} de {prestamos.length}
+                    Mostrando {list.length} de {loans.length}
                 </p>
             )}
         </>

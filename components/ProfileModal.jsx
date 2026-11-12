@@ -1,10 +1,10 @@
 "use client";
 
-import { CONTRASENA_OCULTA, USUARIO_ADMIN } from "@/lib/datos";
+import { HIDDEN_PASSWORD, ADMIN_USERNAME } from "@/lib/data";
 import { Icon } from "./Icon";
 import { Modal } from "./Modal";
 
-export function PerfilModal({ onCloseAction, titulo = "Admin", usuario = USUARIO_ADMIN }) {
+export function ProfileModal({ onCloseAction, title = "Admin", user = ADMIN_USERNAME }) {
     return (
         <Modal label="Perfil" onCloseAction={onCloseAction}>
             <div className="relative w-[min(90vw,320px)] rounded-4xl border border-slate-400 bg-white px-7 py-8 shadow-xl">
@@ -21,7 +21,7 @@ export function PerfilModal({ onCloseAction, titulo = "Admin", usuario = USUARIO
                     <span className="text-slate-500">
                         <Icon name="user" size={58} />
                     </span>
-                    <p className="m-0 text-base font-bold text-azul">{titulo}</p>
+                    <p className="m-0 text-base font-bold text-azul">{title}</p>
                 </div>
 
                 <div className="mt-6">
@@ -32,7 +32,7 @@ export function PerfilModal({ onCloseAction, titulo = "Admin", usuario = USUARIO
                         id="perfil-usuario"
                         type="text"
                         readOnly
-                        value={usuario}
+                        value={user}
                         className="mt-1 w-full rounded-full border border-slate-500 bg-gris px-4 py-1.5 text-sm text-slate-700 outline-none"
                     />
                 </div>
@@ -45,7 +45,7 @@ export function PerfilModal({ onCloseAction, titulo = "Admin", usuario = USUARIO
                         id="perfil-contrasena"
                         type="password"
                         readOnly
-                        value={CONTRASENA_OCULTA}
+                        value={HIDDEN_PASSWORD}
                         className="mt-1 w-full rounded-full border border-slate-500 bg-gris px-4 py-1.5 text-sm text-slate-700 outline-none"
                     />
                 </div>

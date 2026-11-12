@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-export function Cargando() {
+export function LoadingScreen() {
     return (
         <div
             role="status"

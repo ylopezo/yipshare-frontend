@@ -1,4 +1,5 @@
 import "./globals.css";
+import { SESSION_SCRIPT } from "@/lib/session";
 
 export const metadata = {
     title: "YipShare",
@@ -7,8 +8,11 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
     return (
-        <html lang="es">
-            <body>{children}</body>
+        <html lang="es" suppressHydrationWarning>
+            <head>
+                <script dangerouslySetInnerHTML={{ __html: SESSION_SCRIPT }} />
+            </head>
+            <body suppressHydrationWarning>{children}</body>
         </html>
     );
 }

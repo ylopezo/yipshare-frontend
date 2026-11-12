@@ -1,59 +1,71 @@
 "use client";
 
 import Link from "next/link";
-import { Campo } from "@/components/Campo";
+import { Field } from "@/components/Field";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { iniciarSesion, paginaDeInicio } from "@/lib/sesion";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { signIn, homePage } from "@/lib/session";
+
+const SESSION_NOTICES = {
+    required: "Inicia sesión para continuar.",
+    expired: "Tu sesión expiró o ya no es válida. Inicia sesión de nuevo.",
+    offline: "No se pudo conectar con el servidor. Intenta de nuevo.",
+};
+
+const noSubscription = () => () => {};
+const readReason = () => new URLSearchParams(window.location.search).get("session");
+const noReasonOnServer = () => null;
 
 export default function LoginPage() {
     const router = useRouter();
 
-    const [usuario, setUsuario] = useState("");
-    const [contrasena, setContrasena] = useState("");
+    const [user, setUser] = useState("");
+    const [password, setPassword] = useState("");
 
-    const [errorUsuario, setErrorUsuario] = useState("");
-    const [errorContrasena, setErrorContrasena] = useState("");
-    function limpiarFormulario() {
-        setUsuario("");
-        setContrasena("");
-        setErrorUsuario("");
-        setErrorContrasena("");
+    const [userError, setUserError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+    const notice = SESSION_NOTICES[useSyncExternalStore(noSubscription, readReason, noReasonOnServer)] ?? "";
+    function clearForm() {
+        setUser("");
+        setPassword("");
+        setUserError("");
+        setPasswordError("");
     }
 
     useEffect(() => {
-        const alMostrarPagina = (e) => {
-            if (e.persisted) limpiarFormulario();
+        const onPageShow = (e) => {
+            if (e.persisted) clearForm();
         };
 
-        window.addEventListener("pageshow", alMostrarPagina);
-        return () => window.removeEventListener("pageshow", alMostrarPagina);
+        window.addEventListener("pageshow", onPageShow);
+        return () => window.removeEventListener("pageshow", onPageShow);
     }, []);
 
-    async function manejarEnvio(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
 
-        const errUsuario = usuario.trim() ? "" : "Ingresa tu usuario.";
-        const errContrasena = contrasena.trim() ? "" : "Ingresa tu contraseña.";
+        const userErr = user.trim() ? "" : "Ingresa tu usuario.";
+        const passwordErr = password.trim() ? "" : "Ingresa tu contraseña.";
 
-        setErrorUsuario(errUsuario);
-        setErrorContrasena(errContrasena);
+        setUserError(userErr);
+        setPasswordError(passwordErr);
 
-        if (errUsuario || errContrasena) return;
+        if (userErr || passwordErr) return;
 
-        const { status, datos } = await iniciarSesion(usuario.trim(), contrasena);
+        const { status, data } = await signIn(user.trim(), password);
         if (status !== 200) {
-            setErrorContrasena(datos.error || "Usuario o contraseña incorrectos.");
+            setPasswordError(data.error || "Usuario o contraseña incorrectos.");
             return;
         }
 
-        limpiarFormulario();
-        router.push(paginaDeInicio(datos.usuario?.rol));
+        clearForm();
+        router.replace(homePage(data.user?.role));
     }
 
     return (
         <div
             className="m-0 flex min-h-screen flex-col items-center justify-center bg-cover bg-center px-4 py-10 font-sans text-oscuro"
+            suppressHydrationWarning
             style={{
                 backgroundImage: "url('/img/fondo.webp'), linear-gradient(to bottom, #1e4a73, #2f78b8)",
             }}
@@ -64,29 +76,34 @@ export default function LoginPage() {
 
             <form
                 noValidate
-                onSubmit={manejarEnvio}
+                onSubmit={handleSubmit}
                 className="w-full max-w-md rounded-3xl bg-white px-8 pb-4 pt-6 shadow-xl">
 
                 <h1 className="m-0 text-center text-3xl font-black uppercase tracking-wide">Iniciar Sesión</h1>
-                <Campo
+                {notice && (
+                    <p role="alert" className="mb-0 mt-4 rounded-lg bg-[#dbe7f5] px-3 py-2 text-center text-sm text-azul">
+                        {notice}
+                    </p>
+                )}
+                <Field
                     className="mt-6"
-                    id="usuario"
-                    icono="user"
+                    id="user"
+                    icon="user"
                     placeholder="Usuario"
                     autoComplete="username"
-                    value={usuario}
-                    onChange={(e) => setUsuario(e.target.value)}
-                    error={errorUsuario}/>
-                <Campo
+                    value={user}
+                    onChange={(e) => setUser(e.target.value)}
+                    error={userError}/>
+                <Field
                     className="mt-2"
-                    id="contrasena"
-                    icono="lock"
+                    id="password"
+                    icon="lock"
                     placeholder="Contraseña"
-                    contrasena
+                    password
                     autoComplete="current-password"
-                    value={contrasena}
-                    onChange={(e) => setContrasena(e.target.value)}
-                    error={errorContrasena}/>
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    error={passwordError}/>
 
                 <div className="mt-2 flex justify-center">
                     <button
@@ -102,12 +119,6 @@ export default function LoginPage() {
                         Regístrate
                     </Link>
                 </p>
-
-                <div className="mt-6">
-                    <a href="/admin_yipshare/principal_page" className="text-[10px] text-slate-500 hover:underline">
-                        Admin
-                    </a>
-                </div>
             </form>
         </div>
     );

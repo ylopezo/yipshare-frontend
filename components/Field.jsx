@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Icon } from "./Icon";
 
 // Campo de usuario o contraseña con ícono a la izquierda y mensaje de error abajo (login y registro)
-export function Campo({ id, icono, placeholder, error, contrasena = false, className = "", ...input }) {
+export function Field({ id, icon, placeholder, error, password = false, className = "", ...input }) {
     const [visible, setVisible] = useState(false);
 
     return (
@@ -15,20 +15,20 @@ export function Campo({ id, icono, placeholder, error, contrasena = false, class
 
             <div className="relative">
                 <span className="pointer-events-none absolute left-3 top-1/2 flex -translate-y-1/2 text-slate-500">
-                    <Icon name={icono} size={20} />
+                    <Icon name={icon} size={20} />
                 </span>
 
                 <input
                     {...input}
                     id={id}
                     name={id}
-                    type={contrasena && !visible ? "password" : "text"}
+                    type={password && !visible ? "password" : "text"}
                     placeholder={placeholder}
                     required
-                    className={`w-full rounded-lg border border-slate-600 bg-gris py-2 pl-11 text-lg text-slate-700 outline-none placeholder:text-slate-500 focus:border-slate-900 ${contrasena ? "pr-11" : "pr-3"}`}
+                    className={`w-full rounded-lg border border-slate-600 bg-gris py-2 pl-11 text-lg text-slate-700 outline-none placeholder:text-slate-500 focus:border-slate-900 ${password ? "pr-11" : "pr-3"}`}
                 />
 
-                {contrasena && (
+                {password && (
                     <button
                         type="button"
                         aria-label={visible ? "Ocultar contraseña" : "Mostrar contraseña"}

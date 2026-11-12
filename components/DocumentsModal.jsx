@@ -1,10 +1,10 @@
 "use client";
 
-import { DOCUMENTOS_EJEMPLO } from "@/lib/datos";
+import { SAMPLE_DOCUMENTS } from "@/lib/data";
 import { Icon } from "./Icon";
 import { Modal } from "./Modal";
 
-export function DocumentosModal({ solicitud, onCloseAction }) {
+export function DocumentsModal({ request, onCloseAction }) {
     return (
         <Modal label="Documentos de la solicitud" onCloseAction={onCloseAction}>
             <div
@@ -24,11 +24,11 @@ export function DocumentosModal({ solicitud, onCloseAction }) {
                 <h2 className="m-0 text-center text-lg font-bold text-azul">Documentos</h2>
 
                 <p className="mb-0 mt-1 text-center text-xs text-slate-600">
-                    {solicitud.nombre} · {solicitud.aspirante}
+                    {request.name} · {request.applicant}
                 </p>
 
                 <ul className="m-0 mt-5 list-none space-y-2 p-0">
-                    {DOCUMENTOS_EJEMPLO.map((doc) => (
+                    {SAMPLE_DOCUMENTS.map((doc) => (
                         <li
                             key={doc}
                             className="flex items-center gap-3 rounded-xl border border-slate-300 bg-gris px-3 py-2"

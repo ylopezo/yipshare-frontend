@@ -1,38 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { BOTON_OSCURO } from "./Modal";
+import { DARK_BUTTON } from "./Modal";
 
-export const REPORTE_ESTADOS = [
+export const REPORT_STATUSES = [
     {
-        valor: "en_revision",
-        texto: "En revisión",
-        clase: "bg-[#dbe7f5] text-azul",
+        value: "in_review",
+        text: "En revisión",
+        cssClass: "bg-[#dbe7f5] text-azul",
     },
     {
-        valor: "pendiente",
-        texto: "Pendiente",
-        clase: "bg-[#fde9a8] text-amber-900",
+        value: "pending",
+        text: "Pendiente",
+        cssClass: "bg-[#fde9a8] text-amber-900",
     },
     {
-        valor: "finalizado",
-        texto: "Finalizado",
-        clase: "bg-[#b9f0c8] text-green-900",
+        value: "resolved",
+        text: "Finalizado",
+        cssClass: "bg-[#b9f0c8] text-green-900",
     },
 ];
 
-const INPUT_LECTURA =
+const READONLY_INPUT =
     "w-full rounded-full border border-slate-500 bg-gris px-4 py-2 text-sm text-slate-700 outline-none read-only:cursor-default";
 
-export function ReportesVista({ reportes, onCambiarEstadoAction }) {
-    const [seleccionId, setSeleccionId] = useState(null);
-    const [estado, setEstado] = useState("pendiente");
+export function ReportsView({ reports, onChangeStatusAction }) {
+    const [selectedId, setSelectedId] = useState(null);
+    const [status, setStatus] = useState("pending");
 
-    const seleccionado = reportes.find((r) => r.id === seleccionId) ?? null;
+    const selected = reports.find((r) => r.id === selectedId) ?? null;
 
-    function elegir(r) {
-        setSeleccionId(r.id);
-        setEstado(r.estado);
+    function choose(r) {
+        setSelectedId(r.id);
+        setStatus(r.status);
     }
 
     return (
@@ -48,8 +48,8 @@ export function ReportesVista({ reportes, onCambiarEstadoAction }) {
                         id="rep-involucrado"
                         readOnly
                         placeholder="Nombre del vecino involucrado"
-                        value={seleccionado?.involucrado ?? ""}
-                        className={INPUT_LECTURA}
+                        value={selected?.involved ?? ""}
+                        className={READONLY_INPUT}
                     />
 
                     <label className="sr-only" htmlFor="rep-reporto">
@@ -59,8 +59,8 @@ export function ReportesVista({ reportes, onCambiarEstadoAction }) {
                         id="rep-reporto"
                         readOnly
                         placeholder="Nombre del vecino que reportó"
-                        value={seleccionado?.reporto ?? ""}
-                        className={`${INPUT_LECTURA} mt-3`}
+                        value={selected?.reportedBy ?? ""}
+                        className={`${READONLY_INPUT} mt-3`}
                     />
 
                     <label className="sr-only" htmlFor="rep-detalles">
@@ -71,35 +71,35 @@ export function ReportesVista({ reportes, onCambiarEstadoAction }) {
                         readOnly
                         rows={3}
                         placeholder="Detalles del reporte"
-                        value={seleccionado?.detalles ?? ""}
+                        value={selected?.details ?? ""}
                         className="mt-3 w-full resize-none rounded-2xl border border-slate-500 bg-gris px-4 py-2 text-sm text-slate-700 outline-none read-only:cursor-default"
                     />
 
                     <p className="mb-2 mt-4 text-xs font-bold text-azul">Estado del reporte</p>
                     <div className="flex flex-wrap gap-2">
-                        {REPORTE_ESTADOS.map((e) => (
+                        {REPORT_STATUSES.map((e) => (
                             <button
-                                key={e.valor}
+                                key={e.value}
                                 type="button"
-                                disabled={!seleccionado}
-                                aria-pressed={estado === e.valor}
-                                onClick={() => setEstado(e.valor)}
+                                disabled={!selected}
+                                aria-pressed={status === e.value}
+                                onClick={() => setStatus(e.value)}
                                 className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${
-                                    estado === e.valor
+                                    status === e.value
                                         ? "border-azul bg-azul text-white"
                                         : "border-slate-500 bg-white text-slate-700 hover:bg-slate-100"
                                 }`}
                             >
-                                {e.texto}
+                                {e.text}
                             </button>
                         ))}
                     </div>
 
                     <button
                         type="button"
-                        disabled={!seleccionado || estado === seleccionado.estado}
-                        onClick={() => seleccionado && onCambiarEstadoAction(seleccionado.id, estado)}
-                        className={`${BOTON_OSCURO} mx-auto mt-6 block w-full max-w-xs py-2 text-sm font-semibold`}
+                        disabled={!selected || status === selected.status}
+                        onClick={() => selected && onChangeStatusAction(selected.id, status)}
+                        className={`${DARK_BUTTON} mx-auto mt-6 block w-full max-w-xs py-2 text-sm font-semibold`}
                     >
                         Modificar Estado
                     </button>
@@ -108,25 +108,25 @@ export function ReportesVista({ reportes, onCambiarEstadoAction }) {
                 <section>
                     <h3 className="m-0 text-sm font-bold text-slate-700">Reportes Recibidos</h3>
 
-                    {reportes.length === 0 ? (
+                    {reports.length === 0 ? (
                         <p className="mb-0 mt-3 text-sm text-slate-500">No hay reportes.</p>
                     ) : (
                         <ul className="m-0 mt-3 list-none p-0">
-                            {reportes.map((r) => {
-                                const info = REPORTE_ESTADOS.find((e) => e.valor === r.estado);
+                            {reports.map((r) => {
+                                const info = REPORT_STATUSES.find((e) => e.value === r.status);
                                 return (
                                     <li key={r.id} className="border-b border-slate-300">
                                         <button
                                             type="button"
-                                            aria-pressed={seleccionId === r.id}
-                                            onClick={() => elegir(r)}
-                                            className={`flex w-full cursor-pointer items-center justify-between gap-3 px-2 py-2 text-left text-xs font-bold hover:bg-white ${seleccionId === r.id ? "bg-white" : ""}`}
+                                            aria-pressed={selectedId === r.id}
+                                            onClick={() => choose(r)}
+                                            className={`flex w-full cursor-pointer items-center justify-between gap-3 px-2 py-2 text-left text-xs font-bold hover:bg-white ${selectedId === r.id ? "bg-white" : ""}`}
                                         >
-                                            <span className="min-w-0 truncate">Reporte contra {r.involucrado}</span>
+                                            <span className="min-w-0 truncate">Reporte contra {r.involved}</span>
                                             <span
-                                                className={`shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold ${info.clase}`}
+                                                className={`shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold ${info.cssClass}`}
                                             >
-                                                {info.texto}
+                                                {info.text}
                                             </span>
                                         </button>
                                     </li>

@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 
-const INDICE = [
+const INDEX = [
     { id: "aceptacion", label: "Aceptación de los términos" },
     { id: "que-es", label: "Qué es YipShare" },
     { id: "cuenta", label: "Registro y cuenta" },
     { id: "publicaciones", label: "Publicación de artículos" },
-    { id: "prestamos", label: "Préstamos y uso compartido" },
+    { id: "loans", label: "Préstamos y uso compartido" },
     { id: "responsabilidades", label: "Responsabilidades del usuario" },
     { id: "danos", label: "Daños, pérdidas y disputas" },
     { id: "prohibido", label: "Conductas prohibidas" },
@@ -81,7 +81,7 @@ export default function TermsConditionsPage() {
                             </h2>
 
                             <ol className="mt-3 grid list-decimal gap-x-8 gap-y-1 pl-5 text-sm sm:grid-cols-2">
-                                {INDICE.map((item) => (
+                                {INDEX.map((item) => (
                                     <li key={item.id}>
                                         <a href={`#${item.id}`} className="text-azul hover:underline">
                                             {item.label}
@@ -160,7 +160,7 @@ export default function TermsConditionsPage() {
                             </p>
                         </section>
 
-                        <section id="prestamos" className="scroll-mt-24">
+                        <section id="loans" className="scroll-mt-24">
                             <h2 className="mb-2 mt-8 text-xl font-black text-azul">5. Préstamos y uso compartido</h2>
 
                             <ul className="m-0 list-disc space-y-1 pl-6 text-slate-700">

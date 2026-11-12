@@ -69,6 +69,7 @@ export function Icon({ name, size = 24 }) {
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden="true"
+            suppressHydrationWarning
         >
             {paths[name]}
         </svg>

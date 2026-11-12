@@ -1,41 +1,48 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
-import { CONDOMINIOS_INICIALES, SOLICITUDES_INICIALES } from "@/lib/datos";
+import { createContext, useContext, useEffect, useState } from "react";
+import { approveCondominium, deleteCondominium, getCondominiums, rejectCondominium } from "@/lib/condominiums";
 
 const AdminContext = createContext(null);
 
 export function AdminProvider({ children }) {
-    const [condominios, setCondominios] = useState(CONDOMINIOS_INICIALES);
-    const [solicitudes, setSolicitudes] = useState(SOLICITUDES_INICIALES);
-    const [busqueda, setBusqueda] = useState("");
+    const [all, setAll] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    useEffect(() => {
+        getCondominiums().then(({ condominiums }) => setAll(condominiums));
+    }, []);
+
+    const drop = (id) => setAll((prev) => prev.filter((c) => c.id !== id));
+
+    const remove = async (id) => {
+        const { status } = await deleteCondominium(id);
+        if (status !== 204) return alert("No se pudo completar la acción. Intenta de nuevo.");
+        drop(id);
+    };
 
     const value = {
-        condominios,
-        solicitudes,
-        busqueda,
-        setBusqueda,
+        condominiums: all.filter((c) => c.status === "approved"),
+        requests: all.filter((c) => c.status === "pending"),
+        searchQuery,
+        setSearchQuery,
 
-        editarCondominio: (actualizado) =>
-            setCondominios((prev) => prev.map((c) => (c.id === actualizado.id ? actualizado : c))),
+        editCondominium: (updated) =>
+            setAll((prev) => prev.map((c) => (c.id === updated.id ? updated : c))),
 
-        eliminarCondominio: (id) => setCondominios((prev) => prev.filter((c) => c.id !== id)),
+        deleteCondominium: remove,
 
-        aceptarSolicitud: (solicitud) => {
-            setCondominios((prev) => [
-                ...prev,
-                {
-                    id: crypto.getRandomValues(new Uint32Array(1))[0],
-                    nombre: solicitud.nombre,
-                    direccion: solicitud.direccion,
-                    cantidad: solicitud.cantidad,
-                    admin: solicitud.aspirante,
-                },
-            ]);
-            setSolicitudes((prev) => prev.filter((s) => s.id !== solicitud.id));
+        acceptRequest: async (request) => {
+            const { status } = await approveCondominium(request.id);
+            if (status !== 200) return alert("No se pudo aceptar la solicitud. Intenta de nuevo.");
+            setAll((prev) => prev.map((c) => (c.id === request.id ? { ...c, status: "approved" } : c)));
         },
 
-        denegarSolicitud: (id) => setSolicitudes((prev) => prev.filter((s) => s.id !== id)),
+        denyRequest: async (id) => {
+            const { status } = await rejectCondominium(id);
+            if (status !== 204) return alert("No se pudo denegar la solicitud. Intenta de nuevo.");
+            drop(id);
+        },
     };
 
     return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>;

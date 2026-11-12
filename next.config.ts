@@ -5,9 +5,9 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   // redirect() inside a page breaks cacheComponents prerender validation
-  // El front pide /api/... al mismo sitio y Next lo reenvía al backend: la cookie de sesión queda en el mismo origen (sameSite lax)
+  // El front pide /api/... al mismo sitio y Next lo reenvía al backend sin el prefijo: así no hace falta CORS
   async rewrites() {
-    return [{ source: "/api/:ruta*", destination: `${process.env.API_URL || "http://localhost:4600"}/api/:ruta*` }];
+    return [{ source: "/api/:ruta*", destination: `${process.env.API_URL || "http://localhost:4600"}/:ruta*` }];
   },
   async redirects() {
     return [

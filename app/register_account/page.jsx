@@ -1,84 +1,155 @@
 "use client";
 
 import Link from "next/link";
-import { Campo } from "@/components/Campo";
+import { Field } from "@/components/Field";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { LADAS, soloDigitos, telefonoValido } from "@/lib/datos";
+import { getCountryCallingCode } from "libphonenumber-js";
+import { DIAL_CODES, digitsOnly, isPhoneValid } from "@/lib/data";
+import { apiRequest } from "@/lib/session";
 
-const MENSAJES_ERROR = {
-    apellidoPaterno: "Ingresa tu apellido paterno.",
-    apellidoMaterno: "Ingresa tu apellido materno.",
-    nombres: "Ingresa tu nombre o nombres.",
-    telefono: "Ingresa un teléfono de 10 dígitos.",
-    usuario: "Ingresa un nombre de usuario.",
-    contrasena: "Ingresa una contraseña.",
+const ERROR_MESSAGES = {
+    paternalSurname: "Ingresa tu apellido paterno.",
+    maternalSurname: "Ingresa tu apellido materno.",
+    givenNames: "Ingresa tu nombre o nombres.",
+    email: "Ingresa tu correo electrónico.",
+    phone: "Ingresa un teléfono de 10 dígitos.",
+    user: "Ingresa un nombre de usuario.",
+    password: "Ingresa una contraseña.",
 };
 
-const CAMPOS_NOMBRE = [
+// Mismas reglas que RegisterRequest del backend, para avisar en español antes de enviar
+const LETTERS_ONLY = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+const VALID_USERNAME = /^[a-zA-Z0-9_-]{3,50}$/;
+const VALID_PASSWORD = /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[!-~]{8,255}$/;
+const VALID_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const BACKEND_FIELD = {
+    name: "givenNames",
+    paternalSurname: "paternalSurname",
+    maternalSurname: "maternalSurname",
+    email: "email",
+    phoneNumber: "phone",
+    username: "user",
+    password: "password",
+};
+
+const TEXT_FIELDS = [
     {
-        name: "apellidoPaterno",
+        name: "paternalSurname",
         placeholder: "Apellido Paterno",
         autoComplete: "family-name",
     },
     {
-        name: "apellidoMaterno",
+        name: "maternalSurname",
         placeholder: "Apellido materno",
         autoComplete: "additional-name",
     },
-    { name: "nombres", placeholder: "Nombre(s)", autoComplete: "given-name" },
+    { name: "givenNames", placeholder: "Nombre(s)", autoComplete: "given-name" },
+    { name: "email", placeholder: "Correo electrónico", autoComplete: "email", type: "email" },
 ];
 
-const RUTA_DESPUES_DE_REGISTRO = "/login";
+const ROUTE_AFTER_REGISTER = "/login";
 
-const CLASE_INPUT =
+const INPUT_CLASS =
     "w-full rounded-lg border border-slate-600 bg-gris py-2 pr-3 text-lg text-slate-700 placeholder:text-slate-500 outline-none focus:border-slate-900";
 
-export default function RegistroPage() {
+export default function RegisterPage() {
     const router = useRouter();
 
-    const [datos, setDatos] = useState({
-        apellidoPaterno: "",
-        apellidoMaterno: "",
-        nombres: "",
-        lada: "MX",
-        telefono: "",
-        usuario: "",
-        contrasena: "",
+    const [data, setData] = useState({
+        paternalSurname: "",
+        maternalSurname: "",
+        givenNames: "",
+        email: "",
+        dialCode: "MX",
+        phone: "",
+        user: "",
+        password: "",
     });
 
-    const [errores, setErrores] = useState({});
+    const [errors, setErrors] = useState({});
+    const [generalError, setGeneralError] = useState("");
+    const [sending, setSending] = useState(false);
 
-    function manejarCambio(e) {
+    function handleChange(e) {
         const { name, value } = e.target;
-        setDatos((prev) => ({
+        setData((prev) => ({
             ...prev,
-            [name]: name === "telefono" ? soloDigitos(value) : value,
+            [name]: name === "phone" ? digitsOnly(value) : value,
         }));
     }
 
-    function manejarEnvio(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
+        setGeneralError("");
 
-        const nuevosErrores = {};
+        const newErrors = {};
 
-        Object.keys(datos).forEach((campo) => {
-            if (!datos[campo].trim()) {
-                nuevosErrores[campo] = MENSAJES_ERROR[campo];
+        Object.keys(data).forEach((field) => {
+            if (!data[field].trim()) {
+                newErrors[field] = ERROR_MESSAGES[field];
             }
         });
 
-        if (!telefonoValido(datos.telefono)) {
-            nuevosErrores.telefono = MENSAJES_ERROR.telefono;
+        if (!isPhoneValid(data.phone)) {
+            newErrors.phone = ERROR_MESSAGES.phone;
         }
 
-        setErrores(nuevosErrores);
+        for (const field of ["givenNames", "paternalSurname", "maternalSurname"]) {
+            if (!newErrors[field] && !LETTERS_ONLY.test(data[field])) {
+                newErrors[field] = "Usa solo letras y espacios.";
+            }
+        }
+        if (!newErrors.email && !VALID_EMAIL.test(data.email.trim())) {
+            newErrors.email = "Ingresa un correo válido.";
+        }
+        if (!newErrors.user && !VALID_USERNAME.test(data.user)) {
+            newErrors.user = "De 3 a 50 caracteres: letras, números, guion o guion bajo.";
+        }
+        if (!newErrors.password && !VALID_PASSWORD.test(data.password)) {
+            newErrors.password = "Mínimo 8 caracteres, con mayúscula, minúscula, número y símbolo.";
+        }
 
-        if (Object.keys(nuevosErrores).length > 0) {
+        setErrors(newErrors);
+
+        if (Object.keys(newErrors).length > 0) {
             return;
         }
 
-        router.push(RUTA_DESPUES_DE_REGISTRO);
+        setSending(true);
+        const { status, data: response } = await apiRequest("POST", "/api/auth/register", {
+            name: data.givenNames.trim(),
+            paternalSurname: data.paternalSurname.trim(),
+            maternalSurname: data.maternalSurname.trim(),
+            email: data.email.trim(),
+            phoneNumber: `+${getCountryCallingCode(data.dialCode)}${data.phone}`,
+            username: data.user,
+            password: data.password,
+        });
+        setSending(false);
+
+        if (status === 201) {
+            router.replace(ROUTE_AFTER_REGISTER);
+            return;
+        }
+
+        if (status === 409) {
+            const message = response.message ?? "";
+            if (message.includes("username")) setErrors({ user: "Ese usuario ya está registrado." });
+            else if (message.includes("email")) setErrors({ email: "Ese correo ya está registrado." });
+            else if (message.includes("phone")) setErrors({ phone: "Ese teléfono ya está registrado." });
+            else setGeneralError("Esa cuenta ya existe.");
+            return;
+        }
+
+        const fields = Object.keys(response.errors?.fieldErrors ?? {});
+        if (status === 400 && fields.length > 0) {
+            setErrors(Object.fromEntries(fields.map((c) => [BACKEND_FIELD[c] ?? c, "Revisa este campo."])));
+            return;
+        }
+
+        setGeneralError(response.error || "No se pudo crear la cuenta. Intenta de nuevo.");
     }
 
     return (
@@ -86,6 +157,7 @@ export default function RegistroPage() {
             <aside
                 aria-hidden="true"
                 className="hidden items-center justify-center bg-cover bg-center md:flex"
+                suppressHydrationWarning
                 style={{
                     backgroundImage: "url('/img/fondo.webp'), linear-gradient(to bottom, #1e4a73, #2f78b8)",
                 }}
@@ -104,107 +176,114 @@ export default function RegistroPage() {
                     />
                 </Link>
 
-                <form noValidate onSubmit={manejarEnvio} className="w-full max-w-md">
+                <form noValidate onSubmit={handleSubmit} className="w-full max-w-md">
                     <h1 className="m-0 text-center text-3xl font-black uppercase tracking-wide">Registrarse</h1>
 
                     <div className="mt-8">
-                        {CAMPOS_NOMBRE.map(({ name, placeholder, autoComplete }) => (
+                        {TEXT_FIELDS.map(({ name, placeholder, autoComplete, type = "text" }) => (
                             <div key={name} className="mb-1">
                                 <label htmlFor={name} className="sr-only">
                                     {placeholder}
                                 </label>
 
                                 <input
-                                    type="text"
+                                    type={type}
                                     id={name}
                                     name={name}
                                     placeholder={placeholder}
                                     required
                                     autoComplete={autoComplete}
-                                    value={datos[name]}
-                                    onChange={manejarCambio}
-                                    className={`${CLASE_INPUT} pl-5`}
+                                    value={data[name]}
+                                    onChange={handleChange}
+                                    className={`${INPUT_CLASS} pl-5`}
                                 />
 
-                                <span className="mt-1 block min-h-5 text-sm text-azul">{errores[name]}</span>
+                                <span className="mt-1 block min-h-5 text-sm text-azul">{errors[name]}</span>
                             </div>
                         ))}
                     </div>
 
                     <div className="mb-1">
-                        <label htmlFor="telefono" className="sr-only">
+                        <label htmlFor="phone" className="sr-only">
                             Teléfono
                         </label>
 
                         <div className="flex gap-2">
-                            <label htmlFor="lada" className="sr-only">
+                            <label htmlFor="dialCode" className="sr-only">
                                 Lada
                             </label>
                             <select
-                                id="lada"
-                                name="lada"
+                                id="dialCode"
+                                name="dialCode"
                                 autoComplete="tel-country-code"
-                                value={datos.lada}
-                                onChange={manejarCambio}
-                                className={`${CLASE_INPUT.replace("w-full ", "")} w-44 shrink-0 cursor-pointer pl-3`}
+                                value={data.dialCode}
+                                onChange={handleChange}
+                                className={`${INPUT_CLASS.replace("w-full ", "")} w-44 shrink-0 cursor-pointer pl-3`}
                             >
-                                {LADAS.map((l) => (
-                                    <option key={l.valor} value={l.valor}>
-                                        {l.texto}
+                                {DIAL_CODES.map((l) => (
+                                    <option key={l.value} value={l.value}>
+                                        {l.text}
                                     </option>
                                 ))}
                             </select>
 
                             <input
                                 type="tel"
-                                id="telefono"
-                                name="telefono"
+                                id="phone"
+                                name="phone"
                                 placeholder="Teléfono (10 dígitos)"
                                 required
                                 inputMode="numeric"
                                 autoComplete="tel-national"
                                 maxLength={10}
-                                aria-invalid={Boolean(errores.telefono)}
+                                aria-invalid={Boolean(errors.phone)}
                                 aria-describedby="telefono-error"
-                                value={datos.telefono}
-                                onChange={manejarCambio}
-                                className={`${CLASE_INPUT} min-w-0 flex-1 pl-5`}
+                                value={data.phone}
+                                onChange={handleChange}
+                                className={`${INPUT_CLASS} min-w-0 flex-1 pl-5`}
                             />
                         </div>
 
                         <span id="telefono-error" className="mt-1 block min-h-5 text-sm text-azul">
-                            {errores.telefono}
+                            {errors.phone}
                         </span>
                     </div>
 
-                    <Campo
+                    <Field
                         className="mt-6"
-                        id="usuario"
-                        icono="user"
+                        id="user"
+                        icon="user"
                         placeholder="Usuario"
                         autoComplete="username"
-                        value={datos.usuario}
-                        onChange={manejarCambio}
-                        error={errores.usuario}
+                        value={data.user}
+                        onChange={handleChange}
+                        error={errors.user}
                     />
-                    <Campo
+                    <Field
                         className="mt-2"
-                        id="contrasena"
-                        icono="lock"
+                        id="password"
+                        icon="lock"
                         placeholder="Contraseña"
-                        contrasena
+                        password
                         autoComplete="new-password"
-                        value={datos.contrasena}
-                        onChange={manejarCambio}
-                        error={errores.contrasena}
+                        value={data.password}
+                        onChange={handleChange}
+                        error={errors.password}
                     />
+
+                    {generalError && (
+                        <p role="alert" className="mb-0 mt-2 text-center text-sm text-azul">
+                            {generalError}
+                        </p>
+                    )}
 
                     <div className="mt-4 flex justify-center">
                         <button
                             type="submit"
-                            className="w-3/4 cursor-pointer rounded-lg bg-oscuro py-2 text-white shadow-md transition hover:bg-oscuro-hover"
+                            disabled={sending}
+                            className="w-3/4 cursor-pointer rounded-lg bg-oscuro py-2 text-white shadow-md transition hover:bg-oscuro-hover disabled:cursor-wait disabled:opacity-60"
                         >
-                            Registrarse
+                            {sending ? "Creando cuenta..." : "Registrarse"}
                         </button>
                     </div>
 

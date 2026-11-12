@@ -1,19 +1,30 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { CondominioCard } from "@/components/CondominioCard";
-import { CrearCondominioModal } from "@/components/CrearCondominioModal";
+import { CondominiumCard } from "@/components/CondominiumCard";
+import { CreateCondominiumModal } from "@/components/CreateCondominiumModal";
 import { Icon } from "@/components/Icon";
-import { LogoMenuSesion } from "@/components/LogoMenuSesion";
+import { useUser } from "@/components/RequireSession";
+import { LogoSessionMenu } from "@/components/LogoSessionMenu";
 import { ConfirmDialog } from "@/components/Modal";
-import { UnirseCondominioModal } from "@/components/UnirseCondominioModal";
-import { NOMBRE_USUARIO, REGISTRADOS_INICIALES, UNIDOS_INICIALES } from "@/lib/datosHabitante";
+import { JoinCondominiumModal } from "@/components/JoinCondominiumModal";
+import { createCondominium, getMyCondominiums, joinCondominium } from "@/lib/condominiums";
+import { countUnread } from "@/lib/notifications";
 
-function Seccion({ titulo, vacio, children }) {
+const JOIN_ERRORS = {
+    404: "No existe un condominio aprobado con ese código.",
+    409: {
+        "Already a member": "Ya eres miembro de ese condominio.",
+        "Request already pending": "Ya enviaste una solicitud a ese condominio; espera a que el administrador la revise.",
+    },
+};
+
+function Section({ title, empty, children }) {
     return (
         <section className="mb-8">
-            <h2 className="m-0 text-base font-bold">{titulo}</h2>
-            {vacio ? (
+            <h2 className="m-0 text-base font-bold">{title}</h2>
+            {empty ? (
                 <p className="mt-4 text-sm text-slate-500">Sin condominios por ahora.</p>
             ) : (
                 <div className="mt-4 flex flex-wrap gap-4">{children}</div>
@@ -22,30 +33,40 @@ function Seccion({ titulo, vacio, children }) {
     );
 }
 
-export default function HabitantePrincipalPage() {
-    const [registrados] = useState(REGISTRADOS_INICIALES);
-    const [unidos] = useState(UNIDOS_INICIALES);
-    const [busqueda, setBusqueda] = useState("");
-    const [menuAbierto, setMenuAbierto] = useState(false);
+export default function ResidentHomePage() {
+    const user = useUser();
+    const [registered, setRegistered] = useState([]);
+    const [joined, setJoined] = useState([]);
+    const [unread, setUnread] = useState(0);
+
+    useEffect(() => {
+        getMyCondominiums().then(({ registered, joined }) => {
+            setRegistered(registered);
+            setJoined(joined);
+        });
+        countUnread().then(setUnread);
+    }, []);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [menuOpen, setMenuOpen] = useState(false);
     const [modal, setModal] = useState(null);
-    const [aviso, setAviso] = useState(null);
+    const [notice, setNotice] = useState(null);
 
     const menuRef = useRef(null);
 
     useEffect(() => {
-        if (!menuAbierto) {
+        if (!menuOpen) {
             return;
         }
 
         const onMouseDown = (e) => {
             if (menuRef.current && !menuRef.current.contains(e.target)) {
-                setMenuAbierto(false);
+                setMenuOpen(false);
             }
         };
 
         const onKeyDown = (e) => {
             if (e.key === "Escape") {
-                setMenuAbierto(false);
+                setMenuOpen(false);
             }
         };
 
@@ -56,48 +77,57 @@ export default function HabitantePrincipalPage() {
             document.removeEventListener("mousedown", onMouseDown);
             document.removeEventListener("keydown", onKeyDown);
         };
-    }, [menuAbierto]);
+    }, [menuOpen]);
 
-    const texto = busqueda.trim().toLowerCase();
-    const filtrar = (lista) => lista.filter(({ nombre, admin }) => `${nombre} ${admin}`.toLowerCase().includes(texto));
+    const text = searchQuery.trim().toLowerCase();
+    const filterList = (list) => list.filter(({ name, admin }) => `${name} ${admin}`.toLowerCase().includes(text));
 
-    const registradosFiltrados = filtrar(registrados);
-    const unidosFiltrados = filtrar(unidos);
+    const filteredRegistered = filterList(registered);
+    const filteredJoined = filterList(joined);
 
-    const sinCondominios = registrados.length === 0 && unidos.length === 0;
+    const noCondominiums = registered.length === 0 && joined.length === 0;
 
-    const sinResultados = !sinCondominios && registradosFiltrados.length === 0 && unidosFiltrados.length === 0;
+    const noResults = !noCondominiums && filteredRegistered.length === 0 && filteredJoined.length === 0;
 
-    const [confirmacion, setConfirmacion] = useState(null); // { titulo, mensaje, hacer }
+    const [confirmation, setConfirmation] = useState(null); // { titulo, mensaje, hacer }
 
-    const abrirModal = (tipo) => {
-        setMenuAbierto(false);
-        setModal(tipo);
+    const openModal = (type) => {
+        setMenuOpen(false);
+        setModal(type);
     };
 
-    // TODO: enviar la solicitud al backend; el condominio aparece cuando su administrador te acepta
-    const manejarUnirse = (datos) => {
-        void datos;
+    // El condominio aparece cuando su administrador te acepta y te asigna una unidad
+    const handleJoin = async (data) => {
         setModal(null);
-        setAviso("Tu solicitud fue enviada. El administrador del condominio te aceptará.");
+        const { status, data: response } = await joinCondominium(data);
+        if (status === 201) {
+            setNotice("Tu solicitud fue enviada. El administrador del condominio te aceptará.");
+            return;
+        }
+        const error = status === 409 ? JOIN_ERRORS[409][response.message] : JOIN_ERRORS[status];
+        setNotice(error || response.error || "No se pudo enviar la solicitud. Intenta de nuevo.");
     };
 
-    const manejarCrear = (datos) => {
-        void datos;
+    const handleCreate = async (data) => {
         setModal(null);
-        setAviso("Tu solicitud fue enviada. El condominio aparecerá cuando sea aprobada.");
+        const { status, data: response } = await createCondominium(data);
+        setNotice(
+            status === 201
+                ? "Tu solicitud fue enviada. El condominio aparecerá cuando sea aprobada."
+                : response.error || "No se pudo enviar la solicitud. Intenta de nuevo.",
+        );
     };
 
-    const botonPrincipal =
+    const primaryButton =
         "w-56 cursor-pointer rounded-lg bg-oscuro py-2 text-xs font-semibold text-white transition hover:bg-oscuro-hover";
 
     return (
         <div className="flex h-screen flex-col overflow-hidden bg-fondo font-sans text-black">
             <header className="flex h-25 shrink-0 items-center gap-4 bg-azul px-4 text-white md:px-6">
-                <LogoMenuSesion />
+                <LogoSessionMenu />
 
                 <h1 className="m-0 ml-2 min-w-0 truncate text-2xl font-bold md:ml-14 md:text-3xl">
-                    Hola, {NOMBRE_USUARIO}
+                    Hola, {user?.name}
                 </h1>
 
                 <div className="ml-auto flex flex-col items-end gap-2">
@@ -107,14 +137,14 @@ export default function HabitantePrincipalPage() {
                                 type="button"
                                 aria-label="Unirse o crear condominio"
                                 aria-haspopup="menu"
-                                aria-expanded={menuAbierto}
-                                onClick={() => setMenuAbierto((abierto) => !abierto)}
+                                aria-expanded={menuOpen}
+                                onClick={() => setMenuOpen((isOpen) => !isOpen)}
                                 className="cursor-pointer rounded-full p-1 text-white transition hover:bg-white/10"
                             >
                                 <Icon name="plus" size={28} />
                             </button>
 
-                            {menuAbierto && (
+                            {menuOpen && (
                                 <div
                                     role="menu"
                                     className="absolute right-0 top-full z-40 mt-2 w-48 overflow-hidden rounded bg-white text-left shadow-lg"
@@ -122,7 +152,7 @@ export default function HabitantePrincipalPage() {
                                     <button
                                         type="button"
                                         role="menuitem"
-                                        onClick={() => abrirModal("unirse")}
+                                        onClick={() => openModal("join")}
                                         className="block w-full cursor-pointer border-b border-slate-300 px-3 py-2 text-left text-sm font-bold text-[#2a5a88] hover:bg-slate-100"
                                     >
                                         Unirse a Condominio
@@ -131,7 +161,7 @@ export default function HabitantePrincipalPage() {
                                     <button
                                         type="button"
                                         role="menuitem"
-                                        onClick={() => abrirModal("crear")}
+                                        onClick={() => openModal("create")}
                                         className="block w-full cursor-pointer px-3 py-2 text-left text-sm font-bold text-[#2a5a88] hover:bg-slate-100"
                                     >
                                         Crear Condominio
@@ -140,25 +170,33 @@ export default function HabitantePrincipalPage() {
                             )}
                         </div>
 
-                        <button
-                            type="button"
-                            aria-label="Notificaciones"
-                            className="cursor-pointer rounded-full p-1 text-white transition hover:bg-white/10"
+                        <Link
+                            href="/habitante_yipshare/notificaciones"
+                            aria-label={unread > 0 ? `Notificaciones, ${unread} sin leer` : "Notificaciones"}
+                            className="relative cursor-pointer rounded-full p-1 text-white transition hover:bg-white/10"
                         >
                             <Icon name="bell" size={28} />
-                        </button>
+                            {unread > 0 && (
+                                <span
+                                    aria-hidden="true"
+                                    className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[11px] font-bold leading-none text-white ring-2 ring-azul"
+                                >
+                                    {unread > 9 ? "9+" : unread}
+                                </span>
+                            )}
+                        </Link>
                     </div>
 
                     <div className="relative hidden sm:block">
-                        <label htmlFor="buscar" className="sr-only">
+                        <label htmlFor="search" className="sr-only">
                             Buscar condominio
                         </label>
 
                         <input
-                            id="buscar"
+                            id="search"
                             type="text"
-                            value={busqueda}
-                            onChange={(e) => setBusqueda(e.target.value)}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Buscar condominio..."
                             className="w-72 rounded-full bg-white/10 py-1.5 pl-4 pr-10 text-sm text-white placeholder:text-white/70 outline-none transition focus:bg-white/20 lg:w-80"
                         />
@@ -171,17 +209,17 @@ export default function HabitantePrincipalPage() {
             </header>
 
             <main className="min-h-0 flex-1 overflow-y-auto px-4 pb-8 pt-6 md:px-10">
-                {aviso && (
+                {notice && (
                     <div
                         role="status"
                         className="mb-6 flex items-center justify-between gap-4 rounded-lg border border-celeste bg-[#dbe7f5] px-4 py-2 text-sm text-azul"
                     >
-                        <span>{aviso}</span>
+                        <span>{notice}</span>
 
                         <button
                             type="button"
                             aria-label="Cerrar aviso"
-                            onClick={() => setAviso(null)}
+                            onClick={() => setNotice(null)}
                             className="cursor-pointer rounded-full p-1 hover:bg-white/60"
                         >
                             <Icon name="close" size={16} />
@@ -189,7 +227,7 @@ export default function HabitantePrincipalPage() {
                     </div>
                 )}
 
-                {sinCondominios ? (
+                {noCondominiums ? (
                     <>
                         <h2 className="m-0 text-base font-bold">Condominios Registrados</h2>
 
@@ -198,69 +236,69 @@ export default function HabitantePrincipalPage() {
                         <div className="mt-12 flex flex-col items-center gap-3">
                             <p className="m-0 text-xs font-bold text-celeste">No hay condominios disponibles</p>
 
-                            <button type="button" onClick={() => setModal("crear")} className={botonPrincipal}>
+                            <button type="button" onClick={() => setModal("create")} className={primaryButton}>
                                 Crear Condominio
                             </button>
 
-                            <button type="button" onClick={() => setModal("unirse")} className={botonPrincipal}>
+                            <button type="button" onClick={() => setModal("join")} className={primaryButton}>
                                 Unirse a Condominio
                             </button>
                         </div>
                     </>
-                ) : sinResultados ? (
+                ) : noResults ? (
                     <p className="py-10 text-center text-sm text-slate-500">No se encontraron condominios.</p>
                 ) : (
                     <>
-                        <Seccion titulo="Condominios Registrados" vacio={registradosFiltrados.length === 0}>
-                            {registradosFiltrados.map((condominio) => (
-                                <CondominioCard key={condominio.id} condominio={condominio} rol="admin" />
+                        <Section title="Condominios Registrados" empty={filteredRegistered.length === 0}>
+                            {filteredRegistered.map((condominium) => (
+                                <CondominiumCard key={condominium.id} condominium={condominium} role="admin" />
                             ))}
-                        </Seccion>
+                        </Section>
 
-                        <Seccion titulo="Condominios Unidos" vacio={unidosFiltrados.length === 0}>
-                            {unidosFiltrados.map((condominio) => (
-                                <CondominioCard key={condominio.id} condominio={condominio} rol="habitante" />
+                        <Section title="Condominios Unidos" empty={filteredJoined.length === 0}>
+                            {filteredJoined.map((condominium) => (
+                                <CondominiumCard key={condominium.id} condominium={condominium} role="resident" />
                             ))}
-                        </Seccion>
+                        </Section>
                     </>
                 )}
             </main>
 
-            {modal === "unirse" && (
-                <UnirseCondominioModal
-                    onEntrarAction={(datos) =>
-                        setConfirmacion({
-                            titulo: "¿Enviar solicitud?",
-                            mensaje: `Se enviará tu solicitud para unirte al condominio con código ${datos.codigo} como habitante de ${datos.edificio}, ${datos.departamento}.`,
-                            hacer: () => manejarUnirse(datos),
+            {modal === "join" && (
+                <JoinCondominiumModal
+                    onJoinAction={(data) =>
+                        setConfirmation({
+                            title: "¿Enviar solicitud?",
+                            message: `Se enviará tu solicitud para unirte al condominio con código ${data.code} como habitante de ${data.building}, ${data.apartment}.`,
+                            run: () => handleJoin(data),
                         })
                     }
-                    onCancelarAction={() => setModal(null)}
+                    onCancelAction={() => setModal(null)}
                 />
             )}
 
-            {modal === "crear" && (
-                <CrearCondominioModal
-                    onCrearAction={(datos) =>
-                        setConfirmacion({
-                            titulo: "¿Enviar solicitud?",
-                            mensaje: `Se enviará la solicitud para registrar «${datos.nombre}». Revisa que los datos y documentos sean correctos.`,
-                            hacer: () => manejarCrear(datos),
+            {modal === "create" && (
+                <CreateCondominiumModal
+                    onCreateAction={(data) =>
+                        setConfirmation({
+                            title: "¿Enviar solicitud?",
+                            message: `Se enviará la solicitud para registrar «${data.name}». Revisa que los datos y documentos sean correctos.`,
+                            run: () => handleCreate(data),
                         })
                     }
-                    onCancelarAction={() => setModal(null)}
+                    onCancelAction={() => setModal(null)}
                 />
             )}
 
-            {confirmacion && (
+            {confirmation && (
                 <ConfirmDialog
-                    titulo={confirmacion.titulo}
-                    mensaje={confirmacion.mensaje}
-                    onConfirmarAction={() => {
-                        confirmacion.hacer();
-                        setConfirmacion(null);
+                    title={confirmation.title}
+                    message={confirmation.message}
+                    onConfirmAction={() => {
+                        confirmation.run();
+                        setConfirmation(null);
                     }}
-                    onCancelarAction={() => setConfirmacion(null)}
+                    onCancelAction={() => setConfirmation(null)}
                 />
             )}
         </div>

@@ -2,10 +2,10 @@
 
 import { useEffect, useRef } from "react";
 
-export const BOTON_OSCURO =
+export const DARK_BUTTON =
     "cursor-pointer rounded-full bg-oscuro text-white transition hover:bg-oscuro-hover disabled:cursor-not-allowed disabled:opacity-50";
 
-export const BOTON_CLARO =
+export const LIGHT_BUTTON =
     "cursor-pointer rounded-full border border-azul bg-white text-azul transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50";
 
 export function Modal({ children, onCloseAction, label }) {
@@ -14,8 +14,8 @@ export function Modal({ children, onCloseAction, label }) {
     useEffect(() => {
         const onKeyDown = (e) => {
             // con modales apilados, Esc solo cierra el de arriba
-            const dialogos = document.querySelectorAll('[role="dialog"]');
-            if (e.key === "Escape" && dialogos[dialogos.length - 1] === ref.current) onCloseAction();
+            const dialogs = document.querySelectorAll('[role="dialog"]');
+            if (e.key === "Escape" && dialogs[dialogs.length - 1] === ref.current) onCloseAction();
         };
         window.addEventListener("keydown", onKeyDown);
         return () => window.removeEventListener("keydown", onKeyDown);
@@ -30,23 +30,23 @@ export function Modal({ children, onCloseAction, label }) {
     );
 }
 
-export function ConfirmDialog({ titulo, mensaje, onConfirmarAction, onCancelarAction }) {
+export function ConfirmDialog({ title, message, onConfirmAction, onCancelAction }) {
     return (
-        <Modal label={titulo} onCloseAction={onCancelarAction}>
+        <Modal label={title} onCloseAction={onCancelAction}>
             <div className="w-[min(90vw,340px)] rounded-2xl bg-white p-6 text-center shadow-xl">
-                <h2 className="m-0 text-lg font-bold text-azul">{titulo}</h2>
-                <p className="mb-0 mt-2 text-sm text-slate-600">{mensaje}</p>
+                <h2 className="m-0 text-lg font-bold text-azul">{title}</h2>
+                <p className="mb-0 mt-2 text-sm text-slate-600">{message}</p>
                 <div className="mt-6 flex gap-3">
                     <button
                         type="button"
-                        onClick={onCancelarAction}
-                        className={`${BOTON_CLARO} flex-1 py-2 text-sm font-semibold`}
+                        onClick={onCancelAction}
+                        className={`${LIGHT_BUTTON} flex-1 py-2 text-sm font-semibold`}
                     >
                         Cancelar
                     </button>
                     <button
                         type="button"
-                        onClick={onConfirmarAction}
+                        onClick={onConfirmAction}
                         className="flex-1 cursor-pointer rounded-full bg-azul py-2 text-sm font-semibold text-white transition hover:bg-azul-claro"
                     >
                         Confirmar
