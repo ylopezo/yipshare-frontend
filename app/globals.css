@@ -10,8 +10,9 @@
   --color-gris: #eeeeee;
 }
 
-/* data-has-session lo pone un script en <head> antes de pintar y lo actualizan login/logout (lib/session.js):
-   evita que al regresar se vea un instante una página que ya no corresponde.
-   Solo oculta: mostrar algo desde aquí también lo mostraría en páginas que Next guarda ocultas en memoria. */
-html[data-has-session] [data-public] { display: none !important; }
-html:not([data-has-session]) [data-private] { display: none !important; }
+html[data-has-session] [data-public] {
+  display: none !important;
+}
+html:not([data-has-session]) [data-private] {
+  display: none !important;
+}

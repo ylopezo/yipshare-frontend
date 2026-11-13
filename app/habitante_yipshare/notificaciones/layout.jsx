@@ -1,7 +1,7 @@
 export const metadata = {
-    title: "Notificaciones",
+  title: "Notificaciones",
 };
 
 export default function NotificationsLayout({ children }) {
-    return children;
+  return children;
 }

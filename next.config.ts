@@ -7,7 +7,12 @@ const nextConfig: NextConfig = {
   // redirect() inside a page breaks cacheComponents prerender validation
   // El front pide /api/... al mismo sitio y Next lo reenvía al backend sin el prefijo: así no hace falta CORS
   async rewrites() {
-    return [{ source: "/api/:ruta*", destination: `${process.env.API_URL || "http://localhost:4600"}/:ruta*` }];
+    return [
+      {
+        source: "/api/:ruta*",
+        destination: `${process.env.API_URL || "http://localhost:4600"}/:ruta*`,
+      },
+    ];
   },
   async redirects() {
     return [

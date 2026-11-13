@@ -1,6 +1,6 @@
 export const metadata = {
-    title: "Página Principal",
+  title: "Página Principal",
 };
 export default function PrincipalPageLayout({ children }) {
-    return children;
+  return children;
 }
