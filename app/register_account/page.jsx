@@ -18,7 +18,6 @@ const ERROR_MESSAGES = {
   password: "Ingresa una contraseña.",
 };
 
-// Mismas reglas que RegisterRequest del backend, para avisar en español antes de enviar
 const LETTERS_ONLY = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
 const VALID_USERNAME = /^[a-zA-Z0-9_-]{3,50}$/;
 const VALID_PASSWORD = /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[!-~]{8,255}$/;

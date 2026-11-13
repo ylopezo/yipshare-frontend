@@ -25,7 +25,6 @@ import {
 
 const ME = "mi_usuario";
 
-// -Datos de ejemplo
 
 const SAMPLE_PROFILE = {
   paternalSurname: "Pérez",
@@ -106,7 +105,6 @@ const SAMPLE_ARTICLES = [
   },
 ];
 
-// (id, nombre, dueño, prestatario, tiempo, estado, fin)
 const loan = (id, name, owner, borrower, duration, status, end = null) => ({
   id,
   articleId: -id,
@@ -174,7 +172,6 @@ const SAMPLE_LOANS = [
   ),
 ];
 
-// Nombre y departamento de cada usuario, para mostrar personas en lugar de "vecino_ana"
 const SAMPLE_PEOPLE = Object.fromEntries(
   [
     ...SAMPLE_NEIGHBORS,
@@ -211,7 +208,6 @@ const ITEM =
 const HEADER_ICON =
   "cursor-pointer rounded-full p-1 text-white hover:bg-white/10";
 
-// -Página
 
 export default function CondominiumAdminPage() {
   const user = useUser();
@@ -279,7 +275,6 @@ export default function CondominiumAdminPage() {
     setDetailId(null);
   }
 
-  // -Artículos
 
   function save(data) {
     if (modal === "new") {
@@ -312,7 +307,6 @@ export default function CondominiumAdminPage() {
   }
 
   function deleteArticle(a) {
-    // TODO: borrar la publicación en el backend y avisar al dueño
     setArticles((prev) => prev.filter((x) => x.id !== a.id));
     setLoans((prev) =>
       prev.filter(
@@ -326,10 +320,7 @@ export default function CondominiumAdminPage() {
     setDetailId(null);
   }
 
-  // -Préstamos
-
   function requestLoan(a, duration) {
-    // TODO: enviar la solicitud al backend
     const newItem = {
       id: crypto.getRandomValues(new Uint32Array(1))[0],
       articleId: a.id,
@@ -347,7 +338,6 @@ export default function CondominiumAdminPage() {
   }
 
   function respond(p, accept) {
-    // TODO: avisar al backend
     const status = accept ? "accepted" : "rejected";
 
     setLoans((prev) => prev.map((x) => (x.id === p.id ? { ...x, status } : x)));
@@ -355,7 +345,6 @@ export default function CondominiumAdminPage() {
   }
 
   function registerCode(p) {
-    // TODO: validar el código en el backend
     const updated = advance(p, Date.now());
 
     setLoans((prev) => prev.map((x) => (x.id === p.id ? updated : x)));
@@ -366,21 +355,17 @@ export default function CondominiumAdminPage() {
   }
 
   function rate(c) {
-    // TODO: guardar la calificación en el backend
     setRatings((prev) => [...prev, c]);
   }
 
-  // -Vecinos
 
   function togglePermission(v) {
-    // TODO: guardar el permiso en el backend (si es false, no puede pedir artículos)
     setNeighbors((prev) =>
       prev.map((x) => (x.id === v.id ? { ...x, upToDate: !x.upToDate } : x)),
     );
   }
 
   function kickOut(v) {
-    // TODO: sacar al vecino del condominio en el backend
     const removed = loans.filter(
       (p) =>
         (p.owner === v.user || p.borrower === v.user) &&
@@ -436,7 +421,6 @@ export default function CondominiumAdminPage() {
     setConfirm(null);
   }
 
-  // - Datos derivados
 
   const text = searchQuery.trim().toLowerCase();
 
@@ -618,7 +602,6 @@ export default function CondominiumAdminPage() {
               people={SAMPLE_PEOPLE}
               me={ME}
               onRemindAction={(p) => {
-                // TODO: enviar el recordatorio de devolución desde el backend
                 setLoans((prev) =>
                   prev.map((x) =>
                     x.id === p.id ? { ...x, reminded: true } : x,

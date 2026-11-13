@@ -9,7 +9,6 @@ import { APPROVED, markAsRead, getNotifications } from "@/lib/notifications";
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState(null);
 
-  // Se muestran como estaban (las nuevas marcadas) y después se guardan como leídas
   useEffect(() => {
     getNotifications().then((list) => {
       setNotifications(list);

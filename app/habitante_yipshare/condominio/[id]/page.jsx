@@ -49,7 +49,6 @@ export default function CondominiumPage() {
   const [section, setSection] = useState("home");
   const [loans, setLoans] = useState([]);
   const [ratings, setRatings] = useState([]);
-  // TODO: cargar del backend los reportes del condominio
   const [reports, setReports] = useState([]);
   const received = ratings.filter((c) => c.to === ME);
   const myRating = average(received);
@@ -105,7 +104,6 @@ export default function CondominiumPage() {
   }
 
   function requestLoan(a, duration) {
-    // TODO: enviar la solicitud al backend
     const randomId = crypto.getRandomValues(new Uint32Array(1))[0];
 
     setLoans((prev) => [
@@ -138,7 +136,6 @@ export default function CondominiumPage() {
   }
 
   function registerCode(p) {
-    // TODO: validar el código en el backend
     const newItem = advance(p, Date.now());
 
     setLoans((prev) => prev.map((x) => (x.id === p.id ? newItem : x)));
@@ -149,7 +146,6 @@ export default function CondominiumPage() {
   }
 
   function report(data) {
-    // TODO: enviar el reporte al backend para que lo revise el administrador del condominio
     setReports((prev) => [
       ...prev,
       {
@@ -299,7 +295,6 @@ export default function CondominiumPage() {
               reports={reports}
               ratings={ratings}
               onRateAction={(c) => {
-                // TODO: guardar la calificación en el backend
                 setRatings((prev) => [...prev, c]);
               }}
             />
