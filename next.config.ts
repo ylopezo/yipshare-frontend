@@ -1,11 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
-  // redirect() inside a page breaks cacheComponents prerender validation
-  // El front pide /api/... al mismo sitio y Next lo reenvía al backend sin el prefijo: así no hace falta CORS
   async rewrites() {
     return [
       {

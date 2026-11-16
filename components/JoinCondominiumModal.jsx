@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Modal } from "./Modal";
 
-// El backend genera códigos de 6 caracteres (shortCode)
 const CODE_PATTERN = /^[A-Z0-9]{6}$/;
 const ADDRESS = /^[\p{L}\d .#-]+$/u;
 

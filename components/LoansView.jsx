@@ -46,8 +46,6 @@ function CodeModal({ phase, initialCode, onConfirmAction, onCancelAction }) {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          // shortcut: compara contra el código mostrado aquí para poder probar sin backend;
-          // con backend, el código a escribir es el que genera la otra persona
           if (isCodeValid(codeInput, written, Date.now())) onConfirmAction();
           else setError(true);
         }}
@@ -134,7 +132,6 @@ export function LoansView({
         open: () => setPopup({ type: "code", p, code: newCode(Date.now()) }),
       };
     }
-    // Las dos personas califican, no solo la que escribió el código de devolución
     if (
       p.status === "finished" &&
       !ratings.some((c) => c.loanId === p.id && c.from === user)
@@ -320,7 +317,6 @@ export function LoansView({
           initialCode={popup.code}
           onConfirmAction={() => {
             onCodeAction(popup.p);
-            // El segundo código (devolución) cierra el préstamo: toca calificar al vecino
             setPopup(
               popup.p.status === "in_progress"
                 ? { type: "rate", p: popup.p }

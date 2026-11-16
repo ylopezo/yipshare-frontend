@@ -9,7 +9,6 @@ const TD = "whitespace-nowrap px-3 py-2.5 align-middle";
 const FOCUSABLE =
   "outline-none focus-visible:ring-2 focus-visible:ring-azul-claro";
 
-// "vencido" no viene del backend: es un préstamo en curso que ya pasó su fecha
 const STATUSES = {
   pending: "Pendiente",
   accepted: "Reservado",
@@ -194,7 +193,6 @@ export function AllLoansView({ loans, people = {}, me, onRemindAction }) {
                 {list.map((p) => {
                   const status = statusOf(p);
                   const overdue = status === "overdue";
-                  // El plazo corre desde la entrega: inicio = vence - duración
                   const home =
                     p.end !== null ? p.end - DAYS[p.duration] * DAY_MS : null;
                   return (

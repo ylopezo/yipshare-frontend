@@ -102,14 +102,13 @@ export default function ResidentHomePage() {
     filteredRegistered.length === 0 &&
     filteredJoined.length === 0;
 
-  const [confirmation, setConfirmation] = useState(null); // { titulo, mensaje, hacer }
+  const [confirmation, setConfirmation] = useState(null);
 
   const openModal = (type) => {
     setMenuOpen(false);
     setModal(type);
   };
 
-  // El condominio aparece cuando su administrador te acepta y te asigna una unidad
   const handleJoin = async (data) => {
     setModal(null);
     const { status, data: response } = await joinCondominium(data);

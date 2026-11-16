@@ -13,7 +13,6 @@ export function ReportFormView({ loans, user, onSubmitAction }) {
 
   const other = (p) => (p.owner === user ? p.borrower : p.owner);
 
-  // Se puede reportar desde que el préstamo se acepta, también ya devuelto (p. ej. llegó dañado)
   const isReportable = (p) => p.status !== "pending" && p.status !== "rejected";
   const activeLoans = loans.filter(
     (p) => (p.owner === user || p.borrower === user) && isReportable(p),

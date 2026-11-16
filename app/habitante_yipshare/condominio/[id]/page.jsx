@@ -126,7 +126,6 @@ export default function CondominiumPage() {
   }
 
   function respond(p, accept) {
-    // TODO: enviar la respuesta al backend
     setLoans((prev) =>
       prev.map((x) =>
         x.id === p.id ? { ...x, status: accept ? "accepted" : "rejected" } : x,
@@ -370,12 +369,10 @@ export default function CondominiumPage() {
           profile={{ ...profileData, rating: myRating }}
           received={received}
           onUpdateAction={(data) => {
-            // TODO: guardar `datos` en el backend
             setProfileData({ ...profileData, ...data });
             setProfile(false);
           }}
           onDeleteAction={() => {
-            // TODO: borrar la cuenta en el backend
             router.replace("/login");
           }}
           onCloseAction={() => setProfile(false)}

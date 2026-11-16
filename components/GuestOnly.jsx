@@ -14,8 +14,6 @@ import { LoadingScreen } from "./LoadingScreen";
 
 const noTokenOnServer = () => false;
 
-// Páginas públicas (inicio, login, registro, términos): con sesión válida te manda a tu página.
-// Mientras hay token, globals.css oculta la página y aquí se muestra la carga, así no se ve ni un instante antes del salto.
 export function GuestOnly({ children }) {
   const router = useRouter();
   const hasToken = useSyncExternalStore(

@@ -174,7 +174,6 @@ export function ArticleDetail({
         </>
       )}
 
-      {/* Acción exclusiva del administrador */}
       {onDeleteAction && (
         <>
           <button

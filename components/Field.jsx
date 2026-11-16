@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Icon } from "./Icon";
 
-// Campo de usuario o contraseña con ícono a la izquierda y mensaje de error abajo (login y registro)
 export function Field({
   id,
   icon,

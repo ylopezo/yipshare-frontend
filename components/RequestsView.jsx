@@ -4,7 +4,7 @@ import { useState } from "react";
 import { DARK_BUTTON, ConfirmDialog } from "./Modal";
 
 export function RequestsView({ applicants, onRespondAction }) {
-  const [pending, setPending] = useState(null); // { a, aceptar }
+  const [pending, setPending] = useState(null);
 
   return (
     <>

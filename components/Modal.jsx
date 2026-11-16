@@ -13,7 +13,6 @@ export function Modal({ children, onCloseAction, label }) {
 
   useEffect(() => {
     const onKeyDown = (e) => {
-      // con modales apilados, Esc solo cierra el de arriba
       const dialogs = document.querySelectorAll('[role="dialog"]');
       if (e.key === "Escape" && dialogs[dialogs.length - 1] === ref.current)
         onCloseAction();

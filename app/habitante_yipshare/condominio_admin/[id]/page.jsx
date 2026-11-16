@@ -386,7 +386,6 @@ export default function CondominiumAdminPage() {
   }
 
   function respondApplicant(a, accept) {
-    // TODO: avisar al backend
     setApplicants((prev) => prev.filter((x) => x.id !== a.id));
     if (accept) {
       setNeighbors((prev) => [
@@ -722,12 +721,10 @@ export default function CondominiumAdminPage() {
           profile={{ ...profileData, rating: myRating }}
           received={received}
           onUpdateAction={(data) => {
-            // TODO: guardar `datos` en el backend
             setProfileData({ ...profileData, ...data });
             setProfile(false);
           }}
           onDeleteAction={() => {
-            // TODO: borrar la cuenta en el backend
             router.replace("/login");
           }}
           onCloseAction={() => setProfile(false)}
