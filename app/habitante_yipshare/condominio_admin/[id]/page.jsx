@@ -558,6 +558,15 @@ export default function CondominiumAdminPage() {
               <Icon name="logout" size={26} />
               <span className="hidden md:inline">Cerrar sesión</span>
             </button>
+
+            {condominium.code && (
+              <div className="hidden rounded-xl bg-white/10 px-3 py-2 text-white md:block">
+                <p className="m-0 text-xs">Código para unirse</p>
+                <p className="m-0 select-all text-lg font-bold tracking-widest">
+                  {condominium.code}
+                </p>
+              </div>
+            )}
           </aside>
         )}
 
