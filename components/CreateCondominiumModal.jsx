@@ -19,6 +19,8 @@ const DOCUMENTS = [
   ["idDocument", "Identificación oficial del Administrador"],
 ];
 
+const MAX_PDF_BYTES = 50 * 1024 * 1024;
+
 const INPUT =
   "w-full rounded-xl border border-slate-600 bg-gris px-4 " +
   "py-2 text-sm text-slate-700 outline-none placeholder:text-slate-500 " +
@@ -54,6 +56,11 @@ export function CreateCondominiumModal({ onCreateAction, onCancelAction }) {
     if (selectedFile && selectedFile.type !== "application/pdf") {
       e.target.value = "";
       setError("Solo se aceptan archivos PDF.");
+      return;
+    }
+    if (selectedFile && selectedFile.size > MAX_PDF_BYTES) {
+      e.target.value = "";
+      setError("Cada PDF debe pesar 50 MB o menos.");
       return;
     }
     setError("");
