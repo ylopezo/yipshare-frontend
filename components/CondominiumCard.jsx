@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Icon } from "./Icon";
 
 const LABEL = {
     admin: "Usted es administrador",
@@ -16,7 +17,9 @@ export function CondominiumCard({ condominium, role }) {
             href={`${BASE_ROUTE[role]}/${condominium.id}`}
             className="flex w-48 cursor-pointer flex-col overflow-hidden rounded-lg bg-white text-left shadow-sm transition hover:shadow-md"
         >
-            <div className="h-24 shrink-0 bg-gris-imagen" />
+            <div aria-hidden="true" className="flex h-24 shrink-0 items-center justify-center bg-gris-imagen text-slate-400">
+                <Icon name="house" size={40} />
+            </div>
 
             <div className="px-3 pb-4 pt-2">
                 <span className="inline-block rounded-full bg-azul-suave px-2 py-0.5 text-xs font-bold text-azul">
