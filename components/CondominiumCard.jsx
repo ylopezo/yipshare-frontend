@@ -17,7 +17,10 @@ export function CondominiumCard({ condominium, role }) {
             href={`${BASE_ROUTE[role]}/${condominium.id}`}
             className="flex w-48 cursor-pointer flex-col overflow-hidden rounded-lg bg-white text-left shadow-sm transition hover:shadow-md"
         >
-            <div aria-hidden="true" className="flex h-24 shrink-0 items-center justify-center bg-gris-imagen text-slate-400">
+            <div
+                aria-hidden="true"
+                className="flex h-24 shrink-0 items-center justify-center bg-gris-imagen text-slate-400"
+            >
                 <Icon name="house" size={40} />
             </div>
 

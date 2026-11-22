@@ -28,7 +28,14 @@ export default function Home() {
                     <header className="bg-azul/80">
                         <nav className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 md:px-6">
                             <div className="flex items-center gap-6 md:gap-8">
-                                <Image src="/img/logo_yipshare_icono.png" alt="Logo de YipShare" width={155} height={135} priority className="h-9 w-auto" />
+                                <Image
+                                    src="/img/logo_yipshare_icono.png"
+                                    alt="Logo de YipShare"
+                                    width={155}
+                                    height={135}
+                                    priority
+                                    className="h-9 w-auto"
+                                />
 
                                 <Link
                                     href="/terms_conditions"
@@ -77,7 +84,13 @@ export default function Home() {
                         {STEPS.map((p, i) => (
                             <li key={p.title}>
                                 <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-azul">
-                                    <Image src={p.img} alt="" width={44} height={44} className="h-11 w-11 object-contain" />
+                                    <Image
+                                        src={p.img}
+                                        alt=""
+                                        width={44}
+                                        height={44}
+                                        className="h-11 w-11 object-contain"
+                                    />
                                 </div>
                                 <h3 className="m-0 mt-4 text-lg font-bold text-azul">
                                     {i + 1}. {p.title}

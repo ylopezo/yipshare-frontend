@@ -13,7 +13,7 @@ const SESSION_NOTICES = {
     offline: "No se pudo conectar con el servidor. Intenta de nuevo.",
 };
 
-const noSubscription = () => () => { };
+const noSubscription = () => () => {};
 const readReason = () => new URLSearchParams(window.location.search).get("session");
 const noReasonOnServer = () => null;
 
@@ -72,7 +72,14 @@ export default function LoginPage() {
             }}
         >
             <Link href="/" aria-label="YipShare - inicio" className="mb-4">
-                <Image src="/img/logo_yipshare_icono.png" alt="Logo de YipShare" width={155} height={135} priority className="h-28 w-auto md:h-35" />
+                <Image
+                    src="/img/logo_yipshare_icono.png"
+                    alt="Logo de YipShare"
+                    width={155}
+                    height={135}
+                    priority
+                    className="h-28 w-auto md:h-35"
+                />
             </Link>
 
             <form

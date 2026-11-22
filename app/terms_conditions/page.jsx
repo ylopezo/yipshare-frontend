@@ -27,7 +27,14 @@ export default function TermsConditionsPage() {
                 <nav className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 md:px-6">
                     <div className="flex items-center gap-6 md:gap-8">
                         <Link href="/" aria-label="YipShare - inicio">
-                            <Image src="/img/logo_yipshare_icono.png" alt="Logo de YipShare" width={155} height={135} priority className="h-9 w-auto" />
+                            <Image
+                                src="/img/logo_yipshare_icono.png"
+                                alt="Logo de YipShare"
+                                width={155}
+                                height={135}
+                                priority
+                                className="h-9 w-auto"
+                            />
                         </Link>
 
                         <ul className="m-0 hidden list-none items-center gap-8 p-0 text-sm font-semibold md:flex">
