@@ -60,7 +60,10 @@ export default function LoginPage() {
         }
 
         clearForm();
+        setUser("");
+        setPassword("");
         router.replace(homePage(data.user?.role));
+        router.refresh();
     }
 
     return (

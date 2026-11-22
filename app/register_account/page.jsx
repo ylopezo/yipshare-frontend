@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { getCountryCallingCode } from "libphonenumber-js";
 import { DIAL_CODES, digitsOnly, isPhoneValid } from "@/lib/data";
-import { apiRequest } from "@/lib/session";
+import { apiRequest, registerAction } from "@/lib/session";
+import { homePage } from "@/lib/session";
 import Image from "next/image";
 
 const ERROR_MESSAGES = {
@@ -53,8 +54,6 @@ const TEXT_FIELDS = [
         type: "email",
     },
 ];
-
-const ROUTE_AFTER_REGISTER = "/login";
 
 const INPUT_CLASS =
     "w-full rounded-lg border border-slate-600 bg-gris py-2 pr-3 text-lg text-slate-700 placeholder:text-slate-500 outline-none focus:border-slate-900";
@@ -135,7 +134,19 @@ export default function RegisterPage() {
         setSending(false);
 
         if (status === 201) {
-            router.replace(ROUTE_AFTER_REGISTER);
+            setData({
+                paternalSurname: "",
+                maternalSurname: "",
+                givenNames: "",
+                email: "",
+                dialCode: "MX",
+                phone: "",
+                user: "",
+                password: "",
+            });
+            const { data: profile } = await registerAction(response.token);
+            router.replace(homePage(profile.user?.role));
+            router.refresh();
             return;
         }
 
