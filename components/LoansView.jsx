@@ -17,26 +17,24 @@ export const LOAN_STATUS = {
     rejected: { text: "Rechazado", cssClass: "bg-azul text-white" },
 };
 
-// The owner generates the code in the back and shows it; the borrower types it in to confirm.
-function ShowCodeModal({ phase, onGenerateAction, onCancelAction }) {
-    const [code, setCode] = useState(null);
+const withExpiry = (value) => value && { value, expiresAt: Date.now() + CODE_SECONDS * 1000 };
+
+function ShowCodeModal({ phase, initialCode, onGenerateAction, onCancelAction }) {
+    const [code, setCode] = useState(initialCode);
     const [now, setNow] = useState(() => Date.now());
 
     const generate = async () => {
-        const value = await onGenerateAction();
-        if (value) setCode({ value, expiresAt: Date.now() + CODE_SECONDS * 1000 });
+        const next = withExpiry(await onGenerateAction());
+        if (next) setCode(next);
         else onCancelAction();
     };
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- state is set after an await
-        generate();
         const t = setInterval(() => setNow(Date.now()), 1000);
         return () => clearInterval(t);
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- generate once on open
     }, []);
 
-    const remaining = code ? Math.max(0, Math.ceil((code.expiresAt - now) / 1000)) : 0;
+    const remaining = Math.max(0, Math.ceil((code.expiresAt - now) / 1000));
 
     return (
         <Modal label="Tu código" onCloseAction={onCancelAction}>
@@ -46,15 +44,13 @@ function ShowCodeModal({ phase, onGenerateAction, onCancelAction }) {
                     Código de {phase}. Dáselo al vecino para que lo ingrese.
                 </p>
 
-                <p className="m-0 mt-5 font-mono text-3xl font-bold tracking-widest text-azul">
-                    {code?.value ?? "······"}
-                </p>
-                {code && remaining > 0 && (
+                <p className="m-0 mt-5 font-mono text-3xl font-bold tracking-widest text-azul">{code.value}</p>
+                {remaining > 0 && (
                     <p className="m-0 mt-1 text-xs text-slate-500">
                         Vence en {Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, "0")}
                     </p>
                 )}
-                {code && remaining === 0 && (
+                {remaining === 0 && (
                     <button
                         type="button"
                         onClick={generate}
@@ -158,7 +154,13 @@ export function LoansView({
         }
         if (p.status === "accepted" || p.status === "in_progress") {
             return role === "owner"
-                ? { text: "Mostrar Código", open: () => setPopup({ type: "showCode", p }) }
+                ? {
+                      text: "Mostrar Código",
+                      open: async () => {
+                          const code = withExpiry(await onGenerateCodeAction(p));
+                          if (code) setPopup({ type: "showCode", p, code });
+                      },
+                  }
                 : { text: "Ingresar Código", open: () => setPopup({ type: "code", p }) };
         }
         if (p.status === "finished" && !ratings.some((c) => c.loanId === p.id && c.from === user)) {
@@ -313,6 +315,7 @@ export function LoansView({
                 <ShowCodeModal
                     key={popup.p.id}
                     phase={popup.p.status === "accepted" ? "entrega" : "devolución"}
+                    initialCode={popup.code}
                     onGenerateAction={() => onGenerateCodeAction(popup.p)}
                     onCancelAction={close}
                 />

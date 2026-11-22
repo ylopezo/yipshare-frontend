@@ -1,10 +1,13 @@
 "use client";
 
-import { HIDDEN_PASSWORD, ADMIN_USERNAME } from "@/lib/data";
+import { HIDDEN_PASSWORD } from "@/lib/data";
 import { Icon } from "./Icon";
+import { useUser } from "./RequireSession";
 import { Modal } from "./Modal";
 
-export function ProfileModal({ onCloseAction, title = "Admin", user = ADMIN_USERNAME }) {
+export function ProfileModal({ onCloseAction, title = "Admin" }) {
+    const user = useUser()?.username ?? "";
+
     return (
         <Modal label="Perfil" onCloseAction={onCloseAction}>
             <div className="relative w-[min(90vw,320px)] rounded-4xl border border-slate-400 bg-white px-7 py-8 shadow-xl">

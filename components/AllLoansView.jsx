@@ -34,7 +34,7 @@ const date = (ms) =>
         year: "numeric",
     });
 
-export function AllLoansView({ loans, people = {}, me, onRemindAction }) {
+export function AllLoansView({ loans, people = {}, me }) {
     const [filterValue, setFilterValue] = useState("all");
     const [searchQuery, setSearchQuery] = useState("");
     const [now] = useState(() => Date.now());
@@ -165,9 +165,6 @@ export function AllLoansView({ loans, people = {}, me, onRemindAction }) {
                                             </button>
                                         </th>
                                     ))}
-                                    <th className="border-b border-zinc-300 px-3 py-2 text-xs font-bold text-zinc-700">
-                                        Acción
-                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-zinc-200">
@@ -214,23 +211,6 @@ export function AllLoansView({ loans, people = {}, me, onRemindAction }) {
                                                     {STATUSES[status]}
                                                 </td>
                                             )}
-                                            <td className={TD}>
-                                                {overdue &&
-                                                    onRemindAction &&
-                                                    (p.reminded ? (
-                                                        <span className="text-xs text-zinc-500">
-                                                            Recordatorio enviado
-                                                        </span>
-                                                    ) : (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => onRemindAction(p)}
-                                                            className={`cursor-pointer rounded border border-zinc-300 bg-white px-2 py-0.5 text-xs font-semibold text-zinc-700 hover:border-azul hover:text-azul ${FOCUSABLE}`}
-                                                        >
-                                                            Recordar
-                                                        </button>
-                                                    ))}
-                                            </td>
                                         </tr>
                                     );
                                 })}

@@ -1,10 +1,34 @@
 "use client";
 
-import { SAMPLE_DOCUMENTS } from "@/lib/data";
+import { useEffect, useState } from "react";
+import { documentUrl, getCondominiumDocuments } from "@/lib/condominiums";
 import { Icon } from "./Icon";
 import { Modal } from "./Modal";
 
+const LABELS = {
+    ecrpcDocument: "Escritura Constitutiva del Régimen de Propiedad en Condominio",
+    aanaDocument: "Acta de Asamblea de Nombramiento del Administrador",
+    ownerIneDocument: "Identificación oficial del Administrador",
+    condominiumRfcDocument: "RFC del Condominio",
+};
+
+async function openDocument(id) {
+    const tab = window.open("", "_blank");
+    const url = await documentUrl(id);
+    if (url) tab.location.href = url;
+    else {
+        tab?.close();
+        alert("No se pudo abrir el documento.");
+    }
+}
+
 export function DocumentsModal({ request, onCloseAction }) {
+    const [documents, setDocuments] = useState(undefined);
+
+    useEffect(() => {
+        getCondominiumDocuments(request.id).then(setDocuments);
+    }, [request.id]);
+
     return (
         <Modal label="Documentos de la solicitud" onCloseAction={onCloseAction}>
             <div
@@ -27,27 +51,46 @@ export function DocumentsModal({ request, onCloseAction }) {
                     {request.name} · {request.applicant}
                 </p>
 
-                <ul className="m-0 mt-5 list-none space-y-2 p-0">
-                    {SAMPLE_DOCUMENTS.map((doc) => (
-                        <li
-                            key={doc}
-                            className="flex items-center gap-3 rounded-xl border border-slate-300 bg-gris px-3 py-2"
-                        >
-                            <span className="text-azul">
-                                <Icon name="file" size={22} />
-                            </span>
-
-                            <span className="min-w-0 flex-1 text-xs text-slate-700">{doc}</span>
-
-                            <button
-                                type="button"
-                                className="cursor-pointer text-xs font-semibold uppercase text-azul-claro hover:underline"
+                {documents === undefined ? (
+                    <p className="mb-0 mt-5 text-center text-xs text-slate-500">Cargando documentos...</p>
+                ) : documents === null ? (
+                    <p role="alert" className="mb-0 mt-5 text-center text-xs text-azul">
+                        No se pudieron cargar los documentos.
+                    </p>
+                ) : documents.length === 0 ? (
+                    <p className="mb-0 mt-5 text-center text-xs text-slate-500">
+                        Esta solicitud ya no tiene documentos.
+                    </p>
+                ) : (
+                    <ul className="m-0 mt-5 list-none space-y-2 p-0">
+                        {documents.map((doc) => (
+                            <li
+                                key={doc.id}
+                                className="flex items-center gap-3 rounded-xl border border-slate-300 bg-gris px-3 py-2"
                             >
-                                Abrir
-                            </button>
-                        </li>
-                    ))}
-                </ul>
+                                <span className="text-azul">
+                                    <Icon name="file" size={22} />
+                                </span>
+
+                                <span className="min-w-0 flex-1 text-xs text-slate-700">
+                                    {LABELS[doc.type] ?? doc.type}
+                                </span>
+
+                                <button
+                                    type="button"
+                                    onClick={() => openDocument(doc.id)}
+                                    className="cursor-pointer text-xs font-semibold uppercase text-azul-claro hover:underline"
+                                >
+                                    Abrir
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+
+                <p className="mb-0 mt-4 text-center text-xs text-slate-500">
+                    Los documentos se eliminan para siempre al aceptar o rechazar la solicitud.
+                </p>
 
                 <button
                     type="button"

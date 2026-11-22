@@ -42,7 +42,6 @@ export function ArticleModal({ article, onSaveAction, onCancelAction }) {
     const selectedFile = useRef(null);
 
     const title = article ? "Editar artículo" : "Agregar artículo";
-    // the back requires a photo when creating
     const isValid =
         name.trim() !== "" &&
         description.trim() !== "" &&

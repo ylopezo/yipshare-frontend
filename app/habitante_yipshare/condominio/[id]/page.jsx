@@ -25,7 +25,6 @@ import {
     saveArticle,
     useCondominiumData,
 } from "@/lib/articles";
-import { SAMPLE_PROFILE } from "@/lib/sampleData";
 
 const ITEM = "flex w-full items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wide";
 const HEADER_ICON = "cursor-pointer rounded-full p-1 text-white hover:bg-white/10";
@@ -40,7 +39,7 @@ export default function CondominiumPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [profile, setProfile] = useState(false);
     const [leaving, setLeaving] = useState(false);
-    const [profileData, setProfileData] = useState(SAMPLE_PROFILE);
+    const [profileData, setProfileData] = useState({});
     const [modal, setModal] = useState(null);
     const [detailId, setDetailId] = useState(null);
     const [section, setSection] = useState("home");

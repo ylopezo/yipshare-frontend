@@ -31,7 +31,6 @@ import {
     saveArticle,
     useCondominiumData,
 } from "@/lib/articles";
-import { SAMPLE_PROFILE, SAMPLE_NEIGHBORS, SAMPLE_APPLICANTS } from "@/lib/sampleData";
 
 const SECTIONS = [
     { id: "home", label: "Inicio", icon: "house" },
@@ -53,8 +52,8 @@ export default function CondominiumAdminPage() {
     const me = user?.username;
     const { articles, loans, ratings, refresh: refreshMine } = useCondominiumData(id, me);
     const [allLoans, setAllLoans] = useState([]);
-    const [neighbors, setNeighbors] = useState(SAMPLE_NEIGHBORS);
-    const [applicants, setApplicants] = useState(SAMPLE_APPLICANTS);
+    const [neighbors, setNeighbors] = useState([]);
+    const [applicants, setApplicants] = useState([]);
     const [reports, setReports] = useState([]);
 
     useEffect(() => {
@@ -72,7 +71,7 @@ export default function CondominiumAdminPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [profile, setProfile] = useState(false);
     const [leaving, setLeaving] = useState(false);
-    const [profileData, setProfileData] = useState(SAMPLE_PROFILE);
+    const [profileData, setProfileData] = useState({});
     const [modal, setModal] = useState(null);
     const [detailId, setDetailId] = useState(null);
     const [confirm, setConfirm] = useState(null);
@@ -139,7 +138,6 @@ export default function CondominiumAdminPage() {
         setNeighbors((prev) => prev.map((x) => (x.id === v.id ? { ...x, upToDate: !x.upToDate } : x)));
     }
 
-    // shortcut: neighbors are still sample data; once kicking out hits the back, refresh() picks up its articles/loans
     function kickOut(v) {
         setNeighbors((prev) => prev.filter((x) => x.id !== v.id));
     }
@@ -328,14 +326,7 @@ export default function CondominiumAdminPage() {
                             onRateAction={rate}
                         />
                     ) : section === "all" ? (
-                        <AllLoansView
-                            loans={allLoans}
-                            me={me}
-                            onRemindAction={(p) => {
-                                // shortcut: no reminder endpoint in the back yet, it only marks it here
-                                setAllLoans((prev) => prev.map((x) => (x.id === p.id ? { ...x, reminded: true } : x)));
-                            }}
-                        />
+                        <AllLoansView loans={allLoans} me={me} />
                     ) : section === "reports" ? (
                         <ReportsView reports={reports} onChangeStatusAction={changeReportStatus} />
                     ) : detail ? (
