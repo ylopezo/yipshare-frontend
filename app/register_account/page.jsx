@@ -166,7 +166,7 @@ export default function RegisterPage() {
                     backgroundImage: "url('/img/fondo.webp'), linear-gradient(to bottom, #1e4a73, #2f78b8)",
                 }}
             >
-                <Link href="/">
+                <Link href="/" tabIndex={-1}>
                     <img src="/img/logo_yipshare_icono.png" alt="" className="h-44 w-auto" />
                 </Link>
             </aside>

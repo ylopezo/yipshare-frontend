@@ -76,7 +76,7 @@ export function ArticleModal({ article, onSaveAction, onCancelAction }) {
                             justify-center overflow-hidden rounded-xl bg-gris-imagen text-slate-500 hover:bg-[#d8d8d8]"
                         >
                             {image ? (
-                                <img src={image} alt="" className="h-full w-full object-cover" />
+                                <img src={image} alt="Vista previa de la imagen del artículo" className="h-full w-full object-cover" />
                             ) : (
                                 <span className="flex flex-col items-center gap-1 text-xs font-semibold">
                                     <Icon name="plus" size={28} />
@@ -164,11 +164,10 @@ export function ArticleModal({ article, onSaveAction, onCancelAction }) {
                                         type="button"
                                         aria-pressed={active}
                                         onClick={() => toggleDuration(t)}
-                                        className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-semibold transition ${
-                                            active
+                                        className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-semibold transition ${active
                                                 ? "border-oscuro bg-oscuro text-white"
                                                 : "border-slate-500 bg-gris text-slate-700 hover:bg-[#e2e2e2]"
-                                        }`}
+                                            }`}
                                     >
                                         {t}
                                     </button>
