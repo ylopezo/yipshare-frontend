@@ -154,7 +154,8 @@ export default function RegisterPage() {
             return;
         }
 
-        setGeneralError(response.error || "No se pudo crear la cuenta. Intenta de nuevo.");
+        const connectionProblem = status === 0 || status >= 500;
+        setGeneralError(connectionProblem && response.error ? response.error : "No se pudo crear la cuenta. Intenta de nuevo.");
     }
 
     return (
