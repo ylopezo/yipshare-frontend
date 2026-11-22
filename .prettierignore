@@ -1,20 +1,2 @@
-# Dependencias
-node_modules
-
-# Carpetas de compilación y caché
-dist
-build
-.next
-out
-.nuxt
-.cache
-coverage
-
-# Archivos de bloqueo de paquetes
 package-lock.json
-yarn.lock
-pnpm-lock.yaml
-
-# Archivos minificados
-*.min.js
-*.min.css
+.next

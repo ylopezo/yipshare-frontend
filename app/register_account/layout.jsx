@@ -1,9 +1,9 @@
 import { GuestOnly } from "@/components/GuestOnly";
 
 export const metadata = {
-  title: "Registrarse",
+    title: "Registrarse",
 };
 
 export default function LoginLayout({ children }) {
-  return <GuestOnly>{children}</GuestOnly>;
+    return <GuestOnly>{children}</GuestOnly>;
 }

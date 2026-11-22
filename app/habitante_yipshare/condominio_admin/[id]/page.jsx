@@ -18,765 +18,625 @@ import { AllLoansView } from "@/components/AllLoansView";
 import { NeighborsView } from "@/components/NeighborsView";
 import { useCondominium } from "@/lib/condominiums";
 import { advance, average } from "@/lib/loans";
-import {
-  changeReportStatus as saveReportStatus,
-  getCondominiumReports,
-} from "@/lib/reports";
+import { changeReportStatus as saveReportStatus, getCondominiumReports } from "@/lib/reports";
 
 const ME = "mi_usuario";
 
-
 const SAMPLE_PROFILE = {
-  paternalSurname: "Pérez",
-  maternalSurname: "López",
-  givenNames: "Juan Carlos",
-  building: "Edificio 2",
-  apartment: "Departamento 14",
-  dialCode: "MX",
-  phone: "5512345678",
-  rating: 4.2,
+    paternalSurname: "Pérez",
+    maternalSurname: "López",
+    givenNames: "Juan Carlos",
+    building: "Edificio 2",
+    apartment: "Departamento 14",
+    dialCode: "MX",
+    phone: "5512345678",
+    rating: 4.2,
 };
 
 const SAMPLE_NEIGHBORS = [
-  {
-    id: 1,
-    name: "Ana Martínez",
-    user: "vecino_ana",
-    unit: "Edificio 1, Dpto 3",
-    upToDate: true,
-  },
-  {
-    id: 2,
-    name: "Luis Hernández",
-    user: "vecino_luis",
-    unit: "Edificio 1, Dpto 8",
-    upToDate: true,
-  },
-  {
-    id: 3,
-    name: "Marta Ruiz",
-    user: "vecino_marta",
-    unit: "Edificio 3, Dpto 5",
-    upToDate: false,
-  },
+    {
+        id: 1,
+        name: "Ana Martínez",
+        user: "vecino_ana",
+        unit: "Edificio 1, Dpto 3",
+        upToDate: true,
+    },
+    {
+        id: 2,
+        name: "Luis Hernández",
+        user: "vecino_luis",
+        unit: "Edificio 1, Dpto 8",
+        upToDate: true,
+    },
+    {
+        id: 3,
+        name: "Marta Ruiz",
+        user: "vecino_marta",
+        unit: "Edificio 3, Dpto 5",
+        upToDate: false,
+    },
 ];
 
 const SAMPLE_APPLICANTS = [
-  {
-    id: 10,
-    name: "Pedro Sánchez",
-    user: "vecino_pedro",
-    unit: "Edificio 2, Dpto 6",
-  },
-  {
-    id: 11,
-    name: "Laura Gómez",
-    user: "vecino_laura",
-    unit: "Edificio 4, Dpto 12",
-  },
+    {
+        id: 10,
+        name: "Pedro Sánchez",
+        user: "vecino_pedro",
+        unit: "Edificio 2, Dpto 6",
+    },
+    {
+        id: 11,
+        name: "Laura Gómez",
+        user: "vecino_laura",
+        unit: "Edificio 4, Dpto 12",
+    },
 ];
 
 const SAMPLE_ARTICLES = [
-  {
-    id: 101,
-    name: "Taladro",
-    category: "Herramientas",
-    description: "Taladro inalámbrico con juego de brocas.",
-    condition: "Buen estado",
-    durations: ["1 día", "2 días"],
-    status: "available",
-    image: null,
-    owner: "vecino_ana",
-    address: "Edificio 1, Departamento 3",
-    rating: 4.5,
-  },
-  {
-    id: 102,
-    name: "Escalera",
-    category: "Herramientas",
-    description: "Escalera de aluminio de 3 metros.",
-    condition: "Excelente estado",
-    durations: ["1 día", "3 días"],
-    status: "available",
-    image: null,
-    owner: "vecino_luis",
-    address: "Edificio 1, Departamento 8",
-    rating: 3.8,
-  },
+    {
+        id: 101,
+        name: "Taladro",
+        category: "Herramientas",
+        description: "Taladro inalámbrico con juego de brocas.",
+        condition: "Buen estado",
+        durations: ["1 día", "2 días"],
+        status: "available",
+        image: null,
+        owner: "vecino_ana",
+        address: "Edificio 1, Departamento 3",
+        rating: 4.5,
+    },
+    {
+        id: 102,
+        name: "Escalera",
+        category: "Herramientas",
+        description: "Escalera de aluminio de 3 metros.",
+        condition: "Excelente estado",
+        durations: ["1 día", "3 días"],
+        status: "available",
+        image: null,
+        owner: "vecino_luis",
+        address: "Edificio 1, Departamento 8",
+        rating: 3.8,
+    },
 ];
 
 const loan = (id, name, owner, borrower, duration, status, end = null) => ({
-  id,
-  articleId: -id,
-  name,
-  image: null,
-  owner,
-  borrower,
-  duration,
-  status,
-  end: end && Date.parse(end),
+    id,
+    articleId: -id,
+    name,
+    image: null,
+    owner,
+    borrower,
+    duration,
+    status,
+    end: end && Date.parse(end),
 });
 
 const SAMPLE_LOANS = [
-  loan(
-    1,
-    "Taladro percutor inalámbrico Bosch 18V",
-    "vecino_ana",
-    ME,
-    "2 días",
-    "pending",
-  ),
-  loan(
-    2,
-    "Escalera de tijera de aluminio, 3 m",
-    ME,
-    "vecino_luis",
-    "1 día",
-    "pending",
-  ),
-  loan(3, "Bocina JBL Charge 5", "vecino_marta", ME, "3 días", "accepted"),
-  loan(
-    4,
-    "Podadora eléctrica Truper",
-    ME,
-    "vecino_pedro",
-    "1 semana",
-    "accepted",
-  ),
-  loan(
-    5,
-    "Carpa plegable 3 × 3 m",
-    "vecino_ana",
-    "vecino_luis",
-    "1 día",
-    "in_progress",
-    "2026-11-06T12:00",
-  ),
-  loan(
-    6,
-    "Bicicleta de montaña R26",
-    "vecino_marta",
-    "vecino_ana",
-    "2 días",
-    "finished",
-    "2026-11-02T12:00",
-  ),
-  loan(
-    7,
-    "Hidrolavadora Kärcher K2",
-    "vecino_luis",
-    "vecino_marta",
-    "1 semana",
-    "in_progress",
-    "2026-11-14T18:00",
-  ),
+    loan(1, "Taladro percutor inalámbrico Bosch 18V", "vecino_ana", ME, "2 días", "pending"),
+    loan(2, "Escalera de tijera de aluminio, 3 m", ME, "vecino_luis", "1 día", "pending"),
+    loan(3, "Bocina JBL Charge 5", "vecino_marta", ME, "3 días", "accepted"),
+    loan(4, "Podadora eléctrica Truper", ME, "vecino_pedro", "1 semana", "accepted"),
+    loan(5, "Carpa plegable 3 × 3 m", "vecino_ana", "vecino_luis", "1 día", "in_progress", "2026-11-06T12:00"),
+    loan(6, "Bicicleta de montaña R26", "vecino_marta", "vecino_ana", "2 días", "finished", "2026-11-02T12:00"),
+    loan(7, "Hidrolavadora Kärcher K2", "vecino_luis", "vecino_marta", "1 semana", "in_progress", "2026-11-14T18:00"),
 ];
 
 const SAMPLE_PEOPLE = Object.fromEntries(
-  [
-    ...SAMPLE_NEIGHBORS,
-    ...SAMPLE_APPLICANTS,
-    {
-      user: ME,
-      name: `${SAMPLE_PROFILE.givenNames} ${SAMPLE_PROFILE.paternalSurname}`,
-      unit: "Edificio 2, Dpto 14",
-    },
-  ].map((v) => [v.user, { name: v.name, unit: v.unit }]),
+    [
+        ...SAMPLE_NEIGHBORS,
+        ...SAMPLE_APPLICANTS,
+        {
+            user: ME,
+            name: `${SAMPLE_PROFILE.givenNames} ${SAMPLE_PROFILE.paternalSurname}`,
+            unit: "Edificio 2, Dpto 14",
+        },
+    ].map((v) => [v.user, { name: v.name, unit: v.unit }]),
 );
 
 const SAMPLE_RATINGS = [
-  {
-    loanId: 90,
-    from: "vecino_ana",
-    to: ME,
-    stars: 5,
-    comment: "Muy puntual y el artículo llegó en perfecto estado.",
-  },
-  { loanId: 91, from: "vecino_luis", to: ME, stars: 4, comment: "" },
+    {
+        loanId: 90,
+        from: "vecino_ana",
+        to: ME,
+        stars: 5,
+        comment: "Muy puntual y el artículo llegó en perfecto estado.",
+    },
+    { loanId: 91, from: "vecino_luis", to: ME, stars: 4, comment: "" },
 ];
 
 const SECTIONS = [
-  { id: "home", label: "Inicio", icon: "house" },
-  { id: "requests", label: "Solicitudes", icon: "bell" },
-  { id: "loans", label: "Préstamos", icon: "calendar" },
-  { id: "all", label: "Todos los préstamos", icon: "file" },
-  { id: "reports", label: "Reportes", icon: "alert" },
+    { id: "home", label: "Inicio", icon: "house" },
+    { id: "requests", label: "Solicitudes", icon: "bell" },
+    { id: "loans", label: "Préstamos", icon: "calendar" },
+    { id: "all", label: "Todos los préstamos", icon: "file" },
+    { id: "reports", label: "Reportes", icon: "alert" },
 ];
 
 const ITEM =
-  "flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-bold uppercase tracking-wide [&>svg]:shrink-0";
-const HEADER_ICON =
-  "cursor-pointer rounded-full p-1 text-white hover:bg-white/10";
-
+    "flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-bold uppercase tracking-wide [&>svg]:shrink-0";
+const HEADER_ICON = "cursor-pointer rounded-full p-1 text-white hover:bg-white/10";
 
 export default function CondominiumAdminPage() {
-  const user = useUser();
-  const { id } = useParams();
-  const router = useRouter();
+    const user = useUser();
+    const { id } = useParams();
+    const router = useRouter();
 
-  const [articles, setArticles] = useState(SAMPLE_ARTICLES);
-  const [loans, setLoans] = useState(SAMPLE_LOANS);
-  const [neighbors, setNeighbors] = useState(SAMPLE_NEIGHBORS);
-  const [applicants, setApplicants] = useState(SAMPLE_APPLICANTS);
-  const [reports, setReports] = useState([]);
+    const [articles, setArticles] = useState(SAMPLE_ARTICLES);
+    const [loans, setLoans] = useState(SAMPLE_LOANS);
+    const [neighbors, setNeighbors] = useState(SAMPLE_NEIGHBORS);
+    const [applicants, setApplicants] = useState(SAMPLE_APPLICANTS);
+    const [reports, setReports] = useState([]);
 
-  useEffect(() => {
-    getCondominiumReports(id).then(({ reports }) => setReports(reports));
-  }, [id]);
-  const [ratings, setRatings] = useState(SAMPLE_RATINGS);
-  const received = ratings.filter((c) => c.to === ME);
-  const myRating = average(received);
+    useEffect(() => {
+        getCondominiumReports(id).then(({ reports }) => setReports(reports));
+    }, [id]);
+    const [ratings, setRatings] = useState(SAMPLE_RATINGS);
+    const received = ratings.filter((c) => c.to === ME);
+    const myRating = average(received);
 
-  const [section, setSection] = useState("home");
-  const [previous, setPrevious] = useState("home");
-  const [tab, setTab] = useState("articles");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [profile, setProfile] = useState(false);
-  const [leaving, setLeaving] = useState(false);
-  const [profileData, setProfileData] = useState(SAMPLE_PROFILE);
-  const [modal, setModal] = useState(null);
-  const [detailId, setDetailId] = useState(null);
-  const [confirm, setConfirm] = useState(null);
+    const [section, setSection] = useState("home");
+    const [previous, setPrevious] = useState("home");
+    const [tab, setTab] = useState("articles");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [profile, setProfile] = useState(false);
+    const [leaving, setLeaving] = useState(false);
+    const [profileData, setProfileData] = useState(SAMPLE_PROFILE);
+    const [modal, setModal] = useState(null);
+    const [detailId, setDetailId] = useState(null);
+    const [confirm, setConfirm] = useState(null);
 
-  const { loading, condominium } = useCondominium(id);
+    const { loading, condominium } = useCondominium(id);
 
-  if (loading) return null;
+    if (loading) return null;
 
-  if (!condominium) {
+    if (!condominium) {
+        return (
+            <main className="p-10">
+                <p>No se encontró el condominio.</p>
+
+                <Link href="/habitante_yipshare/principal_page" className="font-bold text-azul-claro hover:underline">
+                    Volver
+                </Link>
+            </main>
+        );
+    }
+
+    function goTo(destination) {
+        setSection(destination);
+        setDetailId(null);
+        setSearchQuery("");
+    }
+
+    function openNotifications() {
+        setPrevious(section);
+        setSection("notifications");
+        setDetailId(null);
+    }
+
+    function changeTab(p) {
+        setTab(p);
+        setSearchQuery("");
+        setDetailId(null);
+    }
+
+    function save(data) {
+        if (modal === "new") {
+            const randomId = crypto.getRandomValues(new Uint32Array(1))[0];
+
+            setArticles((prev) => [
+                ...prev,
+                {
+                    ...data,
+                    id: randomId,
+                    owner: ME,
+                    address: `${profileData.building}, ${profileData.apartment}`,
+                    rating: myRating,
+                },
+            ]);
+        } else if (modal) {
+            const edited = modal.id;
+            setArticles((prev) => prev.map((a) => (a.id === edited ? { ...a, ...data } : a)));
+        }
+
+        setModal(null);
+    }
+
+    function changeArticleStatus(targetArticleId, status) {
+        setArticles((prev) => prev.map((a) => (a.id === targetArticleId ? { ...a, status } : a)));
+    }
+
+    function deleteArticle(a) {
+        setArticles((prev) => prev.filter((x) => x.id !== a.id));
+        setLoans((prev) =>
+            prev.filter((p) => !(p.articleId === a.id && (p.status === "pending" || p.status === "accepted"))),
+        );
+        setDetailId(null);
+    }
+
+    function requestLoan(a, duration) {
+        const newItem = {
+            id: crypto.getRandomValues(new Uint32Array(1))[0],
+            articleId: a.id,
+            name: a.name,
+            image: a.image,
+            owner: a.owner,
+            borrower: ME,
+            duration,
+            status: "pending",
+            end: null,
+        };
+
+        setLoans((prev) => [...prev, newItem]);
+        changeArticleStatus(a.id, "pending");
+    }
+
+    function respond(p, accept) {
+        const status = accept ? "accepted" : "rejected";
+
+        setLoans((prev) => prev.map((x) => (x.id === p.id ? { ...x, status } : x)));
+        if (!accept) changeArticleStatus(p.articleId, "available");
+    }
+
+    function registerCode(p) {
+        const updated = advance(p, Date.now());
+
+        setLoans((prev) => prev.map((x) => (x.id === p.id ? updated : x)));
+        if (updated.status === "in_progress") changeArticleStatus(p.articleId, "unavailable");
+        if (updated.status === "finished") changeArticleStatus(p.articleId, "available");
+    }
+
+    function rate(c) {
+        setRatings((prev) => [...prev, c]);
+    }
+
+    function togglePermission(v) {
+        setNeighbors((prev) => prev.map((x) => (x.id === v.id ? { ...x, upToDate: !x.upToDate } : x)));
+    }
+
+    function kickOut(v) {
+        const removed = loans.filter(
+            (p) => (p.owner === v.user || p.borrower === v.user) && (p.status === "pending" || p.status === "accepted"),
+        );
+        const removedIds = new Set(removed.map((p) => p.id));
+        const releasedArticles = new Set(removed.map((p) => p.articleId));
+
+        setLoans((prev) => prev.filter((p) => !removedIds.has(p.id)));
+        setArticles((prev) =>
+            prev
+                .filter((a) => a.owner !== v.user)
+                .map((a) => (releasedArticles.has(a.id) ? { ...a, status: "available" } : a)),
+        );
+        setNeighbors((prev) => prev.filter((x) => x.id !== v.id));
+    }
+
+    function respondApplicant(a, accept) {
+        setApplicants((prev) => prev.filter((x) => x.id !== a.id));
+        if (accept) {
+            setNeighbors((prev) => [
+                ...prev,
+                {
+                    id: a.id,
+                    name: a.name,
+                    user: a.user,
+                    unit: a.unit,
+                    upToDate: true,
+                },
+            ]);
+        }
+    }
+
+    async function changeReportStatus(targetReportId, status) {
+        const { status: httpStatus } = await saveReportStatus(id, targetReportId, status);
+        if (httpStatus !== 200) return alert("No se pudo cambiar el estado del reporte.");
+        setReports((prev) => prev.map((r) => (r.id === targetReportId ? { ...r, status } : r)));
+    }
+
+    function handleConfirm() {
+        if (confirm?.type === "delete") deleteArticle(confirm.article);
+        if (confirm?.type === "kickOut") kickOut(confirm.neighbor);
+        setConfirm(null);
+    }
+
+    const text = searchQuery.trim().toLowerCase();
+
+    const detail = articles.find((a) => a.id === detailId);
+    const visibleItems = articles.filter((a) => a.name.toLowerCase().includes(text));
+    const mine = visibleItems.filter((a) => a.owner === ME);
+    const fromOthers = visibleItems.filter((a) => a.owner !== ME);
+
+    const visibleNeighbors = neighbors.filter((v) => `${v.name} ${v.user}`.toLowerCase().includes(text));
+
+    const inProgress = (articleId) => loans.some((p) => p.articleId === articleId && p.status === "in_progress");
+
+    const itemClass = (active) =>
+        `${ITEM} cursor-pointer ${active ? "text-white" : "text-white/40 hover:text-white/80"}`;
+
     return (
-      <main className="p-10">
-        <p>No se encontró el condominio.</p>
+        <div className="flex h-screen flex-col overflow-hidden bg-fondo font-sans text-black">
+            <header className="flex h-25 shrink-0 items-center gap-4 bg-azul px-4 text-white md:px-6">
+                <Link href="/habitante_yipshare/principal_page" aria-label="Volver a mis condominios">
+                    <Image
+                        src="/img/logo_yipshare_icono.png"
+                        alt="YipShare"
+                        width={190}
+                        height={56}
+                        priority
+                        className="h-14 w-auto object-contain"
+                    />
+                </Link>
 
-        <Link
-          href="/habitante_yipshare/principal_page"
-          className="font-bold text-azul-claro hover:underline"
-        >
-          Volver
-        </Link>
-      </main>
-    );
-  }
-
-  function goTo(destination) {
-    setSection(destination);
-    setDetailId(null);
-    setSearchQuery("");
-  }
-
-  function openNotifications() {
-    setPrevious(section);
-    setSection("notifications");
-    setDetailId(null);
-  }
-
-  function changeTab(p) {
-    setTab(p);
-    setSearchQuery("");
-    setDetailId(null);
-  }
-
-
-  function save(data) {
-    if (modal === "new") {
-      const randomId = crypto.getRandomValues(new Uint32Array(1))[0];
-
-      setArticles((prev) => [
-        ...prev,
-        {
-          ...data,
-          id: randomId,
-          owner: ME,
-          address: `${profileData.building}, ${profileData.apartment}`,
-          rating: myRating,
-        },
-      ]);
-    } else if (modal) {
-      const edited = modal.id;
-      setArticles((prev) =>
-        prev.map((a) => (a.id === edited ? { ...a, ...data } : a)),
-      );
-    }
-
-    setModal(null);
-  }
-
-  function changeArticleStatus(targetArticleId, status) {
-    setArticles((prev) =>
-      prev.map((a) => (a.id === targetArticleId ? { ...a, status } : a)),
-    );
-  }
-
-  function deleteArticle(a) {
-    setArticles((prev) => prev.filter((x) => x.id !== a.id));
-    setLoans((prev) =>
-      prev.filter(
-        (p) =>
-          !(
-            p.articleId === a.id &&
-            (p.status === "pending" || p.status === "accepted")
-          ),
-      ),
-    );
-    setDetailId(null);
-  }
-
-  function requestLoan(a, duration) {
-    const newItem = {
-      id: crypto.getRandomValues(new Uint32Array(1))[0],
-      articleId: a.id,
-      name: a.name,
-      image: a.image,
-      owner: a.owner,
-      borrower: ME,
-      duration,
-      status: "pending",
-      end: null,
-    };
-
-    setLoans((prev) => [...prev, newItem]);
-    changeArticleStatus(a.id, "pending");
-  }
-
-  function respond(p, accept) {
-    const status = accept ? "accepted" : "rejected";
-
-    setLoans((prev) => prev.map((x) => (x.id === p.id ? { ...x, status } : x)));
-    if (!accept) changeArticleStatus(p.articleId, "available");
-  }
-
-  function registerCode(p) {
-    const updated = advance(p, Date.now());
-
-    setLoans((prev) => prev.map((x) => (x.id === p.id ? updated : x)));
-    if (updated.status === "in_progress")
-      changeArticleStatus(p.articleId, "unavailable");
-    if (updated.status === "finished")
-      changeArticleStatus(p.articleId, "available");
-  }
-
-  function rate(c) {
-    setRatings((prev) => [...prev, c]);
-  }
-
-
-  function togglePermission(v) {
-    setNeighbors((prev) =>
-      prev.map((x) => (x.id === v.id ? { ...x, upToDate: !x.upToDate } : x)),
-    );
-  }
-
-  function kickOut(v) {
-    const removed = loans.filter(
-      (p) =>
-        (p.owner === v.user || p.borrower === v.user) &&
-        (p.status === "pending" || p.status === "accepted"),
-    );
-    const removedIds = new Set(removed.map((p) => p.id));
-    const releasedArticles = new Set(removed.map((p) => p.articleId));
-
-    setLoans((prev) => prev.filter((p) => !removedIds.has(p.id)));
-    setArticles((prev) =>
-      prev
-        .filter((a) => a.owner !== v.user)
-        .map((a) =>
-          releasedArticles.has(a.id) ? { ...a, status: "available" } : a,
-        ),
-    );
-    setNeighbors((prev) => prev.filter((x) => x.id !== v.id));
-  }
-
-  function respondApplicant(a, accept) {
-    setApplicants((prev) => prev.filter((x) => x.id !== a.id));
-    if (accept) {
-      setNeighbors((prev) => [
-        ...prev,
-        {
-          id: a.id,
-          name: a.name,
-          user: a.user,
-          unit: a.unit,
-          upToDate: true,
-        },
-      ]);
-    }
-  }
-
-  async function changeReportStatus(targetReportId, status) {
-    const { status: httpStatus } = await saveReportStatus(
-      id,
-      targetReportId,
-      status,
-    );
-    if (httpStatus !== 200)
-      return alert("No se pudo cambiar el estado del reporte.");
-    setReports((prev) =>
-      prev.map((r) => (r.id === targetReportId ? { ...r, status } : r)),
-    );
-  }
-
-  function handleConfirm() {
-    if (confirm?.type === "delete") deleteArticle(confirm.article);
-    if (confirm?.type === "kickOut") kickOut(confirm.neighbor);
-    setConfirm(null);
-  }
-
-
-  const text = searchQuery.trim().toLowerCase();
-
-  const detail = articles.find((a) => a.id === detailId);
-  const visibleItems = articles.filter((a) =>
-    a.name.toLowerCase().includes(text),
-  );
-  const mine = visibleItems.filter((a) => a.owner === ME);
-  const fromOthers = visibleItems.filter((a) => a.owner !== ME);
-
-  const visibleNeighbors = neighbors.filter((v) =>
-    `${v.name} ${v.user}`.toLowerCase().includes(text),
-  );
-
-  const inProgress = (articleId) =>
-    loans.some((p) => p.articleId === articleId && p.status === "in_progress");
-
-  const itemClass = (active) =>
-    `${ITEM} cursor-pointer ${active ? "text-white" : "text-white/40 hover:text-white/80"}`;
-
-  return (
-    <div className="flex h-screen flex-col overflow-hidden bg-fondo font-sans text-black">
-      <header className="flex h-25 shrink-0 items-center gap-4 bg-azul px-4 text-white md:px-6">
-        <Link
-          href="/habitante_yipshare/principal_page"
-          aria-label="Volver a mis condominios"
-        >
-          <Image
-            src="/img/logo_yipshare_icono.png"
-            alt="YipShare"
-            width={190}
-            height={56}
-            priority
-            className="h-14 w-auto object-contain"
-          />
-        </Link>
-
-        <div className="ml-2 min-w-0 md:ml-14">
-          <h1 className="m-0 truncate text-2xl font-bold md:text-3xl">
-            Hola, {user?.name}
-          </h1>
-          <p className="m-0 truncate text-sm font-semibold text-celeste">
-            {condominium.name}
-          </p>
-        </div>
-
-        <div className="ml-auto flex flex-col items-end gap-2">
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              aria-label="Agregar artículo"
-              onClick={() => setModal("new")}
-              className={HEADER_ICON}
-            >
-              <Icon name="plus" size={28} />
-            </button>
-
-            <button
-              type="button"
-              aria-label="Notificaciones"
-              onClick={openNotifications}
-              className={HEADER_ICON}
-            >
-              <Icon name="bell" size={28} />
-            </button>
-
-            <button
-              type="button"
-              aria-label="Perfil"
-              onClick={() => setProfile(true)}
-              className={HEADER_ICON}
-            >
-              <Icon name="user" size={30} />
-            </button>
-          </div>
-
-          {section === "home" && !detail && (
-            <div className="relative hidden sm:block">
-              <input
-                aria-label={
-                  tab === "articles" ? "Buscar artículo" : "Buscar vecino"
-                }
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={
-                  tab === "articles" ? "Buscar artículo..." : "Buscar vecino..."
-                }
-                className="w-72 rounded-full bg-white/10 py-1.5 pl-4 pr-10 text-sm text-white outline-none placeholder:text-white/70 focus:bg-white/20 lg:w-80"
-              />
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                <Icon name="search" size={18} />
-              </span>
-            </div>
-          )}
-        </div>
-      </header>
-
-      <div className="flex min-h-0 flex-1">
-        {section !== "notifications" && (
-          <aside className="flex w-16 shrink-0 flex-col space-y-3 bg-azul px-1 pt-8 md:w-56 md:px-3">
-            {SECTIONS.map(({ id, label, icon }) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => goTo(id)}
-                aria-current={section === id ? "page" : undefined}
-                className={`${itemClass(section === id)} relative`}
-              >
-                <Icon name={icon} size={26} />
-                <span className="hidden md:inline">{label}</span>
-                {id === "requests" && applicants.length > 0 && (
-                  <span
-                    aria-label={`${applicants.length} solicitudes pendientes`}
-                    className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-white px-1 text-[9px] font-bold text-azul md:right-3 md:top-3"
-                  >
-                    {applicants.length}
-                  </span>
-                )}
-              </button>
-            ))}
-
-            <button
-              type="button"
-              onClick={() => setProfile(true)}
-              className={itemClass(false)}
-            >
-              <Icon name="user" size={26} />
-              <span className="hidden md:inline">Perfil</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setLeaving(true)}
-              className={itemClass(false)}
-            >
-              <Icon name="logout" size={26} />
-              <span className="hidden md:inline">Cerrar sesión</span>
-            </button>
-
-            {condominium.code && (
-              <div className="hidden rounded-xl bg-white/10 px-3 py-2 text-white md:block">
-                <p className="m-0 text-xs">Código para unirse</p>
-                <p className="m-0 select-all text-lg font-bold tracking-widest">
-                  {condominium.code}
-                </p>
-              </div>
-            )}
-          </aside>
-        )}
-
-        <main className="min-w-0 flex-1 overflow-y-auto px-4 pb-8 pt-6 md:px-10">
-          {section === "notifications" ? (
-            <>
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  aria-label="Volver"
-                  onClick={() => setSection(previous)}
-                  className="cursor-pointer rounded-full p-1 text-black transition hover:bg-white"
-                >
-                  <Icon name="arrow" size={24} />
-                </button>
-                <h2 className="m-0 text-base font-bold">Notificaciones</h2>
-              </div>
-
-              <p className="mt-24 text-center text-xl font-bold text-celeste">
-                No tienes notificaciones por el momento
-              </p>
-            </>
-          ) : section === "requests" ? (
-            <RequestsView
-              applicants={applicants}
-              onRespondAction={respondApplicant}
-            />
-          ) : section === "loans" ? (
-            <LoansView
-              loans={loans}
-              user={ME}
-              onRespondAction={respond}
-              onCodeAction={registerCode}
-              reports={reports}
-              ratings={ratings}
-              onRateAction={rate}
-            />
-          ) : section === "all" ? (
-            <AllLoansView
-              loans={loans}
-              people={SAMPLE_PEOPLE}
-              me={ME}
-              onRemindAction={(p) => {
-                setLoans((prev) =>
-                  prev.map((x) =>
-                    x.id === p.id ? { ...x, reminded: true } : x,
-                  ),
-                );
-              }}
-            />
-          ) : section === "reports" ? (
-            <ReportsView
-              reports={reports}
-              onChangeStatusAction={changeReportStatus}
-            />
-          ) : detail ? (
-            <ArticleDetail
-              key={detail.id}
-              a={detail}
-              onBackAction={() => setDetailId(null)}
-              onRequestAction={
-                detail.owner !== ME
-                  ? (duration) => requestLoan(detail, duration)
-                  : undefined
-              }
-              onDeleteAction={() =>
-                setConfirm({ type: "delete", article: detail })
-              }
-              deleteBlocked={inProgress(detail.id)}
-            />
-          ) : (
-            <>
-              <div className="flex justify-center gap-6">
-                {["articles", "neighbors"].map((p) => (
-                  <button
-                    key={p}
-                    type="button"
-                    aria-pressed={tab === p}
-                    onClick={() => changeTab(p)}
-                    className={`w-32 cursor-pointer rounded-xl border px-4 py-1.5 text-sm font-bold transition ${
-                      tab === p
-                        ? "border-azul bg-azul text-white"
-                        : "border-slate-400 bg-[#d3d6da] text-slate-500 hover:bg-[#c5c9ce]"
-                    }`}
-                  >
-                    {p === "articles" ? "Artículos" : "Vecinos"}
-                  </button>
-                ))}
-              </div>
-
-              {tab === "neighbors" ? (
-                <div className="mt-6">
-                  <NeighborsView
-                    neighbors={visibleNeighbors}
-                    onPermissionAction={togglePermission}
-                    onKickOutAction={(v) =>
-                      setConfirm({ type: "kickOut", neighbor: v })
-                    }
-                  />
+                <div className="ml-2 min-w-0 md:ml-14">
+                    <h1 className="m-0 truncate text-2xl font-bold md:text-3xl">Hola, {user?.name}</h1>
+                    <p className="m-0 truncate text-sm font-semibold text-celeste">{condominium.name}</p>
                 </div>
-              ) : (
-                <>
-                  <h2 className="m-0 mt-4 text-base font-bold">
-                    Mis Artículos
-                  </h2>
 
-                  {mine.length === 0 && (
-                    <p className="mb-0 mt-3 text-sm text-slate-500">
-                      No hay artículos.
-                    </p>
-                  )}
+                <div className="ml-auto flex flex-col items-end gap-2">
+                    <div className="flex items-center gap-3">
+                        <button
+                            type="button"
+                            aria-label="Agregar artículo"
+                            onClick={() => setModal("new")}
+                            className={HEADER_ICON}
+                        >
+                            <Icon name="plus" size={28} />
+                        </button>
 
-                  <div className="mt-4 flex flex-wrap items-center gap-4">
-                    {mine.map((a) => (
-                      <ArticleCard
-                        key={a.id}
-                        a={a}
-                        onViewAction={() => setDetailId(a.id)}
-                        onEditAction={() => setModal(a)}
-                      />
-                    ))}
+                        <button
+                            type="button"
+                            aria-label="Notificaciones"
+                            onClick={openNotifications}
+                            className={HEADER_ICON}
+                        >
+                            <Icon name="bell" size={28} />
+                        </button>
 
-                    <button
-                      type="button"
-                      aria-label="Agregar artículo"
-                      onClick={() => setModal("new")}
-                      className="ml-4 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-azul text-white shadow-md hover:bg-azul-claro"
-                    >
-                      <Icon name="plus" size={26} />
-                    </button>
-                  </div>
+                        <button
+                            type="button"
+                            aria-label="Perfil"
+                            onClick={() => setProfile(true)}
+                            className={HEADER_ICON}
+                        >
+                            <Icon name="user" size={30} />
+                        </button>
+                    </div>
 
-                  <h2 className="m-0 mt-10 text-base font-bold">
-                    Artículos Disponibles
-                  </h2>
+                    {section === "home" && !detail && (
+                        <div className="relative hidden sm:block">
+                            <input
+                                aria-label={tab === "articles" ? "Buscar artículo" : "Buscar vecino"}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder={tab === "articles" ? "Buscar artículo..." : "Buscar vecino..."}
+                                className="w-72 rounded-full bg-white/10 py-1.5 pl-4 pr-10 text-sm text-white outline-none placeholder:text-white/70 focus:bg-white/20 lg:w-80"
+                            />
+                            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                                <Icon name="search" size={18} />
+                            </span>
+                        </div>
+                    )}
+                </div>
+            </header>
 
-                  {fromOthers.length === 0 && (
-                    <p className="mb-0 mt-3 text-sm text-slate-500">
-                      No hay artículos.
-                    </p>
-                  )}
+            <div className="flex min-h-0 flex-1">
+                {section !== "notifications" && (
+                    <aside className="flex w-16 shrink-0 flex-col space-y-3 bg-azul px-1 pt-8 md:w-56 md:px-3">
+                        {SECTIONS.map(({ id, label, icon }) => (
+                            <button
+                                key={id}
+                                type="button"
+                                onClick={() => goTo(id)}
+                                aria-current={section === id ? "page" : undefined}
+                                className={`${itemClass(section === id)} relative`}
+                            >
+                                <Icon name={icon} size={26} />
+                                <span className="hidden md:inline">{label}</span>
+                                {id === "requests" && applicants.length > 0 && (
+                                    <span
+                                        aria-label={`${applicants.length} solicitudes pendientes`}
+                                        className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-white px-1 text-[9px] font-bold text-azul md:right-3 md:top-3"
+                                    >
+                                        {applicants.length}
+                                    </span>
+                                )}
+                            </button>
+                        ))}
 
-                  <div className="mt-4 flex flex-wrap gap-4">
-                    {fromOthers.map((a) => (
-                      <ArticleCard
-                        key={a.id}
-                        a={a}
-                        onViewAction={() => setDetailId(a.id)}
-                      />
-                    ))}
-                  </div>
-                </>
-              )}
-            </>
-          )}
-        </main>
-      </div>
+                        <button type="button" onClick={() => setProfile(true)} className={itemClass(false)}>
+                            <Icon name="user" size={26} />
+                            <span className="hidden md:inline">Perfil</span>
+                        </button>
 
-      {profile && (
-        <ResidentProfileModal
-          profile={{ ...profileData, rating: myRating }}
-          received={received}
-          onUpdateAction={(data) => {
-            setProfileData({ ...profileData, ...data });
-            setProfile(false);
-          }}
-          onDeleteAction={() => {
-            router.replace("/login");
-          }}
-          onCloseAction={() => setProfile(false)}
-        />
-      )}
+                        <button type="button" onClick={() => setLeaving(true)} className={itemClass(false)}>
+                            <Icon name="logout" size={26} />
+                            <span className="hidden md:inline">Cerrar sesión</span>
+                        </button>
 
-      {modal && (
-        <ArticleModal
-          key={modal === "new" ? "new" : modal.id}
-          article={modal === "new" ? null : modal}
-          onSaveAction={save}
-          onCancelAction={() => setModal(null)}
-        />
-      )}
+                        {condominium.code && (
+                            <div className="hidden rounded-xl bg-white/10 px-3 py-2 text-white md:block">
+                                <p className="m-0 text-xs">Código para unirse</p>
+                                <p className="m-0 select-all text-lg font-bold tracking-widest">{condominium.code}</p>
+                            </div>
+                        )}
+                    </aside>
+                )}
 
-      {confirm && (
-        <ConfirmDialog
-          title={
-            confirm.type === "delete"
-              ? "¿Eliminar publicación?"
-              : "¿Expulsar vecino?"
-          }
-          message={
-            confirm.type === "delete"
-              ? `Se eliminará «${confirm.article.name}» de ${confirm.article.owner} y se cancelarán sus solicitudes pendientes.`
-              : `${confirm.neighbor.name} saldrá del condominio y se eliminarán sus artículos y préstamos pendientes.`
-          }
-          onConfirmAction={handleConfirm}
-          onCancelAction={() => setConfirm(null)}
-        />
-      )}
+                <main className="min-w-0 flex-1 overflow-y-auto px-4 pb-8 pt-6 md:px-10">
+                    {section === "notifications" ? (
+                        <>
+                            <div className="flex items-center gap-3">
+                                <button
+                                    type="button"
+                                    aria-label="Volver"
+                                    onClick={() => setSection(previous)}
+                                    className="cursor-pointer rounded-full p-1 text-black transition hover:bg-white"
+                                >
+                                    <Icon name="arrow" size={24} />
+                                </button>
+                                <h2 className="m-0 text-base font-bold">Notificaciones</h2>
+                            </div>
 
-      {leaving && (
-        <ConfirmDialog
-          title="¿Estás seguro?"
-          message="Se cerrará tu sesión."
-          onConfirmAction={async () => {
-            await signOut();
-            router.replace("/login");
-          }}
-          onCancelAction={() => setLeaving(false)}
-        />
-      )}
-    </div>
-  );
+                            <p className="mt-24 text-center text-xl font-bold text-celeste">
+                                No tienes notificaciones por el momento
+                            </p>
+                        </>
+                    ) : section === "requests" ? (
+                        <RequestsView applicants={applicants} onRespondAction={respondApplicant} />
+                    ) : section === "loans" ? (
+                        <LoansView
+                            loans={loans}
+                            user={ME}
+                            onRespondAction={respond}
+                            onCodeAction={registerCode}
+                            reports={reports}
+                            ratings={ratings}
+                            onRateAction={rate}
+                        />
+                    ) : section === "all" ? (
+                        <AllLoansView
+                            loans={loans}
+                            people={SAMPLE_PEOPLE}
+                            me={ME}
+                            onRemindAction={(p) => {
+                                setLoans((prev) => prev.map((x) => (x.id === p.id ? { ...x, reminded: true } : x)));
+                            }}
+                        />
+                    ) : section === "reports" ? (
+                        <ReportsView reports={reports} onChangeStatusAction={changeReportStatus} />
+                    ) : detail ? (
+                        <ArticleDetail
+                            key={detail.id}
+                            a={detail}
+                            onBackAction={() => setDetailId(null)}
+                            onRequestAction={
+                                detail.owner !== ME ? (duration) => requestLoan(detail, duration) : undefined
+                            }
+                            onDeleteAction={() => setConfirm({ type: "delete", article: detail })}
+                            deleteBlocked={inProgress(detail.id)}
+                        />
+                    ) : (
+                        <>
+                            <div className="flex justify-center gap-6">
+                                {["articles", "neighbors"].map((p) => (
+                                    <button
+                                        key={p}
+                                        type="button"
+                                        aria-pressed={tab === p}
+                                        onClick={() => changeTab(p)}
+                                        className={`w-32 cursor-pointer rounded-xl border px-4 py-1.5 text-sm font-bold transition ${
+                                            tab === p
+                                                ? "border-azul bg-azul text-white"
+                                                : "border-slate-400 bg-[#d3d6da] text-slate-500 hover:bg-[#c5c9ce]"
+                                        }`}
+                                    >
+                                        {p === "articles" ? "Artículos" : "Vecinos"}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {tab === "neighbors" ? (
+                                <div className="mt-6">
+                                    <NeighborsView
+                                        neighbors={visibleNeighbors}
+                                        onPermissionAction={togglePermission}
+                                        onKickOutAction={(v) => setConfirm({ type: "kickOut", neighbor: v })}
+                                    />
+                                </div>
+                            ) : (
+                                <>
+                                    <h2 className="m-0 mt-4 text-base font-bold">Mis Artículos</h2>
+
+                                    {mine.length === 0 && (
+                                        <p className="mb-0 mt-3 text-sm text-slate-500">No hay artículos.</p>
+                                    )}
+
+                                    <div className="mt-4 flex flex-wrap items-center gap-4">
+                                        {mine.map((a) => (
+                                            <ArticleCard
+                                                key={a.id}
+                                                a={a}
+                                                onViewAction={() => setDetailId(a.id)}
+                                                onEditAction={() => setModal(a)}
+                                            />
+                                        ))}
+
+                                        <button
+                                            type="button"
+                                            aria-label="Agregar artículo"
+                                            onClick={() => setModal("new")}
+                                            className="ml-4 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-azul text-white shadow-md hover:bg-azul-claro"
+                                        >
+                                            <Icon name="plus" size={26} />
+                                        </button>
+                                    </div>
+
+                                    <h2 className="m-0 mt-10 text-base font-bold">Artículos Disponibles</h2>
+
+                                    {fromOthers.length === 0 && (
+                                        <p className="mb-0 mt-3 text-sm text-slate-500">No hay artículos.</p>
+                                    )}
+
+                                    <div className="mt-4 flex flex-wrap gap-4">
+                                        {fromOthers.map((a) => (
+                                            <ArticleCard key={a.id} a={a} onViewAction={() => setDetailId(a.id)} />
+                                        ))}
+                                    </div>
+                                </>
+                            )}
+                        </>
+                    )}
+                </main>
+            </div>
+
+            {profile && (
+                <ResidentProfileModal
+                    profile={{ ...profileData, rating: myRating }}
+                    received={received}
+                    onUpdateAction={(data) => {
+                        setProfileData({ ...profileData, ...data });
+                        setProfile(false);
+                    }}
+                    onDeleteAction={() => {
+                        router.replace("/login");
+                    }}
+                    onCloseAction={() => setProfile(false)}
+                />
+            )}
+
+            {modal && (
+                <ArticleModal
+                    key={modal === "new" ? "new" : modal.id}
+                    article={modal === "new" ? null : modal}
+                    onSaveAction={save}
+                    onCancelAction={() => setModal(null)}
+                />
+            )}
+
+            {confirm && (
+                <ConfirmDialog
+                    title={confirm.type === "delete" ? "¿Eliminar publicación?" : "¿Expulsar vecino?"}
+                    message={
+                        confirm.type === "delete"
+                            ? `Se eliminará «${confirm.article.name}» de ${confirm.article.owner} y se cancelarán sus solicitudes pendientes.`
+                            : `${confirm.neighbor.name} saldrá del condominio y se eliminarán sus artículos y préstamos pendientes.`
+                    }
+                    onConfirmAction={handleConfirm}
+                    onCancelAction={() => setConfirm(null)}
+                />
+            )}
+
+            {leaving && (
+                <ConfirmDialog
+                    title="¿Estás seguro?"
+                    message="Se cerrará tu sesión."
+                    onConfirmAction={async () => {
+                        await signOut();
+                        router.replace("/login");
+                    }}
+                    onCancelAction={() => setLeaving(false)}
+                />
+            )}
+        </div>
+    );
 }
