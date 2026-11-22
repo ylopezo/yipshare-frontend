@@ -7,6 +7,7 @@ import { useState } from "react";
 import { getCountryCallingCode } from "libphonenumber-js";
 import { DIAL_CODES, digitsOnly, isPhoneValid } from "@/lib/data";
 import { apiRequest } from "@/lib/session";
+import Image from "next/image";
 
 const ERROR_MESSAGES = {
     paternalSurname: "Ingresa tu apellido paterno.",
@@ -167,15 +168,17 @@ export default function RegisterPage() {
                 }}
             >
                 <Link href="/" tabIndex={-1}>
-                    <img src="/img/logo_yipshare_icono.png" alt="" className="h-44 w-auto" />
+                    <Image src="/img/logo_yipshare_icono.png" alt="" width={155} height={135} className="h-44 w-auto" />
                 </Link>
             </aside>
 
             <main className="relative flex flex-col items-center justify-center bg-white px-6 py-10">
                 <Link href="/" aria-label="YipShare - inicio" className="mb-4 md:hidden">
-                    <img
+                    <Image
                         src="/img/logo_yipshare_icono.png"
                         alt="Logo de YipShare"
+                        width={155}
+                        height={135}
                         className="h-24 w-auto rounded-xl bg-azul p-2"
                     />
                 </Link>
