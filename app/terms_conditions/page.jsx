@@ -21,7 +21,7 @@ const INDEX = [
 
 export default function TermsConditionsPage() {
     return (
-        <div className="relative flex min-h-screen scroll-smooth flex-col bg-linear-to-b from-degradado-inicio to-degradado-fin font-sans text-white">
+        <div className="relative flex min-h-dvh scroll-smooth flex-col bg-linear-to-b from-degradado-inicio to-degradado-fin font-sans text-white">
             <header className="sticky top-0 z-20 bg-azul/90 backdrop-blur">
                 <nav className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 md:px-6">
                     <div className="flex items-center gap-6 md:gap-8">

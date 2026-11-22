@@ -157,7 +157,7 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="grid min-h-screen font-sans text-oscuro md:grid-cols-2">
+        <div className="grid min-h-dvh font-sans text-oscuro md:grid-cols-2">
             <aside
                 aria-hidden="true"
                 className="hidden items-center justify-center bg-cover bg-center md:flex"

@@ -64,7 +64,7 @@ export default function LoginPage() {
 
     return (
         <div
-            className="m-0 flex min-h-screen flex-col items-center justify-center bg-cover bg-center px-4 py-10 font-sans text-oscuro"
+            className="m-0 flex min-h-dvh flex-col items-center justify-center bg-cover bg-center px-4 py-10 font-sans text-oscuro"
             suppressHydrationWarning
             style={{
                 backgroundImage: "url('/img/fondo.webp'), linear-gradient(to bottom, #1e4a73, #2f78b8)",

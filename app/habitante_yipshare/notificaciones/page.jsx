@@ -17,7 +17,7 @@ export default function NotificationsPage() {
     }, []);
 
     return (
-        <div className="flex h-screen flex-col overflow-hidden bg-fondo font-sans text-black">
+        <div className="flex h-dvh flex-col overflow-hidden bg-fondo font-sans text-black">
             <header className="flex h-25 shrink-0 items-center gap-4 bg-azul px-4 text-white md:px-6">
                 <LogoSessionMenu />
 
