@@ -25,12 +25,12 @@ export function ArticleCard({ a, onViewAction, onEditAction }) {
 
                 <div className="flex flex-col px-3 pb-3 pt-2">
                     <span
-                        className={`self-start rounded-full px-2 py-0.5 text-[9px] font-bold uppercase ${COLOR[a.status]}`}
+                        className={`self-start rounded-full px-2 py-0.5 text-xs font-bold uppercase ${COLOR[a.status]}`}
                     >
                         {STATUSES[a.status]}
                     </span>
                     <p className="m-0 mt-1 wrap-break-word text-lg font-bold text-azul">{a.name}</p>
-                    <p className="m-0 text-[10px] text-slate-500">{a.owner}</p>
+                    <p className="m-0 text-xs text-slate-500">{a.owner}</p>
                 </div>
             </button>
 
@@ -38,7 +38,7 @@ export function ArticleCard({ a, onViewAction, onEditAction }) {
                 <button
                     type="button"
                     onClick={onEditAction}
-                    className="cursor-pointer self-center pb-3 pt-1 text-[11px] font-semibold text-azul-link hover:underline"
+                    className="cursor-pointer self-center pb-3 pt-1 text-xs font-semibold text-azul-link hover:underline"
                 >
                     Editar Artículo
                 </button>

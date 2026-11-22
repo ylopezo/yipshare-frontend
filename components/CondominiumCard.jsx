@@ -19,13 +19,13 @@ export function CondominiumCard({ condominium, role }) {
             <div className="h-24 shrink-0 bg-gris-imagen" />
 
             <div className="px-3 pb-4 pt-2">
-                <span className="inline-block rounded-full bg-azul-suave px-2 py-0.5 text-[9px] font-bold text-azul">
+                <span className="inline-block rounded-full bg-azul-suave px-2 py-0.5 text-xs font-bold text-azul">
                     {LABEL[role]}
                 </span>
 
                 <p className="m-0 mt-1 text-lg font-bold text-azul-texto">{condominium.name}</p>
 
-                <p className="m-0 text-[10px] font-semibold text-celeste">Admin: {condominium.admin}</p>
+                <p className="m-0 text-xs font-semibold text-celeste">Admin: {condominium.admin}</p>
             </div>
         </Link>
     );

@@ -45,12 +45,12 @@ export default function NotificationsPage() {
                                     className={`rounded-xl bg-white px-5 py-4 shadow-sm ${n.isRead ? "" : "border-l-4 border-azul-claro"}`}
                                 >
                                     {!n.isRead && (
-                                        <span className="mr-2 rounded-full bg-azul-claro px-2 py-0.5 text-[10px] font-bold text-white">
+                                        <span className="mr-2 rounded-full bg-azul-claro px-2 py-0.5 text-xs font-bold text-white">
                                             Nueva
                                         </span>
                                     )}
                                     <span
-                                        className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                                        className={`rounded-full px-2 py-0.5 text-xs font-bold ${
                                             accepted ? "bg-verde-suave text-green-900" : "bg-rojo-suave text-red-900"
                                         }`}
                                     >

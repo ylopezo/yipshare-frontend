@@ -47,14 +47,14 @@ export default function RequestsPage() {
                     <ul className="m-0 list-none space-y-3 p-0 pb-2">
                         {filtered.map((request) => (
                             <li key={request.id} className="rounded-xl border border-slate-400 bg-white px-4 py-3">
-                                <div className={`${GRID} items-center text-center text-[11px] md:text-xs`}>
+                                <div className={`${GRID} items-center text-center text-xs`}>
                                     <span className="wrap-break-word">{request.name}</span>
                                     <span className="wrap-break-word">{request.address}</span>
 
                                     <button
                                         type="button"
                                         onClick={() => setViewDocuments(request)}
-                                        className="cursor-pointer text-[11px] font-semibold uppercase text-azul-claro hover:underline md:text-xs"
+                                        className="cursor-pointer text-xs font-semibold uppercase text-azul-claro hover:underline md:text-xs"
                                     >
                                         Ver documentos
                                     </button>
@@ -65,14 +65,14 @@ export default function RequestsPage() {
                                         <button
                                             type="button"
                                             onClick={() => setConfirmation({ action: "accept", request })}
-                                            className="w-full cursor-pointer rounded-full bg-azul py-0.5 text-[11px] text-white transition hover:bg-azul-claro"
+                                            className="w-full cursor-pointer rounded-full bg-azul py-0.5 text-xs text-white transition hover:bg-azul-claro"
                                         >
                                             Aceptar
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => setConfirmation({ action: "deny", request })}
-                                            className="w-full cursor-pointer rounded-full border border-azul bg-white py-0.5 text-[11px] text-azul transition hover:bg-slate-100"
+                                            className="w-full cursor-pointer rounded-full border border-azul bg-white py-0.5 text-xs text-azul transition hover:bg-slate-100"
                                         >
                                             Denegar
                                         </button>

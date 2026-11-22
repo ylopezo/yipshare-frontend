@@ -35,7 +35,7 @@ export default function CondominiumsPage() {
                     <ul className="m-0 list-none space-y-3 p-0 pb-2">
                         {filtered.map((condominium) => (
                             <li key={condominium.id} className="rounded-xl border border-slate-400 bg-white px-4 py-3">
-                                <div className={`${GRID} items-center text-center text-[11px] md:text-xs`}>
+                                <div className={`${GRID} items-center text-center text-xs`}>
                                     <span className="break-words">{condominium.name}</span>
                                     <span className="break-words">{condominium.address}</span>
                                     <span>{condominium.unitCount}</span>
@@ -46,14 +46,14 @@ export default function CondominiumsPage() {
                                     <button
                                         type="button"
                                         onClick={() => setDialog({ type: "edit", condominium })}
-                                        className="col-start-2 mx-auto w-20 cursor-pointer rounded-full bg-azul py-0.5 text-[11px] text-white transition hover:bg-azul-claro md:w-24"
+                                        className="col-start-2 mx-auto w-20 cursor-pointer rounded-full bg-azul py-0.5 text-xs text-white transition hover:bg-azul-claro md:w-24"
                                     >
                                         Editar
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setDialog({ type: "delete", condominium })}
-                                        className="col-start-3 mx-auto w-20 cursor-pointer rounded-full border border-azul bg-white py-0.5 text-[11px] text-azul transition hover:bg-slate-100 md:w-24"
+                                        className="col-start-3 mx-auto w-20 cursor-pointer rounded-full border border-azul bg-white py-0.5 text-xs text-azul transition hover:bg-slate-100 md:w-24"
                                     >
                                         Eliminar
                                     </button>

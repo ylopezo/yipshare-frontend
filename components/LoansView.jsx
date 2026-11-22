@@ -132,9 +132,9 @@ export function LoansView({ loans, user, onRespondAction, onCodeAction, onRateAc
 
                 <div className="px-3 pb-3 pt-2">
                     <p className="m-0 break-words text-base font-bold text-azul">{p.name}</p>
-                    <p className="m-0 text-[10px] text-slate-500">{role === "borrower" ? p.owner : p.borrower}</p>
+                    <p className="m-0 text-xs text-slate-500">{role === "borrower" ? p.owner : p.borrower}</p>
                     {p.status === "in_progress" && p.end && (
-                        <p className="m-0 mt-1 text-[10px] text-slate-500">
+                        <p className="m-0 mt-1 text-xs text-slate-500">
                             Vence:{" "}
                             {new Date(p.end).toLocaleString("es-MX", {
                                 dateStyle: "medium",
@@ -145,7 +145,7 @@ export function LoansView({ loans, user, onRespondAction, onCodeAction, onRateAc
 
                     <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
                         <span
-                            className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${LOAN_STATUS[p.status].cssClass}`}
+                            className={`rounded-full px-2 py-0.5 text-xs font-bold ${LOAN_STATUS[p.status].cssClass}`}
                         >
                             {LOAN_STATUS[p.status].text}
                         </span>
@@ -153,7 +153,7 @@ export function LoansView({ loans, user, onRespondAction, onCodeAction, onRateAc
                             <button
                                 type="button"
                                 onClick={a.open}
-                                className={`${DARK_BUTTON} px-3 py-1 text-[10px] font-semibold`}
+                                className={`${DARK_BUTTON} px-3 py-1 text-xs font-semibold`}
                             >
                                 {a.text}
                             </button>
@@ -215,7 +215,7 @@ export function LoansView({ loans, user, onRespondAction, onCodeAction, onRateAc
                                             return (
                                                 <li key={r.id} className="rounded-xl border border-slate-300 px-3 py-2">
                                                     <span
-                                                        className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${info.cssClass}`}
+                                                        className={`rounded-full px-2 py-0.5 text-xs font-bold ${info.cssClass}`}
                                                     >
                                                         {info.text}
                                                     </span>

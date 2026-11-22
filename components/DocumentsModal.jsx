@@ -41,7 +41,7 @@ export function DocumentsModal({ request, onCloseAction }) {
 
                             <button
                                 type="button"
-                                className="cursor-pointer text-[11px] font-semibold uppercase text-azul-claro hover:underline"
+                                className="cursor-pointer text-xs font-semibold uppercase text-azul-claro hover:underline"
                             >
                                 Abrir
                             </button>

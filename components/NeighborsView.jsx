@@ -33,7 +33,7 @@ export function NeighborsView({ neighbors, onPermissionAction, onKickOutAction }
                 >
                     <div className="min-w-0 flex-1 basis-40">
                         <p className="m-0 break-words text-sm font-bold">{v.name}</p>
-                        <p className={`m-0 text-[11px] ${v.upToDate ? "text-azul-link" : "text-azul"}`}>
+                        <p className={`m-0 text-xs ${v.upToDate ? "text-azul-link" : "text-azul"}`}>
                             {v.upToDate ? "Al Corriente" : "Adeudo de Mantenimiento"}
                         </p>
                     </div>

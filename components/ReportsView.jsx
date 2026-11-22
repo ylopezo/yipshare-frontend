@@ -124,7 +124,7 @@ export function ReportsView({ reports, onChangeStatusAction }) {
                                         >
                                             <span className="min-w-0 truncate">Reporte contra {r.involved}</span>
                                             <span
-                                                className={`shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold ${info.cssClass}`}
+                                                className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-bold ${info.cssClass}`}
                                             >
                                                 {info.text}
                                             </span>
