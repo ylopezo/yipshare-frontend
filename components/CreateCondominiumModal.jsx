@@ -13,10 +13,10 @@ const ADDRESS = [
 ];
 
 const DOCUMENTS = [
-    ["deed", "Escritura Constitutiva del Régimen de Propiedad en Condominio"],
-    ["minutes", "Acta de Asamblea de Nombramiento del Administrador"],
-    ["rfc", "RFC del Condominio"],
-    ["idDocument", "Identificación oficial del Administrador"],
+    ["ecrpcDocument", "Escritura Constitutiva del Régimen de Propiedad en Condominio"],
+    ["aanaDocument", "Acta de Asamblea de Nombramiento del Administrador"],
+    ["ownerIneDocument", "RFC del Condominio"],
+    ["condominiumRfcDocument", "Identificación oficial del Administrador"],
 ];
 
 const MAX_PDF_BYTES = 50 * 1024 * 1024;

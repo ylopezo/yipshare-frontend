@@ -11,6 +11,8 @@ import { ConfirmDialog } from "@/components/Modal";
 import { JoinCondominiumModal } from "@/components/JoinCondominiumModal";
 import { createCondominium, getMyCondominiums, joinCondominium } from "@/lib/condominiums";
 import { countUnread } from "@/lib/notifications";
+import { ResidentProfileModal } from "@/components/ResidentProfileModal";
+import { fetchProfile } from "@/lib/session";
 
 const JOIN_ERRORS = {
     404: "No existe un condominio aprobado con ese código.",
@@ -39,6 +41,7 @@ export default function ResidentHomePage() {
     const [registered, setRegistered] = useState([]);
     const [joined, setJoined] = useState([]);
     const [unread, setUnread] = useState(0);
+    const [leaving, setLeaving] = useState(false);
 
     useEffect(() => {
         getMyCondominiums().then(({ registered, joined }) => {
@@ -51,6 +54,8 @@ export default function ResidentHomePage() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [modal, setModal] = useState(null);
     const [notice, setNotice] = useState(null);
+    const [profile, setProfile] = useState(false);
+    const [profileData, setProfileData] = useState({});
 
     const menuRef = useRef(null);
 
@@ -121,6 +126,12 @@ export default function ResidentHomePage() {
     const primaryButton =
         "w-56 cursor-pointer rounded-lg bg-oscuro py-2 text-xs font-semibold text-white transition hover:bg-oscuro-hover";
 
+    const ITEM =
+        "flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-bold uppercase tracking-wide [&>svg]:shrink-0";
+
+    const itemClass = (active) =>
+        `${ITEM} cursor-pointer ${active ? "text-white" : "text-white/40 hover:text-white/80"}`;
+
     return (
         <div className="flex h-dvh flex-col overflow-hidden bg-fondo font-sans text-black">
             <header className="flex h-25 shrink-0 items-center gap-4 bg-azul px-4 text-white md:px-6">
@@ -185,6 +196,16 @@ export default function ResidentHomePage() {
                                 </span>
                             )}
                         </Link>
+
+                        <button
+                            type="button"
+                            aria-label="Perfil"
+                            aria-haspopup="dialog"
+                            onClick={() => setProfileOpen(true)}
+                            className="cursor-pointer rounded-full p-1 text-white transition hover:bg-white/10"
+                        >
+                            <Icon name="user" size={30} />
+                        </button>
                     </div>
 
                     <div className="relative hidden sm:block">
@@ -208,61 +229,82 @@ export default function ResidentHomePage() {
                 </div>
             </header>
 
-            <main className="min-h-0 flex-1 overflow-y-auto px-4 pb-8 pt-6 md:px-10">
-                {notice && (
-                    <div
-                        role="status"
-                        className="mb-6 flex items-center justify-between gap-4 rounded-lg border border-celeste bg-azul-suave px-4 py-2 text-sm text-azul"
+            <div className="flex min-h-0 flex-1">
+                <aside className="flex w-16 shrink-0 flex-col space-y-3 bg-azul px-1 pt-8 md:w-56 md:px-3">
+                    <button
+                        type="button"
+                        onClick={async () => {
+                            const fresh = await fetchProfile();
+                            setProfile(true);
+                        }}
+                        className={itemClass(false)}
                     >
-                        <span>{notice}</span>
+                        <Icon name="user" size={26} />
+                        <span className="hidden md:inline">Perfil</span>
+                    </button>
 
-                        <button
-                            type="button"
-                            aria-label="Cerrar aviso"
-                            onClick={() => setNotice(null)}
-                            className="cursor-pointer rounded-full p-1 hover:bg-white/60"
+                    <button type="button" onClick={() => setLeaving(true)} className={itemClass(false)}>
+                        <Icon name="logout" size={26} />
+                        <span className="hidden md:inline">Cerrar sesión</span>
+                    </button>
+                </aside>
+
+                <main className="min-h-0 flex-1 overflow-y-auto px-4 pb-8 pt-6 md:px-10">
+                    {notice && (
+                        <div
+                            role="status"
+                            className="mb-6 flex items-center justify-between gap-4 rounded-lg border border-celeste bg-azul-suave px-4 py-2 text-sm text-azul"
                         >
-                            <Icon name="close" size={16} />
-                        </button>
-                    </div>
-                )}
+                            <span>{notice}</span>
 
-                {noCondominiums ? (
-                    <>
-                        <h2 className="m-0 text-base font-bold">Condominios Registrados</h2>
-
-                        <h2 className="m-0 mt-6 text-base font-bold">Condominios Unidos</h2>
-
-                        <div className="mt-12 flex flex-col items-center gap-3">
-                            <p className="m-0 text-xs font-bold text-celeste">No hay condominios disponibles</p>
-
-                            <button type="button" onClick={() => setModal("create")} className={primaryButton}>
-                                Crear Condominio
-                            </button>
-
-                            <button type="button" onClick={() => setModal("join")} className={primaryButton}>
-                                Unirse a Condominio
+                            <button
+                                type="button"
+                                aria-label="Cerrar aviso"
+                                onClick={() => setNotice(null)}
+                                className="cursor-pointer rounded-full p-1 hover:bg-white/60"
+                            >
+                                <Icon name="close" size={16} />
                             </button>
                         </div>
-                    </>
-                ) : noResults ? (
-                    <p className="py-10 text-center text-sm text-slate-500">No se encontraron condominios.</p>
-                ) : (
-                    <>
-                        <Section title="Condominios Registrados" empty={filteredRegistered.length === 0}>
-                            {filteredRegistered.map((condominium) => (
-                                <CondominiumCard key={condominium.id} condominium={condominium} role="admin" />
-                            ))}
-                        </Section>
+                    )}
 
-                        <Section title="Condominios Unidos" empty={filteredJoined.length === 0}>
-                            {filteredJoined.map((condominium) => (
-                                <CondominiumCard key={condominium.id} condominium={condominium} role="resident" />
-                            ))}
-                        </Section>
-                    </>
-                )}
-            </main>
+                    {noCondominiums ? (
+                        <>
+                            <h2 className="m-0 text-base font-bold">Condominios Registrados</h2>
+
+                            <h2 className="m-0 mt-6 text-base font-bold">Condominios Unidos</h2>
+
+                            <div className="mt-12 flex flex-col items-center gap-3">
+                                <p className="m-0 text-xs font-bold text-celeste">No hay condominios disponibles</p>
+
+                                <button type="button" onClick={() => setModal("create")} className={primaryButton}>
+                                    Crear Condominio
+                                </button>
+
+                                <button type="button" onClick={() => setModal("join")} className={primaryButton}>
+                                    Unirse a Condominio
+                                </button>
+                            </div>
+                        </>
+                    ) : noResults ? (
+                        <p className="py-10 text-center text-sm text-slate-500">No se encontraron condominios.</p>
+                    ) : (
+                        <>
+                            <Section title="Condominios Registrados" empty={filteredRegistered.length === 0}>
+                                {filteredRegistered.map((condominium) => (
+                                    <CondominiumCard key={condominium.id} condominium={condominium} role="admin" />
+                                ))}
+                            </Section>
+
+                            <Section title="Condominios Unidos" empty={filteredJoined.length === 0}>
+                                {filteredJoined.map((condominium) => (
+                                    <CondominiumCard key={condominium.id} condominium={condominium} role="resident" />
+                                ))}
+                            </Section>
+                        </>
+                    )}
+                </main>
+            </div>
 
             {modal === "join" && (
                 <JoinCondominiumModal
@@ -299,6 +341,33 @@ export default function ResidentHomePage() {
                         setConfirmation(null);
                     }}
                     onCancelAction={() => setConfirmation(null)}
+                />
+            )}
+
+            {leaving && (
+                <ConfirmDialog
+                    title="¿Estás seguro?"
+                    message="Se cerrará tu sesión."
+                    onConfirmAction={async () => {
+                        await signOut();
+                        router.replace("/login");
+                    }}
+                    onCancelAction={() => setLeaving(false)}
+                />
+            )}
+
+            {profile && (
+                <ResidentProfileModal
+                    profile={{ ...profileData, rating: 0 }}
+                    received={{}}
+                    onUpdateAction={(data) => {
+                        setProfileData({ ...profileData, ...data });
+                        setProfile(false);
+                    }}
+                    onDeleteAction={() => {
+                        router.replace("/login");
+                    }}
+                    onCloseAction={() => setProfile(false)}
                 />
             )}
         </div>
