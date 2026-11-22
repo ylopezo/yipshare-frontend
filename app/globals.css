@@ -19,6 +19,11 @@
     --color-degradado-fin: #3b8bd9;
 }
 
+:where(a, button, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid var(--color-celeste);
+    outline-offset: 2px;
+}
+
 html[data-has-session] [data-public] {
     display: none !important;
 }
