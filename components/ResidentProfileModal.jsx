@@ -71,7 +71,7 @@ export function ResidentProfileModal({ profile, received, onUpdateAction, onDele
 
                     <div className="grid gap-6 md:grid-cols-[220px_1fr]">
                         <div className="flex flex-col items-center justify-center text-center">
-                            <span className="flex h-32 w-32 items-center justify-center rounded-full bg-[#e4e4e4] text-slate-500">
+                            <span className="flex h-32 w-32 items-center justify-center rounded-full bg-gris-imagen text-slate-500">
                                 <Icon name="user" size={80} />
                             </span>
                             <p className="m-0 mt-4 wrap-break-word text-xl font-bold text-azul">
@@ -98,7 +98,7 @@ export function ResidentProfileModal({ profile, received, onUpdateAction, onDele
                             <button
                                 type="button"
                                 onClick={() => setShowReceived(true)}
-                                className="mt-1 cursor-pointer text-xs font-semibold text-[#5aa0e8] hover:underline"
+                                className="mt-1 cursor-pointer text-xs font-semibold text-azul-link hover:underline"
                             >
                                 Ver calificaciones recibidas
                             </button>
@@ -236,7 +236,7 @@ export function ResidentProfileModal({ profile, received, onUpdateAction, onDele
                         <button
                             type="button"
                             onClick={() => setShowReceived(false)}
-                            className="mx-auto mt-6 block cursor-pointer text-sm font-bold text-[#2a5a88] hover:underline"
+                            className="mx-auto mt-6 block cursor-pointer text-sm font-bold text-azul-texto hover:underline"
                         >
                             Cerrar
                         </button>

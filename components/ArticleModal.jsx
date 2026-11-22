@@ -73,7 +73,7 @@ export function ArticleModal({ article, onSaveAction, onCancelAction }) {
                             onClick={() => selectedFile.current?.click()}
                             aria-label="Elegir imagen"
                             className="flex aspect-square w-full cursor-pointer items-center
-                            justify-center overflow-hidden rounded-xl bg-[#e4e4e4] text-slate-500 hover:bg-[#d8d8d8]"
+                            justify-center overflow-hidden rounded-xl bg-gris-imagen text-slate-500 hover:bg-[#d8d8d8]"
                         >
                             {image ? (
                                 <img src={image} alt="" className="h-full w-full object-cover" />
@@ -188,7 +188,7 @@ export function ArticleModal({ article, onSaveAction, onCancelAction }) {
                 <button
                     type="button"
                     onClick={onCancelAction}
-                    className="mx-auto mt-3 block cursor-pointer text-sm font-bold text-[#2a5a88] hover:underline"
+                    className="mx-auto mt-3 block cursor-pointer text-sm font-bold text-azul-texto hover:underline"
                 >
                     Cancelar
                 </button>

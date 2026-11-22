@@ -83,7 +83,7 @@ export default function LoginPage() {
                 {notice && (
                     <p
                         role="alert"
-                        className="mb-0 mt-4 rounded-lg bg-[#dbe7f5] px-3 py-2 text-center text-sm text-azul"
+                        className="mb-0 mt-4 rounded-lg bg-azul-suave px-3 py-2 text-center text-sm text-azul"
                     >
                         {notice}
                     </p>

@@ -8,11 +8,21 @@
     --color-celeste: #78b0ea;
     --color-fondo: #e9eef3;
     --color-gris: #eeeeee;
+    --color-azul-texto: #2a5a88;
+    --color-azul-suave: #dbe7f5;
+    --color-azul-link: #5aa0e8;
+    --color-gris-imagen: #e4e4e4;
+    --color-verde-suave: #b9f0c8;
+    --color-amarillo-suave: #fde9a8;
+    --color-rojo-suave: #fde2e2;
+    --color-degradado-inicio: #24557f;
+    --color-degradado-fin: #3b8bd9;
 }
 
 html[data-has-session] [data-public] {
     display: none !important;
 }
+
 html:not([data-has-session]) [data-private] {
     display: none !important;
 }

@@ -9,10 +9,10 @@ import { LIGHT_BUTTON, DARK_BUTTON, Modal } from "./Modal";
 export const LOAN_STATUS = {
     pending: {
         text: "Pendiente de conformación",
-        cssClass: "bg-[#fde9a8] text-amber-900",
+        cssClass: "bg-amarillo-suave text-amber-900",
     },
-    accepted: { text: "Reservado", cssClass: "bg-[#dbe7f5] text-azul" },
-    in_progress: { text: "En préstamo", cssClass: "bg-[#b9f0c8] text-green-900" },
+    accepted: { text: "Reservado", cssClass: "bg-azul-suave text-azul" },
+    in_progress: { text: "En préstamo", cssClass: "bg-verde-suave text-green-900" },
     finished: { text: "Finalizado", cssClass: "bg-slate-200 text-slate-700" },
     rejected: { text: "Rechazado", cssClass: "bg-azul text-white" },
 };
@@ -86,7 +86,7 @@ function CodeModal({ phase, initialCode, onConfirmAction, onCancelAction }) {
                 <button
                     type="button"
                     onClick={onCancelAction}
-                    className="mx-auto mt-4 block cursor-pointer text-sm font-bold text-[#2a5a88] hover:underline"
+                    className="mx-auto mt-4 block cursor-pointer text-sm font-bold text-azul-texto hover:underline"
                 >
                     Cancelar
                 </button>
@@ -126,7 +126,7 @@ export function LoansView({ loans, user, onRespondAction, onCodeAction, onRateAc
         const a = action(p, role);
         return (
             <li key={p.id} className="w-48 overflow-hidden rounded-lg bg-white shadow-sm">
-                <div className="h-24 bg-[#e4e4e4]">
+                <div className="h-24 bg-gris-imagen">
                     {p.image && <img src={p.image} alt={p.name} className="h-full w-full object-cover" />}
                 </div>
 
@@ -253,7 +253,7 @@ export function LoansView({ loans, user, onRespondAction, onCodeAction, onRateAc
                         <button
                             type="button"
                             onClick={close}
-                            className="mx-auto mt-4 block cursor-pointer text-sm font-bold text-[#2a5a88] hover:underline"
+                            className="mx-auto mt-4 block cursor-pointer text-sm font-bold text-azul-texto hover:underline"
                         >
                             Cancelar
                         </button>

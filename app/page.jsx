@@ -22,7 +22,7 @@ const STEPS = [
 export default function Home() {
     return (
         <GuestOnly>
-            <div className="flex min-h-screen flex-col bg-linear-to-b from-[#24557f] to-[#3b8bd9] pb-8 font-sans">
+            <div className="flex min-h-screen flex-col bg-linear-to-b from-degradado-inicio to-degradado-fin pb-8 font-sans">
                 <div className="flex flex-1 flex-col text-white">
                     <header className="bg-azul/80">
                         <nav className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 md:px-6">

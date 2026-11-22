@@ -71,7 +71,7 @@ export function LogoSessionMenu() {
                                 setMenuOpen(false);
                                 setConfirming(true);
                             }}
-                            className="block w-full cursor-pointer px-3 py-2 text-left text-sm font-bold text-[#2a5a88] hover:bg-slate-100"
+                            className="block w-full cursor-pointer px-3 py-2 text-left text-sm font-bold text-azul-texto hover:bg-slate-100"
                         >
                             Cerrar sesión
                         </button>

@@ -7,17 +7,17 @@ export const REPORT_STATUSES = [
     {
         value: "in_review",
         text: "En revisión",
-        cssClass: "bg-[#dbe7f5] text-azul",
+        cssClass: "bg-azul-suave text-azul",
     },
     {
         value: "pending",
         text: "Pendiente",
-        cssClass: "bg-[#fde9a8] text-amber-900",
+        cssClass: "bg-amarillo-suave text-amber-900",
     },
     {
         value: "resolved",
         text: "Finalizado",
-        cssClass: "bg-[#b9f0c8] text-green-900",
+        cssClass: "bg-verde-suave text-green-900",
     },
 ];
 

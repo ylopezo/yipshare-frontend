@@ -59,7 +59,7 @@ export function RateModal({ neighbor, onSubmitAction, onCancelAction }) {
                 <button
                     type="button"
                     onClick={onCancelAction}
-                    className="mx-auto mt-4 block cursor-pointer text-sm font-bold text-[#2a5a88] hover:underline"
+                    className="mx-auto mt-4 block cursor-pointer text-sm font-bold text-azul-texto hover:underline"
                 >
                     Omitir
                 </button>

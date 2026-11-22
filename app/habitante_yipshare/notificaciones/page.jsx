@@ -51,19 +51,19 @@ export default function NotificationsPage() {
                                     )}
                                     <span
                                         className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                                            accepted ? "bg-[#b9f0c8] text-green-900" : "bg-[#fde2e2] text-red-900"
+                                            accepted ? "bg-verde-suave text-green-900" : "bg-rojo-suave text-red-900"
                                         }`}
                                     >
                                         {accepted ? "Aceptado" : "Rechazado"}
                                     </span>
 
-                                    <p className="m-0 mt-2 font-bold text-[#2a5a88]">{n.title}</p>
+                                    <p className="m-0 mt-2 font-bold text-azul-texto">{n.title}</p>
                                     <p className="m-0 mt-1 text-sm text-slate-600">{n.message}</p>
 
                                     {n.code && (
                                         <p className="m-0 mt-3 text-sm text-slate-600">
                                             Código para unirse:{" "}
-                                            <span className="rounded-lg bg-[#dbe7f5] px-3 py-1 font-mono text-lg font-bold tracking-widest text-azul select-all">
+                                            <span className="rounded-lg bg-azul-suave px-3 py-1 font-mono text-lg font-bold tracking-widest text-azul select-all">
                                                 {n.code}
                                             </span>
                                         </p>

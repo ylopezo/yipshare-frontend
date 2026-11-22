@@ -123,7 +123,7 @@ export function JoinCondominiumModal({ onJoinAction, onCancelAction }) {
                 <button
                     type="button"
                     onClick={onCancelAction}
-                    className="mx-auto mt-3 block cursor-pointer text-sm font-bold text-[#2a5a88] hover:underline"
+                    className="mx-auto mt-3 block cursor-pointer text-sm font-bold text-azul-texto hover:underline"
                 >
                     Cancelar
                 </button>

@@ -6,8 +6,8 @@ import { LIGHT_BUTTON } from "./Modal";
 import { Icon } from "./Icon";
 
 const COLOR = {
-    available: "bg-[#b9f0c8] text-green-900",
-    pending: "bg-[#fde9a8] text-amber-900",
+    available: "bg-verde-suave text-green-900",
+    pending: "bg-amarillo-suave text-amber-900",
     unavailable: "bg-azul text-white",
 };
 
@@ -19,7 +19,7 @@ export function ArticleCard({ a, onViewAction, onEditAction }) {
                 onClick={onViewAction}
                 className="flex flex-1 cursor-pointer flex-col text-left hover:bg-slate-50"
             >
-                <div className="h-28 w-full shrink-0 bg-[#e4e4e4]">
+                <div className="h-28 w-full shrink-0 bg-gris-imagen">
                     {a.image && <img src={a.image} alt={a.name} className="h-full w-full object-cover" />}
                 </div>
 
@@ -38,7 +38,7 @@ export function ArticleCard({ a, onViewAction, onEditAction }) {
                 <button
                     type="button"
                     onClick={onEditAction}
-                    className="cursor-pointer self-center pb-3 pt-1 text-[11px] font-semibold text-[#5aa0e8] hover:underline"
+                    className="cursor-pointer self-center pb-3 pt-1 text-[11px] font-semibold text-azul-link hover:underline"
                 >
                     Editar Artículo
                 </button>
@@ -62,7 +62,7 @@ export function ArticleDetail({ a, onBackAction, onRequestAction, onDeleteAction
             </button>
 
             <div className="mx-auto mt-2 w-full max-w-2xl rounded-[2.5rem] bg-white px-8 py-6 shadow-sm">
-                <div className="h-64 overflow-hidden rounded-2xl bg-[#e4e4e4]">
+                <div className="h-64 overflow-hidden rounded-2xl bg-gris-imagen">
                     {a.image && <img src={a.image} alt={a.name} className="h-full w-full object-cover" />}
                 </div>
 
