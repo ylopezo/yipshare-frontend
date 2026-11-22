@@ -37,11 +37,19 @@ export function ArticleModal({ article, onSaveAction, onCancelAction }) {
     const [condition, setCondition] = useState(article?.condition ?? "");
     const [durations, setDurations] = useState(article?.durations ?? []);
     const [image, setImage] = useState(article?.image ?? null);
+    const [file, setFile] = useState(null);
 
     const selectedFile = useRef(null);
 
     const title = article ? "Editar artículo" : "Agregar artículo";
-    const isValid = name.trim() !== "" && description.trim() !== "" && category && condition && durations.length > 0;
+    // the back requires a photo when creating
+    const isValid =
+        name.trim() !== "" &&
+        description.trim() !== "" &&
+        category &&
+        condition &&
+        durations.length > 0 &&
+        (article || file);
 
     const toggleDuration = (t) =>
         setDurations((prev) => DURATIONS.filter((x) => (x === t ? !prev.includes(x) : prev.includes(x))));
@@ -60,6 +68,7 @@ export function ArticleModal({ article, onSaveAction, onCancelAction }) {
                         durations,
                         status: article?.status ?? "available",
                         image,
+                        file,
                     });
                 }}
                 className="max-h-[90vh] w-[min(94vw,760px)] overflow-y-auto rounded-[2rem] bg-white px-8 py-8 shadow-xl"
@@ -95,7 +104,9 @@ export function ArticleModal({ article, onSaveAction, onCancelAction }) {
                             className="hidden"
                             onChange={(e) => {
                                 const f = e.target.files?.[0];
-                                if (f?.type.startsWith("image/")) setImage(URL.createObjectURL(f));
+                                if (!f?.type.startsWith("image/")) return;
+                                setImage(URL.createObjectURL(f));
+                                setFile(f);
                             }}
                         />
                     </div>

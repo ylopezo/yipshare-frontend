@@ -13,9 +13,19 @@ import { ConfirmDialog } from "@/components/Modal";
 import { LoansView } from "@/components/LoansView";
 import { ReportFormView } from "@/components/ReportFormView";
 import { ResidentProfileModal } from "@/components/ResidentProfileModal";
-import { advance, average } from "@/lib/loans";
+import { average } from "@/lib/loans";
 import { useCondominium } from "@/lib/condominiums";
-import { ME, SAMPLE_PROFILE } from "@/lib/sampleData";
+import {
+    confirmCode,
+    generateCode,
+    rateLoan,
+    requestLoan as sendLoanRequest,
+    respondLoan,
+    runAction,
+    saveArticle,
+    useCondominiumData,
+} from "@/lib/articles";
+import { SAMPLE_PROFILE } from "@/lib/sampleData";
 
 const ITEM = "flex w-full items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wide";
 const HEADER_ICON = "cursor-pointer rounded-full p-1 text-white hover:bg-white/10";
@@ -25,7 +35,8 @@ export default function CondominiumPage() {
     const { id } = useParams();
     const router = useRouter();
 
-    const [articles, setArticles] = useState([]);
+    const me = user?.username;
+    const { articles, loans, ratings, refresh } = useCondominiumData(id, me);
     const [searchQuery, setSearchQuery] = useState("");
     const [profile, setProfile] = useState(false);
     const [leaving, setLeaving] = useState(false);
@@ -33,10 +44,8 @@ export default function CondominiumPage() {
     const [modal, setModal] = useState(null);
     const [detailId, setDetailId] = useState(null);
     const [section, setSection] = useState("home");
-    const [loans, setLoans] = useState([]);
-    const [ratings, setRatings] = useState([]);
     const [reports, setReports] = useState([]);
-    const received = ratings.filter((c) => c.to === ME);
+    const received = ratings.filter((c) => c.to === me);
     const myRating = average(received);
 
     const { loading, condominium } = useCondominium(id);
@@ -55,66 +64,25 @@ export default function CondominiumPage() {
         );
     }
 
-    function save(data) {
-        if (modal === "new") {
-            const randomId = crypto.getRandomValues(new Uint32Array(1))[0];
-
-            setArticles((prev) => [
-                ...prev,
-                {
-                    ...data,
-                    id: randomId,
-                    owner: ME,
-                    address: `${profileData.building}, ${profileData.apartment}`,
-                    rating: myRating,
-                },
-            ]);
-        } else if (modal) {
-            const edited = modal.id;
-
-            setArticles((prev) => prev.map((a) => (a.id === edited ? { ...a, ...data } : a)));
-        }
-
-        setModal(null);
+    async function save(data) {
+        if (await runAction(saveArticle(id, modal === "new" ? null : modal.id, data), refresh)) setModal(null);
     }
 
-    function changeStatus(targetArticleId, status) {
-        setArticles((prev) => prev.map((a) => (a.id === targetArticleId ? { ...a, status } : a)));
-    }
-
-    function requestLoan(a, duration) {
-        const randomId = crypto.getRandomValues(new Uint32Array(1))[0];
-
-        setLoans((prev) => [
-            ...prev,
-            {
-                id: randomId,
-                articleId: a.id,
-                name: a.name,
-                image: a.image,
-                owner: a.owner,
-                borrower: ME,
-                duration,
-                status: "pending",
-                end: null,
-            },
-        ]);
-        changeStatus(a.id, "pending");
+    async function requestLoan(a, duration) {
+        if (!(await runAction(sendLoanRequest(a.id, duration), refresh))) return;
         setDetailId(null);
         setSection("loans");
     }
 
-    function respond(p, accept) {
-        setLoans((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: accept ? "accepted" : "rejected" } : x)));
-        if (!accept) changeStatus(p.articleId, "available");
+    const respond = (p, accept) => runAction(respondLoan(p.id, accept), refresh);
+
+    async function registerCode(p, code) {
+        const { status } = await confirmCode(p.id, code);
+        await refresh();
+        return status === 200;
     }
 
-    function registerCode(p) {
-        const newItem = advance(p, Date.now());
-
-        setLoans((prev) => prev.map((x) => (x.id === p.id ? newItem : x)));
-        changeStatus(p.articleId, newItem.status === "in_progress" ? "unavailable" : "available");
-    }
+    const rate = (c) => runAction(rateLoan({ loanId: c.loanId, stars: c.stars, comment: c.comment }), refresh);
 
     function report(data) {
         setReports((prev) => [
@@ -122,7 +90,7 @@ export default function CondominiumPage() {
             {
                 id: crypto.getRandomValues(new Uint32Array(1))[0],
                 involved: data.involved,
-                reportedBy: ME,
+                reportedBy: me,
                 details: data.details,
                 status: "pending",
             },
@@ -133,8 +101,8 @@ export default function CondominiumPage() {
 
     const visibleItems = articles.filter((a) => a.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    const mine = visibleItems.filter((a) => a.owner === ME);
-    const fromOthers = visibleItems.filter((a) => a.owner !== ME);
+    const mine = visibleItems.filter((a) => a.owner === me);
+    const fromOthers = visibleItems.filter((a) => a.owner !== me);
 
     const sections = [
         { id: "home", label: "Inicio", icon: "house" },
@@ -247,24 +215,23 @@ export default function CondominiumPage() {
                     {section === "loans" ? (
                         <LoansView
                             loans={loans}
-                            user={ME}
+                            user={me}
                             onRespondAction={respond}
+                            onGenerateCodeAction={(p) => generateCode(p.id)}
                             onCodeAction={registerCode}
                             reports={reports}
                             ratings={ratings}
-                            onRateAction={(c) => {
-                                setRatings((prev) => [...prev, c]);
-                            }}
+                            onRateAction={rate}
                         />
                     ) : section === "reports" ? (
-                        <ReportFormView loans={loans} user={ME} onSubmitAction={report} />
+                        <ReportFormView loans={loans} user={me} onSubmitAction={report} />
                     ) : detail ? (
                         <ArticleDetail
                             key={detail.id}
                             a={detail}
                             onBackAction={() => setDetailId(null)}
                             onRequestAction={
-                                detail.owner !== ME ? (duration) => requestLoan(detail, duration) : undefined
+                                detail.owner !== me ? (duration) => requestLoan(detail, duration) : undefined
                             }
                         />
                     ) : (

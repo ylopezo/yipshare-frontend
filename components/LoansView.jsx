@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { isCodeValid, newCode, CODE_SECONDS } from "@/lib/loans";
+import { CODE_SECONDS } from "@/lib/loans";
 import { RateModal } from "./RateModal";
 import { REPORT_STATUSES } from "./ReportsView";
 import { LIGHT_BUTTON, DARK_BUTTON, Modal } from "./Modal";
@@ -17,36 +17,84 @@ export const LOAN_STATUS = {
     rejected: { text: "Rechazado", cssClass: "bg-azul text-white" },
 };
 
-function CodeModal({ phase, initialCode, onConfirmAction, onCancelAction }) {
-    const [codeInput, setCodeInput] = useState(initialCode);
-    const [now, setNow] = useState(initialCode.expiresAt - CODE_SECONDS * 1000);
-    const [written, setWritten] = useState("");
-    const [error, setError] = useState(false);
+// The owner generates the code in the back and shows it; the borrower types it in to confirm.
+function ShowCodeModal({ phase, onGenerateAction, onCancelAction }) {
+    const [code, setCode] = useState(null);
+    const [now, setNow] = useState(() => Date.now());
+
+    const generate = async () => {
+        const value = await onGenerateAction();
+        if (value) setCode({ value, expiresAt: Date.now() + CODE_SECONDS * 1000 });
+        else onCancelAction();
+    };
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- state is set after an await
+        generate();
         const t = setInterval(() => setNow(Date.now()), 1000);
         return () => clearInterval(t);
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- generate once on open
     }, []);
 
-    useEffect(() => {
-        const t = setTimeout(() => setCodeInput(newCode(Date.now())), Math.max(0, codeInput.expiresAt - Date.now()));
-        return () => clearTimeout(t);
-    }, [codeInput]);
+    const remaining = code ? Math.max(0, Math.ceil((code.expiresAt - now) / 1000)) : 0;
 
-    const remaining = Math.min(CODE_SECONDS, Math.max(0, Math.ceil((codeInput.expiresAt - now) / 1000)));
+    return (
+        <Modal label="Tu código" onCloseAction={onCancelAction}>
+            <div className="w-[min(92vw,360px)] rounded-[2rem] bg-white px-8 py-8 text-center shadow-xl">
+                <h2 className="m-0 text-xl font-extrabold uppercase">Tu código</h2>
+                <p className="mb-0 mt-1 text-xs text-slate-500">
+                    Código de {phase}. Dáselo al vecino para que lo ingrese.
+                </p>
+
+                <p className="m-0 mt-5 font-mono text-3xl font-bold tracking-widest text-azul">
+                    {code?.value ?? "······"}
+                </p>
+                {code && remaining > 0 && (
+                    <p className="m-0 mt-1 text-xs text-slate-500">
+                        Vence en {Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, "0")}
+                    </p>
+                )}
+                {code && remaining === 0 && (
+                    <button
+                        type="button"
+                        onClick={generate}
+                        className={`${DARK_BUTTON} mx-auto mt-3 block w-3/5 py-2 text-sm font-semibold`}
+                    >
+                        Generar otro
+                    </button>
+                )}
+
+                <button
+                    type="button"
+                    onClick={onCancelAction}
+                    className="mx-auto mt-4 block cursor-pointer text-sm font-bold text-azul-texto hover:underline"
+                >
+                    Cerrar
+                </button>
+            </div>
+        </Modal>
+    );
+}
+
+function CodeModal({ phase, onConfirmAction, onCancelAction }) {
+    const [written, setWritten] = useState("");
+    const [error, setError] = useState(false);
+    const [sending, setSending] = useState(false);
 
     return (
         <Modal label="Ingresar código" onCloseAction={onCancelAction}>
             <form
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                     e.preventDefault();
-                    if (isCodeValid(codeInput, written, Date.now())) onConfirmAction();
-                    else setError(true);
+                    setSending(true);
+                    const ok = await onConfirmAction(written.trim());
+                    setSending(false);
+                    if (!ok) setError(true);
                 }}
                 className="w-[min(92vw,360px)] rounded-[2rem] bg-white px-8 py-8 text-center shadow-xl"
             >
                 <h2 className="m-0 text-xl font-extrabold uppercase">Ingresar código</h2>
-                <p className="mb-0 mt-1 text-xs text-slate-500">Código de {phase}</p>
+                <p className="mb-0 mt-1 text-xs text-slate-500">Código de {phase} que te dio el dueño</p>
 
                 <input
                     aria-label="Código"
@@ -69,19 +117,11 @@ function CodeModal({ phase, initialCode, onConfirmAction, onCancelAction }) {
 
                 <button
                     type="submit"
-                    disabled={written.trim().length !== 6}
+                    disabled={written.trim().length !== 6 || sending}
                     className={`${DARK_BUTTON} mx-auto mt-4 block w-3/5 py-2 text-sm font-semibold`}
                 >
                     Confirmar
                 </button>
-
-                <div className="mt-6 border-t border-slate-300 pt-4">
-                    <p className="m-0 text-xs font-bold text-azul">Tu código</p>
-                    <p className="m-0 mt-1 font-mono text-3xl font-bold tracking-widest text-azul">{codeInput.value}</p>
-                    <p className="m-0 mt-1 text-xs text-slate-500">
-                        Vence en {Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, "0")}
-                    </p>
-                </div>
 
                 <button
                     type="button"
@@ -95,7 +135,16 @@ function CodeModal({ phase, initialCode, onConfirmAction, onCancelAction }) {
     );
 }
 
-export function LoansView({ loans, user, onRespondAction, onCodeAction, onRateAction, reports, ratings = [] }) {
+export function LoansView({
+    loans,
+    user,
+    onRespondAction,
+    onGenerateCodeAction,
+    onCodeAction,
+    onRateAction,
+    reports,
+    ratings = [],
+}) {
     const [popup, setPopup] = useState(null);
     const close = () => setPopup(null);
     const other = (p) => (p.owner === user ? p.borrower : p.owner);
@@ -108,10 +157,9 @@ export function LoansView({ loans, user, onRespondAction, onCodeAction, onRateAc
             };
         }
         if (p.status === "accepted" || p.status === "in_progress") {
-            return {
-                text: "Ingresar Código",
-                open: () => setPopup({ type: "code", p, code: newCode(Date.now()) }),
-            };
+            return role === "owner"
+                ? { text: "Mostrar Código", open: () => setPopup({ type: "showCode", p }) }
+                : { text: "Ingresar Código", open: () => setPopup({ type: "code", p }) };
         }
         if (p.status === "finished" && !ratings.some((c) => c.loanId === p.id && c.from === user)) {
             return {
@@ -261,14 +309,23 @@ export function LoansView({ loans, user, onRespondAction, onCodeAction, onRateAc
                 </Modal>
             )}
 
+            {popup?.type === "showCode" && (
+                <ShowCodeModal
+                    key={popup.p.id}
+                    phase={popup.p.status === "accepted" ? "entrega" : "devolución"}
+                    onGenerateAction={() => onGenerateCodeAction(popup.p)}
+                    onCancelAction={close}
+                />
+            )}
+
             {popup?.type === "code" && (
                 <CodeModal
                     key={popup.p.id}
                     phase={popup.p.status === "accepted" ? "entrega" : "devolución"}
-                    initialCode={popup.code}
-                    onConfirmAction={() => {
-                        onCodeAction(popup.p);
+                    onConfirmAction={async (code) => {
+                        if (!(await onCodeAction(popup.p, code))) return false;
                         setPopup(popup.p.status === "in_progress" ? { type: "rate", p: popup.p } : null);
+                        return true;
                     }}
                     onCancelAction={close}
                 />

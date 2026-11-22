@@ -17,18 +17,21 @@ import { RequestsView } from "@/components/RequestsView";
 import { AllLoansView } from "@/components/AllLoansView";
 import { NeighborsView } from "@/components/NeighborsView";
 import { useCondominium } from "@/lib/condominiums";
-import { advance, average } from "@/lib/loans";
+import { average } from "@/lib/loans";
 import { changeReportStatus as saveReportStatus, getCondominiumReports } from "@/lib/reports";
 import {
-    ME,
-    SAMPLE_PROFILE,
-    SAMPLE_NEIGHBORS,
-    SAMPLE_APPLICANTS,
-    SAMPLE_ARTICLES,
-    SAMPLE_LOANS,
-    SAMPLE_PEOPLE,
-    SAMPLE_RATINGS,
-} from "@/lib/sampleData";
+    confirmCode,
+    deleteArticle as removeArticle,
+    generateCode,
+    getCondominiumLoans,
+    rateLoan,
+    requestLoan as sendLoanRequest,
+    respondLoan,
+    runAction,
+    saveArticle,
+    useCondominiumData,
+} from "@/lib/articles";
+import { SAMPLE_PROFILE, SAMPLE_NEIGHBORS, SAMPLE_APPLICANTS } from "@/lib/sampleData";
 
 const SECTIONS = [
     { id: "home", label: "Inicio", icon: "house" },
@@ -47,17 +50,20 @@ export default function CondominiumAdminPage() {
     const { id } = useParams();
     const router = useRouter();
 
-    const [articles, setArticles] = useState(SAMPLE_ARTICLES);
-    const [loans, setLoans] = useState(SAMPLE_LOANS);
+    const me = user?.username;
+    const { articles, loans, ratings, refresh: refreshMine } = useCondominiumData(id, me);
+    const [allLoans, setAllLoans] = useState([]);
     const [neighbors, setNeighbors] = useState(SAMPLE_NEIGHBORS);
     const [applicants, setApplicants] = useState(SAMPLE_APPLICANTS);
     const [reports, setReports] = useState([]);
 
     useEffect(() => {
         getCondominiumReports(id).then(({ reports }) => setReports(reports));
+        getCondominiumLoans(id).then(setAllLoans);
     }, [id]);
-    const [ratings, setRatings] = useState(SAMPLE_RATINGS);
-    const received = ratings.filter((c) => c.to === ME);
+
+    const refresh = () => Promise.all([refreshMine(), getCondominiumLoans(id).then(setAllLoans)]);
+    const received = ratings.filter((c) => c.to === me);
     const myRating = average(received);
 
     const [section, setSection] = useState("home");
@@ -105,93 +111,36 @@ export default function CondominiumAdminPage() {
         setDetailId(null);
     }
 
-    function save(data) {
-        if (modal === "new") {
-            const randomId = crypto.getRandomValues(new Uint32Array(1))[0];
-
-            setArticles((prev) => [
-                ...prev,
-                {
-                    ...data,
-                    id: randomId,
-                    owner: ME,
-                    address: `${profileData.building}, ${profileData.apartment}`,
-                    rating: myRating,
-                },
-            ]);
-        } else if (modal) {
-            const edited = modal.id;
-            setArticles((prev) => prev.map((a) => (a.id === edited ? { ...a, ...data } : a)));
-        }
-
-        setModal(null);
+    async function save(data) {
+        if (await runAction(saveArticle(id, modal === "new" ? null : modal.id, data), refresh)) setModal(null);
     }
 
-    function changeArticleStatus(targetArticleId, status) {
-        setArticles((prev) => prev.map((a) => (a.id === targetArticleId ? { ...a, status } : a)));
+    async function deleteArticle(a) {
+        if (await runAction(removeArticle(id, a.id), refresh)) setDetailId(null);
     }
 
-    function deleteArticle(a) {
-        setArticles((prev) => prev.filter((x) => x.id !== a.id));
-        setLoans((prev) =>
-            prev.filter((p) => !(p.articleId === a.id && (p.status === "pending" || p.status === "accepted"))),
-        );
+    async function requestLoan(a, duration) {
+        if (!(await runAction(sendLoanRequest(a.id, duration), refresh))) return;
         setDetailId(null);
+        setSection("loans");
     }
 
-    function requestLoan(a, duration) {
-        const newItem = {
-            id: crypto.getRandomValues(new Uint32Array(1))[0],
-            articleId: a.id,
-            name: a.name,
-            image: a.image,
-            owner: a.owner,
-            borrower: ME,
-            duration,
-            status: "pending",
-            end: null,
-        };
+    const respond = (p, accept) => runAction(respondLoan(p.id, accept), refresh);
 
-        setLoans((prev) => [...prev, newItem]);
-        changeArticleStatus(a.id, "pending");
+    async function registerCode(p, code) {
+        const { status } = await confirmCode(p.id, code);
+        await refresh();
+        return status === 200;
     }
 
-    function respond(p, accept) {
-        const status = accept ? "accepted" : "rejected";
-
-        setLoans((prev) => prev.map((x) => (x.id === p.id ? { ...x, status } : x)));
-        if (!accept) changeArticleStatus(p.articleId, "available");
-    }
-
-    function registerCode(p) {
-        const updated = advance(p, Date.now());
-
-        setLoans((prev) => prev.map((x) => (x.id === p.id ? updated : x)));
-        if (updated.status === "in_progress") changeArticleStatus(p.articleId, "unavailable");
-        if (updated.status === "finished") changeArticleStatus(p.articleId, "available");
-    }
-
-    function rate(c) {
-        setRatings((prev) => [...prev, c]);
-    }
+    const rate = (c) => runAction(rateLoan({ loanId: c.loanId, stars: c.stars, comment: c.comment }), refresh);
 
     function togglePermission(v) {
         setNeighbors((prev) => prev.map((x) => (x.id === v.id ? { ...x, upToDate: !x.upToDate } : x)));
     }
 
+    // shortcut: neighbors are still sample data; once kicking out hits the back, refresh() picks up its articles/loans
     function kickOut(v) {
-        const removed = loans.filter(
-            (p) => (p.owner === v.user || p.borrower === v.user) && (p.status === "pending" || p.status === "accepted"),
-        );
-        const removedIds = new Set(removed.map((p) => p.id));
-        const releasedArticles = new Set(removed.map((p) => p.articleId));
-
-        setLoans((prev) => prev.filter((p) => !removedIds.has(p.id)));
-        setArticles((prev) =>
-            prev
-                .filter((a) => a.owner !== v.user)
-                .map((a) => (releasedArticles.has(a.id) ? { ...a, status: "available" } : a)),
-        );
         setNeighbors((prev) => prev.filter((x) => x.id !== v.id));
     }
 
@@ -227,12 +176,12 @@ export default function CondominiumAdminPage() {
 
     const detail = articles.find((a) => a.id === detailId);
     const visibleItems = articles.filter((a) => a.name.toLowerCase().includes(text));
-    const mine = visibleItems.filter((a) => a.owner === ME);
-    const fromOthers = visibleItems.filter((a) => a.owner !== ME);
+    const mine = visibleItems.filter((a) => a.owner === me);
+    const fromOthers = visibleItems.filter((a) => a.owner !== me);
 
     const visibleNeighbors = neighbors.filter((v) => `${v.name} ${v.user}`.toLowerCase().includes(text));
 
-    const inProgress = (articleId) => loans.some((p) => p.articleId === articleId && p.status === "in_progress");
+    const inProgress = (articleId) => allLoans.some((p) => p.articleId === articleId && p.status === "in_progress");
 
     const itemClass = (active) =>
         `${ITEM} cursor-pointer ${active ? "text-white" : "text-white/40 hover:text-white/80"}`;
@@ -370,8 +319,9 @@ export default function CondominiumAdminPage() {
                     ) : section === "loans" ? (
                         <LoansView
                             loans={loans}
-                            user={ME}
+                            user={me}
                             onRespondAction={respond}
+                            onGenerateCodeAction={(p) => generateCode(p.id)}
                             onCodeAction={registerCode}
                             reports={reports}
                             ratings={ratings}
@@ -379,11 +329,11 @@ export default function CondominiumAdminPage() {
                         />
                     ) : section === "all" ? (
                         <AllLoansView
-                            loans={loans}
-                            people={SAMPLE_PEOPLE}
-                            me={ME}
+                            loans={allLoans}
+                            me={me}
                             onRemindAction={(p) => {
-                                setLoans((prev) => prev.map((x) => (x.id === p.id ? { ...x, reminded: true } : x)));
+                                // shortcut: no reminder endpoint in the back yet, it only marks it here
+                                setAllLoans((prev) => prev.map((x) => (x.id === p.id ? { ...x, reminded: true } : x)));
                             }}
                         />
                     ) : section === "reports" ? (
@@ -394,7 +344,7 @@ export default function CondominiumAdminPage() {
                             a={detail}
                             onBackAction={() => setDetailId(null)}
                             onRequestAction={
-                                detail.owner !== ME ? (duration) => requestLoan(detail, duration) : undefined
+                                detail.owner !== me ? (duration) => requestLoan(detail, duration) : undefined
                             }
                             onDeleteAction={() => setConfirm({ type: "delete", article: detail })}
                             deleteBlocked={inProgress(detail.id)}
