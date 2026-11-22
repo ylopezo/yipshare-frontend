@@ -15,19 +15,7 @@ import { ReportFormView } from "@/components/ReportFormView";
 import { ResidentProfileModal } from "@/components/ResidentProfileModal";
 import { advance, average } from "@/lib/loans";
 import { useCondominium } from "@/lib/condominiums";
-
-const ME = "mi_usuario";
-
-const SAMPLE_PROFILE = {
-    paternalSurname: "Pérez",
-    maternalSurname: "López",
-    givenNames: "Juan Carlos",
-    building: "Edificio 2",
-    apartment: "Departamento 14",
-    dialCode: "MX",
-    phone: "5512345678",
-    rating: 4.2,
-};
+import { ME, SAMPLE_PROFILE } from "@/lib/sampleData";
 
 const ITEM = "flex w-full items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wide";
 const HEADER_ICON = "cursor-pointer rounded-full p-1 text-white hover:bg-white/10";
