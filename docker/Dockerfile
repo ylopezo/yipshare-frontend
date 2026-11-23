@@ -20,10 +20,14 @@ RUN cd /temp/prod && bun install --frozen-lockfile --production
 FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN bun run build
 
 # copy production dependencies and source code into final image
 FROM base AS release
 COPY --from=install /temp/prod/node_modules node_modules
+COPY --from=prerelease --chown=bun:bun /usr/src/app/.next ./.next
 COPY --from=prerelease /usr/src/app/app ./app
 COPY --from=prerelease /usr/src/app/components ./components
 COPY --from=prerelease /usr/src/app/lib ./lib
@@ -35,4 +39,4 @@ COPY --from=prerelease /usr/src/app/next.config.ts .
 # run the app
 USER bun
 EXPOSE 3000/tcp
-ENTRYPOINT [ "bun", "start" ]
+ENTRYPOINT [ "bun", "--bun", "run", "start" ]

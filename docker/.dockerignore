@@ -6,6 +6,7 @@ docker-compose*
 .gitignore
 README.md
 LICENSE
+PRODUCT.md
 .vscode
 Makefile
 helm-charts
