@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CODE_SECONDS } from "@/lib/loans";
+import { getUserReports } from "@/lib/reports";
 import { RateModal } from "./RateModal";
 import { REPORT_STATUSES } from "./ReportsView";
 import { LIGHT_BUTTON, DARK_BUTTON, Modal } from "./Modal";
@@ -132,15 +133,14 @@ function CodeModal({ phase, onConfirmAction, onCancelAction }) {
 }
 
 export function LoansView({
-    loans,
-    user,
-    onRespondAction,
-    onGenerateCodeAction,
-    onCodeAction,
-    onRateAction,
-    reports,
-    ratings = [],
-}) {
+                              loans,
+                              user,
+                              onRespondAction,
+                              onGenerateCodeAction,
+                              onCodeAction,
+                              onRateAction,
+                              ratings = [],
+                          }) {
     const [popup, setPopup] = useState(null);
     const close = () => setPopup(null);
     const other = (p) => (p.owner === user ? p.borrower : p.owner);
@@ -149,18 +149,18 @@ export function LoansView({
         if (p.status === "pending" && role === "owner") {
             return {
                 text: "Confirmar Petición",
-                open: () => setPopup({ type: "request", p }),
+                open: async () => setPopup({ type: "request", p, reports: await getUserReports(p.otherUserId) }),
             };
         }
         if (p.status === "accepted" || p.status === "in_progress") {
             return role === "owner"
                 ? {
-                      text: "Mostrar Código",
-                      open: async () => {
-                          const code = withExpiry(await onGenerateCodeAction(p));
-                          if (code) setPopup({ type: "showCode", p, code });
-                      },
-                  }
+                    text: "Mostrar Código",
+                    open: async () => {
+                        const code = withExpiry(await onGenerateCodeAction(p));
+                        if (code) setPopup({ type: "showCode", p, code });
+                    },
+                }
                 : { text: "Ingresar Código", open: () => setPopup({ type: "code", p }) };
         }
         if (p.status === "finished" && !ratings.some((c) => c.loanId === p.id && c.from === user)) {
@@ -251,7 +251,7 @@ export function LoansView({
                         </p>
 
                         {(() => {
-                            const reportsAgainst = reports.filter((r) => r.involved === popup.p.borrower);
+                            const reportsAgainst = popup.reports;
                             return reportsAgainst.length === 0 ? (
                                 <p className="mb-0 mt-3 text-xs text-slate-500">Este vecino no tiene reportes.</p>
                             ) : (
