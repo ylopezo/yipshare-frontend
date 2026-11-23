@@ -16,7 +16,7 @@ import { ReportsView } from "@/components/ReportsView";
 import { RequestsView } from "@/components/RequestsView";
 import { AllLoansView } from "@/components/AllLoansView";
 import { NeighborsView } from "@/components/NeighborsView";
-import { getApplicants, useCondominium } from "@/lib/condominiums";
+import { getApplicants, getCondominiumMembers, getPendingMembers, useCondominium } from "@/lib/condominiums";
 import { average } from "@/lib/loans";
 import { changeReportStatus as saveReportStatus, getCondominiumReports } from "@/lib/reports";
 import {
@@ -56,39 +56,15 @@ export default function CondominiumAdminPage() {
     const [applicants, setApplicants] = useState([]);
     const [reports, setReports] = useState([]);
 
-    const handleOpenApplicants = async () => {
-        try {
-            const data = await getApplicants(id);
-            setApplicants(data);
-        } catch (error) {
-            console.error("Failed to load applicants:", error);
-        }
-    };
-
-    const SECTION_CALLBACKS = {
-        requests: handleOpenApplicants,
-    };
-
-    useEffect(() => {
-        let ignore = false;
-
-        const loadApplicants = async () => {
-            await handleOpenApplicants();
-        };
-
-        if (!ignore) {
-            loadApplicants();
-        }
-
-        return () => {
-            ignore = true;
-        };
-    }, []);
-
     useEffect(() => {
         getCondominiumReports(id).then(({ reports }) => setReports(reports));
         getCondominiumLoans(id).then(setAllLoans);
+        getCondominiumMembers(id).then(setNeighbors);
+        getPendingMembers(id).then(setApplicants);
     }, [id]);
+
+    const refreshMembers = () =>
+        Promise.all([getCondominiumMembers(id).then(setNeighbors), getPendingMembers(id).then(setApplicants)]);
 
     const refresh = () => Promise.all([refreshMine(), getCondominiumLoans(id).then(setAllLoans)]);
     const received = ratings.filter((c) => c.to === me);
@@ -122,7 +98,6 @@ export default function CondominiumAdminPage() {
     }
 
     function goTo(destination) {
-        if (typeof SECTION_CALLBACKS[destination] === "function") SECTION_CALLBACKS[destination]();
         setSection(destination);
         setDetailId(null);
         setSearchQuery("");
@@ -164,17 +139,29 @@ export default function CondominiumAdminPage() {
 
     const rate = (c) => runAction(rateLoan({ loanId: c.loanId, stars: c.stars, comment: c.comment }), refresh);
 
-    function togglePermission(v) {
-        setNeighbors((prev) => prev.map((x) => (x.id === v.id ? { ...x, upToDate: !x.upToDate } : x)));
+    const togglePermission = (v) => runAction(setLoanAccess(id, v.id, !v.upToDate), refreshMembers);
+
+    const kickOut = (v) => runAction(removeMember(id, v.id), refreshMembers);
+
+    async function respondApplicant(a, accept) {
+        if (accept) {
+            await runAction(approveMember(id, a), refreshMembers);
+        } else {
+            await runAction(rejectMember(id, a.id), refreshMembers);
+        }
     }
 
-    function kickOut(v) {
-        setNeighbors((prev) => prev.filter((x) => x.id !== v.id));
-    }
+    async function openProfile() {
+        const fresh = await getMyProfile();
 
-    async function respondApplicant(id, a, accept) {
-        await apiRequest("POST", `/api/condominiums/${id}/members/${a.userId}/${accept ? "approve" : "reject"}`);
-        await handleOpenApplicants();
+        if (!fresh) {
+            return alert("No se pudo cargar tu perfil.");
+        }
+
+        const unit = await getMyUnit(id);
+
+        setProfileData({ ...fresh, unit: unit });
+        setProfile(true);
     }
 
     async function changeReportStatus(targetReportId, status) {
@@ -242,12 +229,7 @@ export default function CondominiumAdminPage() {
                             <Icon name="bell" size={28} />
                         </button>
 
-                        <button
-                            type="button"
-                            aria-label="Perfil"
-                            onClick={() => setProfile(true)}
-                            className={HEADER_ICON}
-                        >
+                        <button type="button" aria-label="Perfil" onClick={openProfile} className={HEADER_ICON}>
                             <Icon name="user" size={30} />
                         </button>
                     </div>
@@ -293,7 +275,7 @@ export default function CondominiumAdminPage() {
                             </button>
                         ))}
 
-                        <button type="button" onClick={() => setProfile(true)} className={itemClass(false)}>
+                        <button type="button" onClick={openProfile} className={itemClass(false)}>
                             <Icon name="user" size={26} />
                             <span className="hidden md:inline">Perfil</span>
                         </button>
@@ -332,7 +314,7 @@ export default function CondominiumAdminPage() {
                             </p>
                         </>
                     ) : section === "requests" ? (
-                        <RequestsView condominiumId={id} applicants={applicants} onRespondAction={respondApplicant} />
+                        <RequestsView applicants={applicants} onRespondAction={respondApplicant} />
                     ) : section === "loans" ? (
                         <LoansView
                             loans={loans}
@@ -437,12 +419,17 @@ export default function CondominiumAdminPage() {
                 <ResidentProfileModal
                     profile={{ ...profileData, rating: myRating }}
                     received={received}
-                    onUpdateAction={(data) => {
-                        setProfileData({ ...profileData, ...data });
-                        setProfile(false);
+                    onUpdateAction={async (data) => {
+                        if (await runAction(updateMyProfile(data))) {
+                            setProfileData({ ...profileData, ...data });
+                            setProfile(false);
+                        }
                     }}
-                    onDeleteAction={() => {
-                        router.replace("/login");
+                    onDeleteAction={async () => {
+                        if (await runAction(deleteMyAccount())) {
+                            await signOut();
+                            router.replace("/login");
+                        }
                     }}
                     onCloseAction={() => setProfile(false)}
                 />
