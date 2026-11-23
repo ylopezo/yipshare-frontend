@@ -12,7 +12,8 @@ import { JoinCondominiumModal } from "@/components/JoinCondominiumModal";
 import { createCondominium, getMyCondominiums, joinCondominium } from "@/lib/condominiums";
 import { countUnread } from "@/lib/notifications";
 import { ResidentProfileModal } from "@/components/ResidentProfileModal";
-import { fetchProfile } from "@/lib/session";
+import { fetchProfile, signOut } from "@/lib/session";
+import { useRouter } from "next/navigation";
 
 const JOIN_ERRORS = {
     404: "No existe un condominio aprobado con ese código.",
@@ -37,6 +38,7 @@ function Section({ title, empty, children }) {
 }
 
 export default function ResidentHomePage() {
+    const router = useRouter();
     const user = useUser();
     const [registered, setRegistered] = useState([]);
     const [joined, setJoined] = useState([]);
@@ -350,6 +352,7 @@ export default function ResidentHomePage() {
                     message="Se cerrará tu sesión."
                     onConfirmAction={async () => {
                         await signOut();
+                        setLeaving(false);
                         router.replace("/login");
                     }}
                     onCancelAction={() => setLeaving(false)}
