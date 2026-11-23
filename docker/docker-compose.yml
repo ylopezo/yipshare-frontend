@@ -3,11 +3,7 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-      args:
-        API_URL: yipshare-backend.oelohey.dev
     restart: unless-stopped
-    environment:
-      - API_URL=yipshare-backend.oelohey.dev
     deploy:
       resources:
         limits:
