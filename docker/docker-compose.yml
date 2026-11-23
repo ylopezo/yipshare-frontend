@@ -1,0 +1,22 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    environment:
+      - API_URL =${API_URL}
+    volumes:
+      - /mnt/yipshare_data:/usr/src/app/data
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+    networks:
+      - default
+      - proxy_net
+
+networks:
+  proxy_net:
+    name: app-stack_web_network
+    external: true
