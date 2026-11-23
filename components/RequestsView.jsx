@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { DARK_BUTTON, ConfirmDialog } from "./Modal";
 
-export function RequestsView({ applicants, onRespondAction }) {
+export function RequestsView({ condominiumId, applicants, onRespondAction }) {
     const [pending, setPending] = useState(null);
 
     return (
@@ -51,7 +51,7 @@ export function RequestsView({ applicants, onRespondAction }) {
                             : `Se rechazará la solicitud de ${pending.a.name} (Dpto/Casa ${pending.a.unit}).`
                     }
                     onConfirmAction={() => {
-                        onRespondAction(pending.a, pending.accept);
+                        onRespondAction(condominiumId, pending.a, pending.accept);
                         setPending(null);
                     }}
                     onCancelAction={() => setPending(null)}

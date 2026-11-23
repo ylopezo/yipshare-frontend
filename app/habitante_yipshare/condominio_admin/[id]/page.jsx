@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { signOut } from "@/lib/session";
+import { apiRequest, signOut } from "@/lib/session";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -59,7 +59,6 @@ export default function CondominiumAdminPage() {
     const handleOpenApplicants = async () => {
         try {
             const data = await getApplicants(id);
-            console.log(data);
             setApplicants(data);
         } catch (error) {
             console.error("Failed to load applicants:", error);
@@ -173,20 +172,9 @@ export default function CondominiumAdminPage() {
         setNeighbors((prev) => prev.filter((x) => x.id !== v.id));
     }
 
-    function respondApplicant(a, accept) {
-        setApplicants((prev) => prev.filter((x) => x.id !== a.id));
-        if (accept) {
-            setNeighbors((prev) => [
-                ...prev,
-                {
-                    id: a.id,
-                    name: a.name,
-                    user: a.user,
-                    unit: a.unit,
-                    upToDate: true,
-                },
-            ]);
-        }
+    async function respondApplicant(id, a, accept) {
+        await apiRequest("POST", `/api/condominiums/${id}/members/${a.userId}/${accept ? "approve" : "reject"}`);
+        await handleOpenApplicants();
     }
 
     async function changeReportStatus(targetReportId, status) {
@@ -344,7 +332,7 @@ export default function CondominiumAdminPage() {
                             </p>
                         </>
                     ) : section === "requests" ? (
-                        <RequestsView applicants={applicants} onRespondAction={respondApplicant} />
+                        <RequestsView condominiumId={id} applicants={applicants} onRespondAction={respondApplicant} />
                     ) : section === "loans" ? (
                         <LoansView
                             loans={loans}

@@ -28,7 +28,7 @@ export function NeighborsView({ neighbors, onPermissionAction, onKickOutAction }
         <ul className="m-0 flex list-none flex-col gap-4 p-0">
             {neighbors.map((v) => (
                 <li
-                    key={v.id}
+                    key={v.userId}
                     className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-xl border border-slate-400 bg-white px-4 py-3"
                 >
                     <div className="min-w-0 flex-1 basis-40">
