@@ -14,15 +14,18 @@ import { LoansView } from "@/components/LoansView";
 import { ReportFormView } from "@/components/ReportFormView";
 import { ResidentProfileModal } from "@/components/ResidentProfileModal";
 import { average } from "@/lib/loans";
-import { useCondominium } from "@/lib/condominiums";
+import { getMyUnit, useCondominium } from "@/lib/condominiums";
 import {
     confirmCode,
+    deleteMyAccount,
     generateCode,
+    getMyProfile,
     rateLoan,
     requestLoan as sendLoanRequest,
     respondLoan,
     runAction,
     saveArticle,
+    updateMyProfile,
     useCondominiumData,
 } from "@/lib/articles";
 
@@ -61,6 +64,19 @@ export default function CondominiumPage() {
                 </Link>
             </main>
         );
+    }
+
+    async function openProfile() {
+        const fresh = await getMyProfile();
+
+        if (!fresh) {
+            return alert("No se pudo cargar tu perfil.");
+        }
+
+        const unit = await getMyUnit(id);
+
+        setProfileData({ ...fresh, unit: unit });
+        setProfile(true);
     }
 
     async function save(data) {
@@ -144,12 +160,7 @@ export default function CondominiumPage() {
                             <Icon name="bell" size={28} />
                         </button>
 
-                        <button
-                            type="button"
-                            aria-label="Perfil"
-                            onClick={() => setProfile(true)}
-                            className={HEADER_ICON}
-                        >
+                        <button type="button" aria-label="Perfil" onClick={openProfile} className={HEADER_ICON}>
                             <Icon name="user" size={30} />
                         </button>
                     </div>
@@ -193,7 +204,7 @@ export default function CondominiumPage() {
 
                     <button
                         type="button"
-                        onClick={() => setProfile(true)}
+                        onClick={openProfile}
                         className={`${ITEM} cursor-pointer text-white/40 hover:text-white/80`}
                     >
                         <Icon name="user" size={26} />
@@ -279,12 +290,17 @@ export default function CondominiumPage() {
                 <ResidentProfileModal
                     profile={{ ...profileData, rating: myRating }}
                     received={received}
-                    onUpdateAction={(data) => {
-                        setProfileData({ ...profileData, ...data });
-                        setProfile(false);
+                    onUpdateAction={async (data) => {
+                        if (await runAction(updateMyProfile(data))) {
+                            setProfileData({ ...profileData, ...data });
+                            setProfile(false);
+                        }
                     }}
-                    onDeleteAction={() => {
-                        router.replace("/login");
+                    onDeleteAction={async () => {
+                        if (await runAction(deleteMyAccount())) {
+                            await signOut();
+                            router.replace("/login");
+                        }
                     }}
                     onCloseAction={() => setProfile(false)}
                 />
