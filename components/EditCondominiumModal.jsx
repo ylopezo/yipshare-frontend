@@ -4,20 +4,23 @@ import { useState } from "react";
 import { Icon } from "./Icon";
 import { Modal } from "./Modal";
 
+const ADDRESS_LABELS = [
+    ["street", "Calle y número"],
+    ["neighborhood", "Colonia"],
+    ["postalCode", "Código postal"],
+    ["municipality", "Municipio / Alcaldía"],
+    ["city", "Ciudad"],
+    ["state", "Estado"],
+];
+
 export function EditCondominiumModal({ condominium, onSaveAction, onCancelAction }) {
     const [name, setName] = useState(condominium.name);
-    const [address, setAddress] = useState(condominium.address);
-    const [unitCount, setUnitCount] = useState(String(condominium.unitCount));
-    const [admin, setAdmin] = useState(condominium.admin);
-
-    const unitCountNum = Number(unitCount);
+    const [fields, setFields] = useState(condominium.fields);
 
     const isValid =
         name.trim() !== "" &&
-        address.trim() !== "" &&
-        admin.trim() !== "" &&
-        Number.isInteger(unitCountNum) &&
-        unitCountNum > 0;
+        Object.values(fields).every((v) => v.trim() !== "") &&
+        /^\d{5}$/.test(fields.postalCode.trim());
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -29,9 +32,7 @@ export function EditCondominiumModal({ condominium, onSaveAction, onCancelAction
         onSaveAction({
             ...condominium,
             name: name.trim(),
-            address: address.trim(),
-            unitCount: unitCountNum,
-            admin: admin.trim(),
+            fields: Object.fromEntries(Object.entries(fields).map(([k, v]) => [k, v.trim()])),
         });
     }
 
@@ -43,7 +44,7 @@ export function EditCondominiumModal({ condominium, onSaveAction, onCancelAction
         <Modal label="Editar condominio" onCloseAction={onCancelAction}>
             <form
                 onSubmit={handleSubmit}
-                className="relative w-[min(90vw,360px)] rounded-[2rem] border border-slate-400 bg-white px-7 py-8 shadow-xl"
+                className="relative max-h-[90vh] w-[min(90vw,360px)] overflow-y-auto rounded-[2rem] border border-slate-400 bg-white px-7 py-8 shadow-xl"
             >
                 <button
                     type="button"
@@ -70,48 +71,23 @@ export function EditCondominiumModal({ condominium, onSaveAction, onCancelAction
                     />
                 </div>
 
-                <div className="mt-3">
-                    <label htmlFor="edit-direccion" className={labelClass}>
-                        Dirección
-                    </label>
+                {ADDRESS_LABELS.map(([key, label]) => (
+                    <div key={key} className="mt-3">
+                        <label htmlFor={`edit-${key}`} className={labelClass}>
+                            {label}
+                        </label>
 
-                    <input
-                        id="edit-direccion"
-                        type="text"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        className={inputClass}
-                    />
-                </div>
-
-                <div className="mt-3">
-                    <label htmlFor="edit-cantidad" className={labelClass}>
-                        Cant. Dptos/Casas
-                    </label>
-
-                    <input
-                        id="edit-cantidad"
-                        type="number"
-                        min={1}
-                        value={unitCount}
-                        onChange={(e) => setUnitCount(e.target.value)}
-                        className={inputClass}
-                    />
-                </div>
-
-                <div className="mt-3">
-                    <label htmlFor="edit-admin" className={labelClass}>
-                        Admin. Condominio
-                    </label>
-
-                    <input
-                        id="edit-admin"
-                        type="text"
-                        value={admin}
-                        onChange={(e) => setAdmin(e.target.value)}
-                        className={inputClass}
-                    />
-                </div>
+                        <input
+                            id={`edit-${key}`}
+                            type="text"
+                            inputMode={key === "postalCode" ? "numeric" : undefined}
+                            maxLength={key === "postalCode" ? 5 : undefined}
+                            value={fields[key]}
+                            onChange={(e) => setFields({ ...fields, [key]: e.target.value })}
+                            className={inputClass}
+                        />
+                    </div>
+                ))}
 
                 <div className="mt-6 flex gap-3">
                     <button
