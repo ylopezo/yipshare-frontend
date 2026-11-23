@@ -16,19 +16,31 @@ import { ReportsView } from "@/components/ReportsView";
 import { RequestsView } from "@/components/RequestsView";
 import { AllLoansView } from "@/components/AllLoansView";
 import { NeighborsView } from "@/components/NeighborsView";
-import { getApplicants, getCondominiumMembers, getPendingMembers, useCondominium } from "@/lib/condominiums";
+import {
+    approveMember,
+    getMembers,
+    getMyUnit,
+    getPendingMembers,
+    rejectMember,
+    removeMember,
+    setLoanAccess,
+    useCondominium,
+} from "@/lib/condominiums";
 import { average } from "@/lib/loans";
 import { changeReportStatus as saveReportStatus, getCondominiumReports } from "@/lib/reports";
 import {
     confirmCode,
     deleteArticle as removeArticle,
+    deleteMyAccount,
     generateCode,
     getCondominiumLoans,
+    getMyProfile,
     rateLoan,
     requestLoan as sendLoanRequest,
     respondLoan,
     runAction,
     saveArticle,
+    updateMyProfile,
     useCondominiumData,
 } from "@/lib/articles";
 
@@ -59,12 +71,12 @@ export default function CondominiumAdminPage() {
     useEffect(() => {
         getCondominiumReports(id).then(({ reports }) => setReports(reports));
         getCondominiumLoans(id).then(setAllLoans);
-        getCondominiumMembers(id).then(setNeighbors);
+        getMembers(id).then(setNeighbors);
         getPendingMembers(id).then(setApplicants);
     }, [id]);
 
     const refreshMembers = () =>
-        Promise.all([getCondominiumMembers(id).then(setNeighbors), getPendingMembers(id).then(setApplicants)]);
+        Promise.all([getMembers(id).then(setNeighbors), getPendingMembers(id).then(setApplicants)]);
 
     const refresh = () => Promise.all([refreshMine(), getCondominiumLoans(id).then(setAllLoans)]);
     const received = ratings.filter((c) => c.to === me);
@@ -322,7 +334,6 @@ export default function CondominiumAdminPage() {
                             onRespondAction={respond}
                             onGenerateCodeAction={(p) => generateCode(p.id)}
                             onCodeAction={registerCode}
-                            reports={reports}
                             ratings={ratings}
                             onRateAction={rate}
                         />
