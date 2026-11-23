@@ -1,7 +1,14 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { approveCondominium, deleteCondominium, getCondominiums, rejectCondominium } from "@/lib/condominiums";
+import {
+    approveCondominium,
+    deleteCondominium,
+    getCondominiums,
+    rejectCondominium,
+    toCondominium,
+    updateCondominium,
+} from "@/lib/condominiums";
 
 const AdminContext = createContext(null);
 
@@ -27,7 +34,15 @@ export function AdminProvider({ children }) {
         searchQuery,
         setSearchQuery,
 
-        editCondominium: (updated) => setAll((prev) => prev.map((c) => (c.id === updated.id ? updated : c))),
+        editCondominium: async (updated) => {
+            const { status, data } = await updateCondominium(updated.id, updated);
+            if (status !== 200) return alert(data?.error ?? "No se pudieron guardar los cambios. Intenta de nuevo.");
+            setAll((prev) =>
+                prev.map((c) =>
+                    c.id === updated.id ? toCondominium({ ...data, adminUsername: c.admin, unitCount: c.unitCount }) : c,
+                ),
+            );
+        },
 
         deleteCondominium: remove,
 
