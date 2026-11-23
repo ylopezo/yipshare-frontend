@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { CondominiumCard } from "@/components/CondominiumCard";
 import { CreateCondominiumModal } from "@/components/CreateCondominiumModal";
@@ -12,8 +13,9 @@ import { JoinCondominiumModal } from "@/components/JoinCondominiumModal";
 import { createCondominium, getMyCondominiums, joinCondominium } from "@/lib/condominiums";
 import { countUnread } from "@/lib/notifications";
 import { ResidentProfileModal } from "@/components/ResidentProfileModal";
-import { fetchProfile, signOut } from "@/lib/session";
-import { useRouter } from "next/navigation";
+import { signOut } from "@/lib/session";
+import { deleteMyAccount, getMyProfile, getMyReviews, runAction, updateMyProfile } from "@/lib/articles";
+import { average } from "@/lib/loans";
 
 const JOIN_ERRORS = {
     404: "No existe un condominio aprobado con ese código.",
@@ -38,8 +40,8 @@ function Section({ title, empty, children }) {
 }
 
 export default function ResidentHomePage() {
-    const router = useRouter();
     const user = useUser();
+    const router = useRouter();
     const [registered, setRegistered] = useState([]);
     const [joined, setJoined] = useState([]);
     const [unread, setUnread] = useState(0);
@@ -58,6 +60,7 @@ export default function ResidentHomePage() {
     const [notice, setNotice] = useState(null);
     const [profile, setProfile] = useState(false);
     const [profileData, setProfileData] = useState({});
+    const [received, setReceived] = useState([]);
 
     const menuRef = useRef(null);
 
@@ -124,6 +127,20 @@ export default function ResidentHomePage() {
                 : response.error || "No se pudo enviar la solicitud. Intenta de nuevo.",
         );
     };
+
+    async function openProfile() {
+        const fresh = await getMyProfile();
+
+        if (!fresh) {
+            return alert("No se pudo cargar tu perfil.");
+        }
+
+        const reviews = await getMyReviews();
+
+        setProfileData(fresh);
+        setReceived(reviews);
+        setProfile(true);
+    }
 
     const primaryButton =
         "w-56 cursor-pointer rounded-lg bg-oscuro py-2 text-xs font-semibold text-white transition hover:bg-oscuro-hover";
@@ -203,7 +220,7 @@ export default function ResidentHomePage() {
                             type="button"
                             aria-label="Perfil"
                             aria-haspopup="dialog"
-                            onClick={() => setProfileOpen(true)}
+                            onClick={openProfile}
                             className="cursor-pointer rounded-full p-1 text-white transition hover:bg-white/10"
                         >
                             <Icon name="user" size={30} />
@@ -233,14 +250,7 @@ export default function ResidentHomePage() {
 
             <div className="flex min-h-0 flex-1">
                 <aside className="flex w-16 shrink-0 flex-col space-y-3 bg-azul px-1 pt-8 md:w-56 md:px-3">
-                    <button
-                        type="button"
-                        onClick={async () => {
-                            const fresh = await fetchProfile();
-                            setProfile(true);
-                        }}
-                        className={itemClass(false)}
-                    >
+                    <button type="button" onClick={openProfile} className={itemClass(false)}>
                         <Icon name="user" size={26} />
                         <span className="hidden md:inline">Perfil</span>
                     </button>
@@ -352,7 +362,6 @@ export default function ResidentHomePage() {
                     message="Se cerrará tu sesión."
                     onConfirmAction={async () => {
                         await signOut();
-                        setLeaving(false);
                         router.replace("/login");
                     }}
                     onCancelAction={() => setLeaving(false)}
@@ -361,14 +370,19 @@ export default function ResidentHomePage() {
 
             {profile && (
                 <ResidentProfileModal
-                    profile={{ ...profileData, rating: 0 }}
-                    received={{}}
-                    onUpdateAction={(data) => {
-                        setProfileData({ ...profileData, ...data });
-                        setProfile(false);
+                    profile={{ ...profileData, rating: average(received) }}
+                    received={received}
+                    onUpdateAction={async (data) => {
+                        if (await runAction(updateMyProfile(data))) {
+                            setProfileData({ ...profileData, ...data });
+                            setProfile(false);
+                        }
                     }}
-                    onDeleteAction={() => {
-                        router.replace("/login");
+                    onDeleteAction={async () => {
+                        if (await runAction(deleteMyAccount())) {
+                            await signOut();
+                            router.replace("/login");
+                        }
                     }}
                     onCloseAction={() => setProfile(false)}
                 />
