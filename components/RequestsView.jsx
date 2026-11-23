@@ -16,7 +16,7 @@ export function RequestsView({ applicants, onRespondAction }) {
                 <ul className="m-0 mt-4 flex list-none flex-col gap-4 p-0">
                     {applicants.map((a) => (
                         <li
-                            key={a.id}
+                            key={a.userId}
                             className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-xl border border-slate-400 bg-white px-4 py-3"
                         >
                             <p className="m-0 min-w-0 flex-1 basis-40 break-words text-sm font-bold">{a.name}</p>

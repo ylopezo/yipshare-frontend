@@ -16,7 +16,7 @@ import { ReportsView } from "@/components/ReportsView";
 import { RequestsView } from "@/components/RequestsView";
 import { AllLoansView } from "@/components/AllLoansView";
 import { NeighborsView } from "@/components/NeighborsView";
-import { useCondominium } from "@/lib/condominiums";
+import { getApplicants, useCondominium } from "@/lib/condominiums";
 import { average } from "@/lib/loans";
 import { changeReportStatus as saveReportStatus, getCondominiumReports } from "@/lib/reports";
 import {
@@ -56,6 +56,36 @@ export default function CondominiumAdminPage() {
     const [applicants, setApplicants] = useState([]);
     const [reports, setReports] = useState([]);
 
+    const handleOpenApplicants = async () => {
+        try {
+            const data = await getApplicants(id);
+            console.log(data);
+            setApplicants(data);
+        } catch (error) {
+            console.error("Failed to load applicants:", error);
+        }
+    };
+
+    const SECTION_CALLBACKS = {
+        requests: handleOpenApplicants,
+    };
+
+    useEffect(() => {
+        let ignore = false;
+
+        const loadApplicants = async () => {
+            await handleOpenApplicants();
+        };
+
+        if (!ignore) {
+            loadApplicants();
+        }
+
+        return () => {
+            ignore = true;
+        };
+    }, []);
+
     useEffect(() => {
         getCondominiumReports(id).then(({ reports }) => setReports(reports));
         getCondominiumLoans(id).then(setAllLoans);
@@ -93,6 +123,7 @@ export default function CondominiumAdminPage() {
     }
 
     function goTo(destination) {
+        if (typeof SECTION_CALLBACKS[destination] === "function") SECTION_CALLBACKS[destination]();
         setSection(destination);
         setDetailId(null);
         setSearchQuery("");
