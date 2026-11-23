@@ -5,7 +5,7 @@ services:
       dockerfile: docker/Dockerfile
     restart: unless-stopped
     environment:
-      - API_URL =${API_URL}
+      - API_URL=${API_URL}
     deploy:
       resources:
         limits:
