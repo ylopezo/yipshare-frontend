@@ -11,15 +11,6 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  async redirects() {
-    return [
-      {
-        source: "/admin_yipshare/principal_page",
-        destination: "/admin_yipshare/principal_page/condominios",
-        permanent: false,
-      },
-    ];
-  },
   turbopack: {
     rules: {
       "*.css": {
