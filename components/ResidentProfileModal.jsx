@@ -10,13 +10,9 @@ const NAME = [
     ["maternalSurname", "Apellido materno"],
     ["givenNames", "Nombre(s)"],
 ];
-const ADDRESS = [
-    ["building", "Edificio"],
-    ["apartment", "Departamento"],
-];
 
 export function ResidentProfileModal({ profile, received, onUpdateAction, onDeleteAction, onCloseAction }) {
-    const { rating, ...initial } = profile;
+    const { rating, unit, ...initial } = profile;
     const [data, setData] = useState(initial);
     const [editing, setEditing] = useState(false);
     const [confirm, setConfirm] = useState(null);
@@ -106,8 +102,19 @@ export function ResidentProfileModal({ profile, received, onUpdateAction, onDele
 
                         <div>
                             {NAME.map(field)}
-                            <p className="m-0 mt-5 text-xs font-bold uppercase text-azul">Dirección</p>
-                            {ADDRESS.map(field)}
+                            {unit && (
+                                <div className="mt-3">
+                                    <label htmlFor="perfil-unit" className="text-xs font-bold text-azul">
+                                        Dpto/Casa
+                                    </label>
+                                    <input
+                                        id="perfil-unit"
+                                        value={unit}
+                                        readOnly
+                                        className="mt-1 w-full cursor-default rounded-full border border-slate-500 bg-gris px-4 py-1.5 text-sm text-slate-700 outline-none"
+                                    />
+                                </div>
+                            )}
 
                             <div className="mt-3">
                                 <label htmlFor="perfil-telefono" className="text-xs font-bold text-azul">
