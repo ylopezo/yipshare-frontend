@@ -15,6 +15,7 @@ import { ReportFormView } from "@/components/ReportFormView";
 import { ResidentProfileModal } from "@/components/ResidentProfileModal";
 import { average } from "@/lib/loans";
 import { getMyUnit, useCondominium } from "@/lib/condominiums";
+import { createReport } from "@/lib/reports";
 import {
     confirmCode,
     deleteMyAccount,
@@ -46,7 +47,6 @@ export default function CondominiumPage() {
     const [modal, setModal] = useState(null);
     const [detailId, setDetailId] = useState(null);
     const [section, setSection] = useState("home");
-    const [reports, setReports] = useState([]);
     const received = ratings.filter((c) => c.to === me);
     const myRating = average(received);
 
@@ -99,18 +99,7 @@ export default function CondominiumPage() {
 
     const rate = (c) => runAction(rateLoan({ loanId: c.loanId, stars: c.stars, comment: c.comment }), refresh);
 
-    function report(data) {
-        setReports((prev) => [
-            ...prev,
-            {
-                id: crypto.getRandomValues(new Uint32Array(1))[0],
-                involved: data.involved,
-                reportedBy: me,
-                details: data.details,
-                status: "pending",
-            },
-        ]);
-    }
+    const report = (data) => runAction(createReport({ loanId: data.loanId, text: data.details, images: data.images }));
 
     const detail = articles.find((a) => a.id === detailId);
 
@@ -229,7 +218,6 @@ export default function CondominiumPage() {
                             onRespondAction={respond}
                             onGenerateCodeAction={(p) => generateCode(p.id)}
                             onCodeAction={registerCode}
-                            reports={reports}
                             ratings={ratings}
                             onRateAction={rate}
                         />
