@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { runAction, uploadProfilePicture } from "@/lib/articles";
 import { DIAL_CODES, digitsOnly, isPhoneValid } from "@/lib/data";
 import { Icon } from "./Icon";
 import { LIGHT_BUTTON, ConfirmDialog, Modal } from "./Modal";
@@ -12,8 +13,16 @@ const NAME = [
 ];
 
 export function ResidentProfileModal({ profile, received, onUpdateAction, onDeleteAction, onCloseAction }) {
-    const { rating, unit, ...initial } = profile;
+    const { rating, unit, photo: loadedPhoto, roles = [], ...initial } = profile;
     const [data, setData] = useState(initial);
+    const [photo, setPhoto] = useState(loadedPhoto);
+
+    async function changePhoto(e) {
+        const file = e.target.files[0];
+        e.target.value = "";
+        if (!file || !(await runAction(uploadProfilePicture(file)))) return;
+        setPhoto(URL.createObjectURL(file));
+    }
     const [editing, setEditing] = useState(false);
     const [confirm, setConfirm] = useState(null);
     const [showReceived, setShowReceived] = useState(false);
@@ -67,12 +76,47 @@ export function ResidentProfileModal({ profile, received, onUpdateAction, onDele
 
                     <div className="grid gap-6 md:grid-cols-[220px_1fr]">
                         <div className="flex flex-col items-center justify-center text-center">
-                            <span className="flex h-32 w-32 items-center justify-center rounded-full bg-gris-imagen text-slate-500">
-                                <Icon name="user" size={80} />
-                            </span>
+                            <label
+                                htmlFor="perfil-foto"
+                                className="group relative flex h-32 w-32 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-gris-imagen text-slate-500"
+                            >
+                                {photo ? (
+                                    <img src={photo} alt="Foto de perfil" className="h-full w-full object-cover" />
+                                ) : (
+                                    <Icon name="user" size={80} />
+                                )}
+                                <span className="absolute inset-x-0 bottom-0 bg-black/50 py-1 text-xs font-semibold text-white opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">
+                                    Cambiar foto
+                                </span>
+                                <input
+                                    id="perfil-foto"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={changePhoto}
+                                    className="sr-only"
+                                />
+                            </label>
                             <p className="m-0 mt-4 wrap-break-word text-xl font-bold text-azul">
                                 {initial.givenNames} {initial.paternalSurname}
                             </p>
+
+                            <p className="m-0 mt-5 text-xs font-bold text-azul">Mis roles</p>
+                            {roles.length === 0 ? (
+                                <p className="m-0 mt-1 text-xs text-slate-500">
+                                    Aún no perteneces a ningún condominio.
+                                </p>
+                            ) : (
+                                <ul className="m-0 mt-1 flex list-none flex-wrap justify-center gap-1 p-0">
+                                    {roles.map((r) => (
+                                        <li
+                                            key={r}
+                                            className="rounded-full bg-azul-suave px-2 py-0.5 text-xs font-semibold text-azul"
+                                        >
+                                            {r}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
 
                             <p className="m-0 mt-5 text-xs font-bold text-azul">Mi calificación</p>
                             <div
