@@ -12,7 +12,7 @@ export default function NotificationsPage() {
     useEffect(() => {
         getNotifications().then((list) => {
             setNotifications(list);
-            if (list.some((n) => !n.isRead)) markAsRead();
+            markAsRead(list);
         });
     }, []);
 
