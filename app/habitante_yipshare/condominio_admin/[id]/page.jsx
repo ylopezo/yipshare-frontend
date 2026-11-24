@@ -21,6 +21,7 @@ import {
     getMembers,
     getMyUnit,
     getPendingMembers,
+    getUnits,
     rejectMember,
     removeMember,
     setLoanAccess,
@@ -66,6 +67,7 @@ export default function CondominiumAdminPage() {
     const [allLoans, setAllLoans] = useState([]);
     const [neighbors, setNeighbors] = useState([]);
     const [applicants, setApplicants] = useState([]);
+    const [units, setUnits] = useState([]);
     const [reports, setReports] = useState([]);
 
     useEffect(() => {
@@ -73,6 +75,7 @@ export default function CondominiumAdminPage() {
         getCondominiumLoans(id).then(setAllLoans);
         getMembers(id).then(setNeighbors);
         getPendingMembers(id).then(setApplicants);
+        getUnits(id).then(setUnits);
     }, [id]);
 
     const refreshMembers = () =>
@@ -155,9 +158,9 @@ export default function CondominiumAdminPage() {
 
     const kickOut = (v) => runAction(removeMember(id, v.id), refreshMembers);
 
-    async function respondApplicant(a, accept) {
+    async function respondApplicant(a, accept, unitId) {
         if (accept) {
-            await runAction(approveMember(id, a), refreshMembers);
+            await runAction(approveMember(id, a, unitId), refreshMembers);
         } else {
             await runAction(rejectMember(id, a.id), refreshMembers);
         }
@@ -326,7 +329,7 @@ export default function CondominiumAdminPage() {
                             </p>
                         </>
                     ) : section === "requests" ? (
-                        <RequestsView applicants={applicants} onRespondAction={respondApplicant} />
+                        <RequestsView applicants={applicants} units={units} onRespondAction={respondApplicant} />
                     ) : section === "loans" ? (
                         <LoansView
                             loans={loans}

@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { Modal } from "./Modal";
 
-const CODE_PATTERN = /^[A-Z0-9]{6}$/;
+const CODE_PATTERN = /^[A-Z0-9]{3}-[A-Z0-9]{3}$/;
+
+const formatCode = (value) => {
+    const chars = value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
+    return chars.length > 3 ? `${chars.slice(0, 3)}-${chars.slice(3)}` : chars;
+};
 const ADDRESS = /^[\p{L}\d .#-]+$/u;
 
 function validateAddress(value, name) {
@@ -24,18 +29,16 @@ function ErrorMessage({ id, text }) {
 
 export function JoinCondominiumModal({ onJoinAction, onCancelAction }) {
     const [code, setCode] = useState("");
-    const [building, setBuilding] = useState("");
-    const [apartment, setApartment] = useState("");
+    const [unit, setUnit] = useState("");
     const [touched, setTouched] = useState({});
 
     const errors = {
         code: !code
             ? "Ingresa el código del condominio."
             : !CODE_PATTERN.test(code)
-              ? "El código debe tener 6 letras o números."
+              ? "El código debe tener el formato ABC-DEF."
               : "",
-        building: validateAddress(building, "el edificio"),
-        apartment: validateAddress(apartment, "el departamento"),
+        unit: validateAddress(unit, "el número de departamento o casa"),
     };
     const isValid = Object.values(errors).every((e) => !e);
     const touch = (field) => setTouched((prev) => ({ ...prev, [field]: true }));
@@ -46,13 +49,12 @@ export function JoinCondominiumModal({ onJoinAction, onCancelAction }) {
 
     function handleSubmit(e) {
         e.preventDefault();
-        setTouched({ code: true, building: true, apartment: true });
+        setTouched({ code: true, unit: true });
 
         if (isValid) {
             onJoinAction({
                 code,
-                building: building.trim(),
-                apartment: apartment.trim(),
+                unit: unit.trim(),
             });
         }
     }
@@ -71,11 +73,11 @@ export function JoinCondominiumModal({ onJoinAction, onCancelAction }) {
                 <input
                     type="text"
                     aria-label="Código de condominio"
-                    placeholder="Código de Condominio"
+                    placeholder="Código de Condominio (ABC-DEF)"
                     value={code}
-                    maxLength={6}
+                    maxLength={7}
                     autoComplete="off"
-                    onChange={(e) => setCode(e.target.value.toUpperCase().replace(/\s/g, ""))}
+                    onChange={(e) => setCode(formatCode(e.target.value))}
                     onBlur={() => touch("code")}
                     aria-invalid={!!show("code")}
                     aria-describedby="err-codigo"
@@ -83,35 +85,21 @@ export function JoinCondominiumModal({ onJoinAction, onCancelAction }) {
                 />
                 <ErrorMessage id="err-codigo" text={show("code")} />
 
-                <p className="mb-2 mt-5 text-sm font-bold uppercase text-azul">Dirección</p>
+                <p className="mb-2 mt-5 text-sm font-bold uppercase text-azul">Dpto/Casa</p>
 
                 <input
                     type="text"
-                    aria-label="Edificio"
-                    placeholder="Ej: Edificio 2"
-                    value={building}
+                    aria-label="Número de departamento o casa"
+                    placeholder="Ej: 14"
+                    value={unit}
                     maxLength={30}
-                    onChange={(e) => setBuilding(e.target.value)}
-                    onBlur={() => touch("building")}
-                    aria-invalid={!!show("building")}
-                    aria-describedby="err-edificio"
+                    onChange={(e) => setUnit(e.target.value)}
+                    onBlur={() => touch("unit")}
+                    aria-invalid={!!show("unit")}
+                    aria-describedby="err-unidad"
                     className={inputClass}
                 />
-                <ErrorMessage id="err-edificio" text={show("building")} />
-
-                <input
-                    type="text"
-                    aria-label="Departamento"
-                    placeholder="Ej: Departamento 14"
-                    value={apartment}
-                    maxLength={30}
-                    onChange={(e) => setApartment(e.target.value)}
-                    onBlur={() => touch("apartment")}
-                    aria-invalid={!!show("apartment")}
-                    aria-describedby="err-departamento"
-                    className={`${inputClass} mt-3`}
-                />
-                <ErrorMessage id="err-departamento" text={show("apartment")} />
+                <ErrorMessage id="err-unidad" text={show("unit")} />
 
                 <button
                     type="submit"

@@ -323,7 +323,7 @@ export default function ResidentHomePage() {
                     onJoinAction={(data) =>
                         setConfirmation({
                             title: "¿Enviar solicitud?",
-                            message: `Se enviará tu solicitud para unirte al condominio con código ${data.code} como habitante de ${data.building}, ${data.apartment}.`,
+                            message: `Se enviará tu solicitud para unirte al condominio con código ${data.code} como habitante de Dpto/Casa ${data.unit}.`,
                             run: () => handleJoin(data),
                         })
                     }
