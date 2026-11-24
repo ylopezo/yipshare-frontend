@@ -7,7 +7,6 @@
   "build": "next build",
   "start": "next start",
   "lint": "eslint",
-  "test": "node --test",
   "format": "prettier --write app components lib"
 },
   "dependencies": {
