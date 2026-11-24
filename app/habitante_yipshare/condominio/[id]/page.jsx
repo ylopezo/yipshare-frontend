@@ -7,6 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArticleModal } from "@/components/ArticleModal";
 import { ArticleDetail, ArticleCard } from "@/components/ArticleView";
+import { CondominiumNotifications } from "@/components/CondominiumNotifications";
 import { Icon } from "@/components/Icon";
 import { useUser } from "@/components/RequireSession";
 import { ConfirmDialog } from "@/components/Modal";
@@ -47,6 +48,7 @@ export default function CondominiumPage() {
     const [modal, setModal] = useState(null);
     const [detailId, setDetailId] = useState(null);
     const [section, setSection] = useState("home");
+    const [previous, setPrevious] = useState("home");
     const received = ratings.filter((c) => c.to === me);
     const myRating = average(received);
 
@@ -77,6 +79,13 @@ export default function CondominiumPage() {
 
         setProfileData({ ...fresh, unit: unit });
         setProfile(true);
+    }
+
+    function openNotifications() {
+        if (section === "notifications") return;
+        setPrevious(section);
+        setSection("notifications");
+        setDetailId(null);
     }
 
     async function save(data) {
@@ -145,7 +154,12 @@ export default function CondominiumPage() {
                             <Icon name="plus" size={28} />
                         </button>
 
-                        <button type="button" aria-label="Notificaciones" className={HEADER_ICON}>
+                        <button
+                            type="button"
+                            aria-label="Notificaciones"
+                            onClick={openNotifications}
+                            className={HEADER_ICON}
+                        >
                             <Icon name="bell" size={28} />
                         </button>
 
@@ -211,7 +225,13 @@ export default function CondominiumPage() {
                 </aside>
 
                 <main className="min-w-0 flex-1 overflow-y-auto px-4 pb-8 pt-6 md:px-10">
-                    {section === "loans" ? (
+                    {section === "notifications" ? (
+                        <CondominiumNotifications
+                            condominiumId={id}
+                            loanIds={loans.map((l) => l.id)}
+                            onBackAction={() => setSection(previous)}
+                        />
+                    ) : section === "loans" ? (
                         <LoansView
                             loans={loans}
                             user={me}

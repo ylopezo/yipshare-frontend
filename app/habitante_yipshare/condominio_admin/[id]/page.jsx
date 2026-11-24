@@ -7,6 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArticleModal } from "@/components/ArticleModal";
 import { ArticleDetail, ArticleCard } from "@/components/ArticleView";
+import { CondominiumNotifications } from "@/components/CondominiumNotifications";
 import { Icon } from "@/components/Icon";
 import { useUser } from "@/components/RequireSession";
 import { ConfirmDialog } from "@/components/Modal";
@@ -119,6 +120,7 @@ export default function CondominiumAdminPage() {
     }
 
     function openNotifications() {
+        if (section === "notifications") return;
         setPrevious(section);
         setSection("notifications");
         setDetailId(null);
@@ -311,23 +313,11 @@ export default function CondominiumAdminPage() {
 
                 <main className="min-w-0 flex-1 overflow-y-auto px-4 pb-8 pt-6 md:px-10">
                     {section === "notifications" ? (
-                        <>
-                            <div className="flex items-center gap-3">
-                                <button
-                                    type="button"
-                                    aria-label="Volver"
-                                    onClick={() => setSection(previous)}
-                                    className="cursor-pointer rounded-full p-1 text-black transition hover:bg-white"
-                                >
-                                    <Icon name="arrow" size={24} />
-                                </button>
-                                <h2 className="m-0 text-base font-bold">Notificaciones</h2>
-                            </div>
-
-                            <p className="mt-24 text-center text-xl font-bold text-celeste">
-                                No tienes notificaciones por el momento
-                            </p>
-                        </>
+                        <CondominiumNotifications
+                            condominiumId={id}
+                            loanIds={loans.map((l) => l.id)}
+                            onBackAction={() => setSection(previous)}
+                        />
                     ) : section === "requests" ? (
                         <RequestsView applicants={applicants} units={units} onRespondAction={respondApplicant} />
                     ) : section === "loans" ? (
