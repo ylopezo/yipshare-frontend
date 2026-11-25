@@ -5,9 +5,9 @@ import { LIGHT_BUTTON } from "./Modal";
 import { Icon } from "./Icon";
 
 const ARTICLE_STATUS = {
-    available: { text: "Disponible", cssClass: "bg-verde-suave text-green-900" },
-    pending: { text: "Pendiente", cssClass: "bg-amarillo-suave text-amber-900" },
-    not_available: { text: "No disponible", cssClass: "bg-neutral-200 text-neutral-700" },
+    available: { text: "Disponible", cssClass: "text-green-900" },
+    pending: { text: "Pendiente", cssClass: "text-amber-900" },
+    not_available: { text: "No disponible", cssClass: "text-neutral-700" },
 };
 
 export function ArticleCard({ article, onView, onEdit }) {
@@ -24,7 +24,7 @@ export function ArticleCard({ article, onView, onEdit }) {
 
                 <div className="flex flex-col px-3 pb-3 pt-2">
                     <span
-                        className={`self-start rounded px-2 py-0.5 text-xs font-semibold ${ARTICLE_STATUS[article.status].cssClass}`}
+                        className={`self-start text-xs font-semibold ${ARTICLE_STATUS[article.status].cssClass}`}
                     >
                         {ARTICLE_STATUS[article.status].text}
                     </span>
@@ -65,7 +65,7 @@ export function ArticleDetail({ article, onBack, onRequest, onDelete, deleteBloc
                     {article.image && <img src={article.image} alt={article.name} className="h-full w-full object-cover" />}
                 </div>
 
-                <span className={`mt-4 inline-block rounded px-3 py-1 text-sm font-semibold ${ARTICLE_STATUS[article.status].cssClass}`}>
+                <span className={`mt-4 inline-block text-sm font-semibold ${ARTICLE_STATUS[article.status].cssClass}`}>
                     {ARTICLE_STATUS[article.status].text}
                 </span>
 

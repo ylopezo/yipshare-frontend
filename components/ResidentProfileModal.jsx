@@ -106,11 +106,11 @@ export function ResidentProfileModal({ profile, received, onUpdate, onDelete, on
                                     Aún no perteneces a ningún condominio.
                                 </p>
                             ) : (
-                                <ul className="m-0 mt-1 flex list-none flex-wrap justify-center gap-1 p-0">
+                                <ul className="m-0 mt-1 flex list-none flex-col items-center gap-0.5 p-0">
                                     {roles.map((role) => (
                                         <li
                                             key={role}
-                                            className="rounded-full bg-azul-suave px-2 py-0.5 text-xs font-semibold text-azul"
+                                            className="text-xs font-semibold text-neutral-600"
                                         >
                                             {role}
                                         </li>

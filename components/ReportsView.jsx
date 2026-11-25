@@ -7,17 +7,17 @@ export const REPORT_STATUSES = [
     {
         value: "in_review",
         text: "En revisión",
-        cssClass: "bg-azul-suave text-azul",
+        cssClass: "text-azul",
     },
     {
         value: "pending",
         text: "Pendiente",
-        cssClass: "bg-amarillo-suave text-amber-900",
+        cssClass: "text-amber-900",
     },
     {
         value: "resolved",
         text: "Finalizado",
-        cssClass: "bg-verde-suave text-green-900",
+        cssClass: "text-green-900",
     },
 ];
 
@@ -40,7 +40,7 @@ export function ReportsView({ reports, onChangeStatus }) {
             <h2 className="m-0 text-base font-bold">Reportes</h2>
 
             <div className="mt-4 grid gap-8 md:grid-cols-[minmax(0,380px)_1fr]">
-                <div className="rounded-lg bg-white px-6 py-6">
+                <div className="rounded-[2rem] bg-white px-6 py-6">
                     <label className="sr-only" htmlFor="rep-involucrado">
                         Vecino involucrado
                     </label>
@@ -138,7 +138,7 @@ export function ReportsView({ reports, onChangeStatus }) {
                                         >
                                             <span className="min-w-0 truncate">Reporte contra {report.involved}</span>
                                             <span
-                                                className={`shrink-0 rounded px-2 py-0.5 text-xs font-semibold ${info.cssClass}`}
+                                                className={`shrink-0 text-xs font-semibold ${info.cssClass}`}
                                             >
                                                 {info.text}
                                             </span>

@@ -8,11 +8,11 @@ import { REPORT_STATUSES } from "./ReportsView";
 import { LIGHT_BUTTON, DARK_BUTTON, Modal } from "./Modal";
 
 export const LOAN_STATUS = {
-    pending: { text: "Pendiente", cssClass: "bg-amarillo-suave text-amber-900" },
-    accepted: { text: "Reservado", cssClass: "bg-azul-suave text-azul" },
-    on_loan: { text: "En préstamo", cssClass: "bg-verde-suave text-green-900" },
-    returned: { text: "Finalizado", cssClass: "bg-neutral-200 text-neutral-700" },
-    rejected: { text: "Rechazado", cssClass: "bg-rojo-suave text-red-900" },
+    pending: { text: "Pendiente", cssClass: "text-amber-900" },
+    accepted: { text: "Reservado", cssClass: "text-azul" },
+    on_loan: { text: "En préstamo", cssClass: "text-green-900" },
+    returned: { text: "Finalizado", cssClass: "text-neutral-700" },
+    rejected: { text: "Rechazado", cssClass: "text-red-900" },
 };
 
 const withExpiry = (value) => value && { value, expiresAt: Date.now() + CODE_SECONDS * 1000 };
@@ -192,7 +192,7 @@ export function LoansView({
 
                     <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
                         <span
-                            className={`rounded-full px-2 py-0.5 text-xs font-bold ${LOAN_STATUS[loan.status].cssClass}`}
+                            className={`text-xs font-bold ${LOAN_STATUS[loan.status].cssClass}`}
                         >
                             {LOAN_STATUS[loan.status].text}
                         </span>
@@ -262,7 +262,7 @@ export function LoansView({
                                             return (
                                                 <li key={report.id} className="rounded-xl border border-neutral-300 px-3 py-2">
                                                     <span
-                                                        className={`rounded-full px-2 py-0.5 text-xs font-bold ${info.cssClass}`}
+                                                        className={`text-xs font-bold ${info.cssClass}`}
                                                     >
                                                         {info.text}
                                                     </span>

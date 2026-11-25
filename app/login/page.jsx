@@ -84,7 +84,7 @@ export default function LoginPage() {
             <form
                 noValidate
                 onSubmit={handleSubmit}
-                className="relative w-full max-w-md rounded-lg bg-white px-6 pb-4 pt-6"
+                className="relative w-full max-w-md rounded-[2rem] bg-white px-6 pb-4 pt-6"
             >
                 <h1 className="m-0 text-center text-3xl font-semibold">Iniciar Sesión</h1>
                 {notice && (

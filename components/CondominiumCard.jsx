@@ -25,7 +25,7 @@ export function CondominiumCard({ condominium, role }) {
             </div>
 
             <div className="px-3 pb-4 pt-2">
-                <span className="inline-block rounded bg-azul-suave px-2 py-0.5 text-xs font-semibold text-azul">
+                <span className="text-xs font-semibold text-neutral-500">
                     {LABEL[role]}
                 </span>
 
