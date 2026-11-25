@@ -10,7 +10,7 @@ export function ProfileModal({ onCloseAction, title = "Admin" }) {
 
     return (
         <Modal label="Perfil" onCloseAction={onCloseAction}>
-            <div className="relative w-[min(90vw,320px)] rounded-4xl border border-slate-400 bg-white px-7 py-8 shadow-xl">
+            <div className="relative w-[min(90vw,320px)] rounded-4xl border border-slate-400 bg-white px-7 py-8">
                 <button
                     type="button"
                     aria-label="Cerrar perfil"
@@ -36,7 +36,7 @@ export function ProfileModal({ onCloseAction, title = "Admin" }) {
                         type="text"
                         readOnly
                         value={user}
-                        className="mt-1 w-full rounded-full border border-slate-500 bg-gris px-4 py-1.5 text-sm text-slate-700 outline-none"
+                        className="mt-1 w-full rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-1.5 text-sm text-slate-700 outline-none"
                     />
                 </div>
 
@@ -49,7 +49,7 @@ export function ProfileModal({ onCloseAction, title = "Admin" }) {
                         type="password"
                         readOnly
                         value={HIDDEN_PASSWORD}
-                        className="mt-1 w-full rounded-full border border-slate-500 bg-gris px-4 py-1.5 text-sm text-slate-700 outline-none"
+                        className="mt-1 w-full rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-1.5 text-sm text-slate-700 outline-none"
                     />
                 </div>
             </div>

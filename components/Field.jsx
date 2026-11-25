@@ -24,7 +24,7 @@ export function Field({ id, icon, placeholder, error, password = false, classNam
                     type={password && !visible ? "password" : "text"}
                     placeholder={placeholder}
                     required
-                    className={`w-full rounded-lg border border-slate-600 bg-gris py-2 pl-11 text-lg text-slate-700 outline-none placeholder:text-slate-500 focus:border-slate-900 ${password ? "pr-11" : "pr-3"}`}
+                    className={`w-full rounded-[15px] border-[1.5px] border-borde bg-gris py-2 pl-11 text-lg text-slate-700 outline-none placeholder:text-slate-500 focus:border-slate-900 ${password ? "pr-11" : "pr-3"}`}
                 />
 
                 {password && (

@@ -33,7 +33,7 @@ export function DocumentsModal({ request, onCloseAction }) {
         <Modal label="Documentos de la solicitud" onCloseAction={onCloseAction}>
             <div
                 className="relative w-[min(90vw,380px)] rounded-4xl border border-slate-400
-             bg-white px-7 py-8 shadow-xl"
+             bg-white px-7 py-8"
             >
                 <button
                     type="button"
@@ -79,7 +79,7 @@ export function DocumentsModal({ request, onCloseAction }) {
                                 <button
                                     type="button"
                                     onClick={() => openDocument(doc.id)}
-                                    className="cursor-pointer text-xs font-semibold uppercase text-azul-claro hover:underline"
+                                    className="cursor-pointer text-xs font-semibold text-azul-claro underline-offset-2 hover:underline"
                                 >
                                     Abrir
                                 </button>
@@ -95,7 +95,7 @@ export function DocumentsModal({ request, onCloseAction }) {
                 <button
                     type="button"
                     onClick={onCloseAction}
-                    className="mt-6 w-full cursor-pointer rounded-full bg-azul py-2 text-sm font-semibold text-white transition
+                    className="mt-6 w-full cursor-pointer rounded-[15px] bg-azul py-2 text-sm font-semibold text-white transition
                     hover:bg-azul-claro"
                 >
                     Cerrar

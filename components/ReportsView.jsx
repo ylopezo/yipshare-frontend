@@ -22,7 +22,7 @@ export const REPORT_STATUSES = [
 ];
 
 const READONLY_INPUT =
-    "w-full rounded-full border border-slate-500 bg-gris px-4 py-2 text-sm text-slate-700 outline-none read-only:cursor-default";
+    "w-full rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-2 text-sm text-slate-700 outline-none read-only:cursor-default";
 
 export function ReportsView({ reports, onChangeStatusAction }) {
     const [selectedId, setSelectedId] = useState(null);
@@ -40,7 +40,7 @@ export function ReportsView({ reports, onChangeStatusAction }) {
             <h2 className="m-0 text-base font-bold">Reportes</h2>
 
             <div className="mt-4 grid gap-8 md:grid-cols-[minmax(0,380px)_1fr]">
-                <div className="rounded-[2rem] bg-white px-6 py-6 shadow-sm">
+                <div className="rounded-[2rem] bg-white px-6 py-6">
                     <label className="sr-only" htmlFor="rep-involucrado">
                         Vecino involucrado
                     </label>
@@ -72,7 +72,7 @@ export function ReportsView({ reports, onChangeStatusAction }) {
                         rows={3}
                         placeholder="Detalles del reporte"
                         value={selected?.details ?? ""}
-                        className="mt-3 w-full resize-none rounded-2xl border border-slate-500 bg-gris px-4 py-2 text-sm text-slate-700 outline-none read-only:cursor-default"
+                        className="mt-3 w-full resize-none rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-2 text-sm text-slate-700 outline-none read-only:cursor-default"
                     />
 
                     {selected?.images.length > 0 && (

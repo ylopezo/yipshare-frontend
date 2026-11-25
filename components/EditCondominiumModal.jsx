@@ -37,14 +37,14 @@ export function EditCondominiumModal({ condominium, onSaveAction, onCancelAction
     }
 
     const inputClass =
-        "mt-1 w-full rounded-full border border-slate-500 bg-gris px-4 py-1.5 text-sm text-slate-700 outline-none focus:border-azul";
+        "mt-1 w-full rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-1.5 text-sm text-slate-700 outline-none focus:border-azul";
     const labelClass = "text-xs font-bold text-azul";
 
     return (
         <Modal label="Editar condominio" onCloseAction={onCancelAction}>
             <form
                 onSubmit={handleSubmit}
-                className="relative max-h-[90vh] w-[min(90vw,360px)] overflow-y-auto rounded-[2rem] border border-slate-400 bg-white px-7 py-8 shadow-xl"
+                className="relative max-h-[90vh] w-[min(90vw,360px)] overflow-y-auto rounded-[2rem] border border-slate-400 bg-white px-7 py-8"
             >
                 <button
                     type="button"
@@ -93,7 +93,7 @@ export function EditCondominiumModal({ condominium, onSaveAction, onCancelAction
                     <button
                         type="button"
                         onClick={onCancelAction}
-                        className="flex-1 cursor-pointer rounded-full border border-azul bg-white py-2 text-sm font-semibold text-azul transition hover:bg-slate-100"
+                        className="flex-1 cursor-pointer rounded-[15px] border-[1.5px] border-azul bg-white py-2 text-sm font-semibold text-azul transition hover:bg-slate-100"
                     >
                         Cancelar
                     </button>
@@ -101,7 +101,7 @@ export function EditCondominiumModal({ condominium, onSaveAction, onCancelAction
                     <button
                         type="submit"
                         disabled={!isValid}
-                        className="flex-1 cursor-pointer rounded-full bg-azul py-2 text-sm font-semibold text-white transition hover:bg-azul-claro disabled:opacity-50"
+                        className="flex-1 cursor-pointer rounded-[15px] bg-azul py-2 text-sm font-semibold text-white transition hover:bg-azul-claro disabled:opacity-50"
                     >
                         Guardar
                     </button>

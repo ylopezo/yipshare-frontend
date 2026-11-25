@@ -28,7 +28,7 @@ function AdminShell({ children }) {
 
     return (
         <div className="flex h-dvh flex-col overflow-hidden bg-fondo font-sans text-black">
-            <header className="flex h-25 shrink-0 items-center gap-4 bg-azul px-4 text-white md:px-6">
+            <header className="flex h-25 shrink-0 items-center gap-4 bg-azul border-b border-white/20 px-4 text-white md:px-6">
                 <Image
                     src="/img/logo_yipshare_icono.png"
                     alt="YipShare"
@@ -75,7 +75,7 @@ function AdminShell({ children }) {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder={searchPlaceholder}
-                            className="w-72 rounded-full bg-white/10 py-1.5 pl-4 pr-10 text-sm text-white outline-none transition lg:w-80"
+                            className="w-72 rounded-[15px] border border-white/30 bg-transparent py-1.5 pl-4 pr-10 text-sm text-white outline-none transition lg:w-80"
                         />
                         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white">
                             <Icon name="search" size={18} />
@@ -95,7 +95,7 @@ function AdminShell({ children }) {
                                     href={href}
                                     onClick={() => setSearchQuery("")}
                                     aria-current={active ? "page" : undefined}
-                                    className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-bold uppercase tracking-wide transition ${active ? "text-white" : "text-white/40 hover:text-white/80"}`}
+                                    className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium transition ${active ? "text-white" : "text-white/40 hover:text-white/80"}`}
                                 >
                                     <Icon name={icon} size={26} />
                                     <span className="hidden md:inline">{label}</span>
@@ -106,7 +106,7 @@ function AdminShell({ children }) {
                         <button
                             type="button"
                             onClick={() => setSignOutOpen(true)}
-                            className="mt-4 flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left text-sm font-bold uppercase tracking-wide text-white/40 transition hover:text-white/80"
+                            className="mt-4 flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left text-sm font-medium text-white/40 transition hover:text-white/80"
                         >
                             <Icon name="logout" size={26} />
                             <span className="hidden md:inline">Cerrar sesión</span>

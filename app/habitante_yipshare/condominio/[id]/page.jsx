@@ -31,7 +31,7 @@ import {
     useCondominiumData,
 } from "@/lib/articles";
 
-const ITEM = "flex w-full items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wide";
+const ITEM = "flex w-full items-center gap-3 px-4 py-3 text-sm font-medium";
 const HEADER_ICON = "cursor-pointer rounded-full p-1 text-white hover:bg-white/10";
 
 export default function CondominiumPage() {
@@ -125,7 +125,7 @@ export default function CondominiumPage() {
 
     return (
         <div className="flex h-dvh flex-col overflow-hidden bg-fondo font-sans text-black">
-            <header className="flex h-25 shrink-0 items-center gap-4 bg-azul px-4 text-white md:px-6">
+            <header className="flex h-25 shrink-0 items-center gap-4 bg-azul border-b border-white/20 px-4 text-white md:px-6">
                 <Link href="/habitante_yipshare/principal_page" aria-label="Volver a mis condominios">
                     <Image
                         src="/img/logo_yipshare_icono.png"
@@ -177,7 +177,7 @@ export default function CondominiumPage() {
                                 setDetailId(null);
                             }}
                             placeholder="Buscar artículo..."
-                            className="w-72 rounded-full bg-white/10 py-1.5 pl-4 pr-10 text-sm text-white outline-none placeholder:text-white/70 focus:bg-white/20 lg:w-80"
+                            className="w-72 rounded-[15px] border border-white/30 bg-transparent py-1.5 pl-4 pr-10 text-sm text-white outline-none placeholder:text-white/70 focus:border-white lg:w-80"
                         />
 
                         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
@@ -272,7 +272,7 @@ export default function CondominiumPage() {
                                     type="button"
                                     aria-label="Agregar artículo"
                                     onClick={() => setModal("new")}
-                                    className="ml-4 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-azul text-white shadow-md hover:bg-azul-claro"
+                                    className="ml-4 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-azul text-white hover:bg-azul-claro"
                                 >
                                     <Icon name="plus" size={26} />
                                 </button>

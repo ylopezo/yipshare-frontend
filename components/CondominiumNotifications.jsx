@@ -38,7 +38,7 @@ export function CondominiumNotifications({ condominiumId, loanIds, onBackAction 
                     {notifications.map((n) => (
                         <li
                             key={n.id}
-                            className={`rounded-xl bg-white px-5 py-4 shadow-sm ${n.isRead ? "" : "border-l-4 border-azul-claro"}`}
+                            className={`rounded-xl bg-white px-5 py-4 ${n.isRead ? "" : "border-l-4 border-azul-claro"}`}
                         >
                             {!n.isRead && (
                                 <span className="rounded-full bg-azul-claro px-2 py-0.5 text-xs font-bold text-white">

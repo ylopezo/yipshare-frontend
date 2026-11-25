@@ -36,7 +36,7 @@ export function RequestsView({ applicants, units, onRespondAction }) {
                                     id={`unidad-${a.id}`}
                                     value={unitOf(a)}
                                     onChange={(e) => setChosen({ ...chosen, [a.id]: e.target.value })}
-                                    className="min-w-0 flex-1 rounded-full border border-slate-500 bg-gris px-3 py-1 text-xs"
+                                    className="min-w-0 flex-1 rounded-[15px] border-[1.5px] border-borde bg-gris px-3 py-1 text-xs"
                                 >
                                     <option value="" disabled>
                                         Elige una unidad
@@ -61,7 +61,7 @@ export function RequestsView({ applicants, units, onRespondAction }) {
                                 <button
                                     type="button"
                                     onClick={() => setPending({ a, accept: false })}
-                                    className="cursor-pointer rounded-full border border-oscuro bg-white px-4 py-1 text-xs font-semibold text-oscuro transition hover:bg-slate-100"
+                                    className="cursor-pointer rounded-[15px] border-[1.5px] border-oscuro bg-white px-4 py-1 text-xs font-semibold text-oscuro transition hover:bg-slate-100"
                                 >
                                     Denegar
                                 </button>

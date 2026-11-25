@@ -39,8 +39,8 @@ function ShowCodeModal({ phase, initialCode, onGenerateAction, onCancelAction })
 
     return (
         <Modal label="Tu código" onCloseAction={onCancelAction}>
-            <div className="w-[min(92vw,360px)] rounded-[2rem] bg-white px-8 py-8 text-center shadow-xl">
-                <h2 className="m-0 text-xl font-extrabold uppercase">Tu código</h2>
+            <div className="w-[min(92vw,360px)] rounded-[2rem] bg-white px-8 py-8 text-center">
+                <h2 className="m-0 text-xl font-semibold">Tu código</h2>
                 <p className="mb-0 mt-1 text-xs text-slate-500">
                     Código de {phase}. Dáselo al vecino para que lo ingrese.
                 </p>
@@ -88,9 +88,9 @@ function CodeModal({ phase, onConfirmAction, onCancelAction }) {
                     setSending(false);
                     if (!ok) setError(true);
                 }}
-                className="w-[min(92vw,360px)] rounded-[2rem] bg-white px-8 py-8 text-center shadow-xl"
+                className="w-[min(92vw,360px)] rounded-[2rem] bg-white px-8 py-8 text-center"
             >
-                <h2 className="m-0 text-xl font-extrabold uppercase">Ingresar código</h2>
+                <h2 className="m-0 text-xl font-semibold">Ingresar código</h2>
                 <p className="mb-0 mt-1 text-xs text-slate-500">Código de {phase} que te dio el dueño</p>
 
                 <input
@@ -104,7 +104,7 @@ function CodeModal({ phase, onConfirmAction, onCancelAction }) {
                         setWritten(e.target.value);
                         setError(false);
                     }}
-                    className="mt-5 w-full rounded-xl border border-slate-600 bg-gris px-4 py-2 text-center text-lg tracking-widest text-slate-700 outline-none focus:border-azul"
+                    className="mt-5 w-full rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-2 text-center text-lg tracking-widest text-slate-700 outline-none focus:border-azul"
                 />
                 {error && (
                     <p role="alert" className="mb-0 mt-2 text-sm text-azul">
@@ -175,7 +175,7 @@ export function LoansView({
     const card = (p, role) => {
         const a = action(p, role);
         return (
-            <li key={p.id} className="w-48 overflow-hidden rounded-lg bg-white shadow-sm">
+            <li key={p.id} className="w-48 overflow-hidden rounded-lg bg-white">
                 <div className="h-24 bg-gris-imagen">
                     {p.image && <img src={p.image} alt={p.name} className="h-full w-full object-cover" />}
                 </div>
@@ -244,8 +244,8 @@ export function LoansView({
 
             {popup?.type === "request" && (
                 <Modal label="Confirmar petición" onCloseAction={close}>
-                    <div className="w-[min(92vw,360px)] rounded-[2rem] bg-white px-8 py-8 text-center shadow-xl">
-                        <h2 className="m-0 text-xl font-extrabold uppercase">Confirmar petición</h2>
+                    <div className="w-[min(92vw,360px)] rounded-[2rem] bg-white px-8 py-8 text-center">
+                        <h2 className="m-0 text-xl font-semibold">Confirmar petición</h2>
                         <p className="mb-0 mt-3 text-sm text-slate-600">
                             {popup.p.borrower} quiere pedir «{popup.p.name}» por {popup.p.duration}.
                         </p>

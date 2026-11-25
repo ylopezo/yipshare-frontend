@@ -14,9 +14,9 @@ export function RateModal({ neighbor, onSubmitAction, onCancelAction }) {
                     e.preventDefault();
                     if (stars > 0) onSubmitAction(stars, comment.trim());
                 }}
-                className="w-[min(92vw,360px)] rounded-[2rem] bg-white px-8 py-8 text-center shadow-xl"
+                className="w-[min(92vw,360px)] rounded-[2rem] bg-white px-8 py-8 text-center"
             >
-                <h2 className="m-0 text-xl font-extrabold uppercase">Calificar al vecino</h2>
+                <h2 className="m-0 text-xl font-semibold">Calificar al vecino</h2>
                 <p className="mb-0 mt-1 text-xs text-slate-500">¿Cómo fue tu préstamo con {neighbor}?</p>
 
                 <div role="radiogroup" aria-label="Calificación" className="mt-4 flex justify-center gap-1">
@@ -45,13 +45,13 @@ export function RateModal({ neighbor, onSubmitAction, onCancelAction }) {
                     placeholder="Comentario (opcional)"
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
-                    className="mt-4 w-full resize-none rounded-2xl border border-slate-500 bg-gris px-4 py-2 text-sm text-slate-700 outline-none focus:border-azul"
+                    className="mt-4 w-full resize-none rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-2 text-sm text-slate-700 outline-none focus:border-azul"
                 />
 
                 <button
                     type="submit"
                     disabled={stars === 0}
-                    className="mx-auto mt-4 block w-3/5 cursor-pointer rounded-full bg-oscuro py-2 text-sm font-semibold text-white transition hover:bg-oscuro-hover disabled:cursor-not-allowed disabled:opacity-50"
+                    className="mx-auto mt-4 block w-3/5 cursor-pointer rounded-[15px] bg-oscuro py-2 text-sm font-semibold text-white transition hover:bg-oscuro-hover disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     Enviar
                 </button>

@@ -23,9 +23,9 @@ const STEPS = [
 export default function Home() {
     return (
         <GuestOnly>
-            <div className="flex min-h-dvh flex-col bg-linear-to-b from-degradado-inicio to-degradado-fin pb-8 font-sans">
+            <div className="flex min-h-dvh flex-col bg-azul pb-8 font-sans">
                 <div className="flex flex-1 flex-col text-white">
-                    <header className="bg-azul/80">
+                    <header className="border-b border-white/20 bg-azul">
                         <nav className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 md:px-6">
                             <div className="flex items-center gap-6 md:gap-8">
                                 <Image
@@ -48,13 +48,13 @@ export default function Home() {
                             <div className="flex items-center gap-3">
                                 <Link
                                     href="/login"
-                                    className="w-32 rounded-full bg-azul-claro py-1 text-center text-sm font-bold text-white transition hover:bg-[#3b86cc]"
+                                    className="w-32 rounded-[15px] bg-azul-claro py-1 text-center text-sm font-bold text-white transition hover:bg-[#3b86cc]"
                                 >
                                     Iniciar Sesión
                                 </Link>
                                 <Link
                                     href="/register_account"
-                                    className="w-32 rounded-full bg-white py-1 text-center text-sm font-bold text-azul transition hover:bg-sky-200"
+                                    className="w-32 rounded-[15px] bg-white py-1 text-center text-sm font-bold text-azul transition hover:bg-sky-200"
                                 >
                                     Registrarse
                                 </Link>
@@ -77,7 +77,7 @@ export default function Home() {
                     </main>
                 </div>
 
-                <section className="mx-4 max-w-5xl rounded-3xl bg-white px-6 py-8 text-center shadow-xl md:mx-auto md:px-10">
+                <section className="mx-4 max-w-5xl rounded-3xl bg-white px-6 py-8 text-center md:mx-auto md:px-10">
                     <h2 className="m-0 text-3xl font-bold text-azul">¿Cómo funciona?</h2>
 
                     <ol className="m-0 mt-6 grid list-none gap-6 p-0 md:grid-cols-3">

@@ -146,14 +146,14 @@ export default function ResidentHomePage() {
         "w-56 cursor-pointer rounded-lg bg-oscuro py-2 text-xs font-semibold text-white transition hover:bg-oscuro-hover";
 
     const ITEM =
-        "flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-bold uppercase tracking-wide [&>svg]:shrink-0";
+        "flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium [&>svg]:shrink-0";
 
     const itemClass = (active) =>
         `${ITEM} cursor-pointer ${active ? "text-white" : "text-white/40 hover:text-white/80"}`;
 
     return (
         <div className="flex h-dvh flex-col overflow-hidden bg-fondo font-sans text-black">
-            <header className="flex h-25 shrink-0 items-center gap-4 bg-azul px-4 text-white md:px-6">
+            <header className="flex h-25 shrink-0 items-center gap-4 bg-azul border-b border-white/20 px-4 text-white md:px-6">
                 <LogoSessionMenu />
 
                 <h1 className="m-0 ml-2 min-w-0 truncate text-2xl font-bold md:ml-14 md:text-3xl">
@@ -177,7 +177,7 @@ export default function ResidentHomePage() {
                             {menuOpen && (
                                 <div
                                     role="menu"
-                                    className="absolute right-0 top-full z-40 mt-2 w-48 overflow-hidden rounded bg-white text-left shadow-lg"
+                                    className="absolute right-0 top-full z-40 mt-2 w-48 overflow-hidden rounded-[15px] border-[1.5px] border-borde bg-white text-left"
                                 >
                                     <button
                                         type="button"
@@ -238,7 +238,7 @@ export default function ResidentHomePage() {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Buscar condominio..."
-                            className="w-72 rounded-full bg-white/10 py-1.5 pl-4 pr-10 text-sm text-white placeholder:text-white/70 outline-none transition focus:bg-white/20 lg:w-80"
+                            className="w-72 rounded-[15px] border border-white/30 bg-transparent py-1.5 pl-4 pr-10 text-sm text-white placeholder:text-white/70 outline-none transition focus:border-white lg:w-80"
                         />
 
                         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white">

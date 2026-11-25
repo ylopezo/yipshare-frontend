@@ -54,7 +54,7 @@ export default function RequestsPage() {
                                     <button
                                         type="button"
                                         onClick={() => setViewDocuments(request)}
-                                        className="cursor-pointer text-xs font-semibold uppercase text-azul-claro hover:underline md:text-xs"
+                                        className="cursor-pointer text-xs font-semibold text-azul-claro underline-offset-2 hover:underline md:text-xs"
                                     >
                                         Ver documentos
                                     </button>
@@ -65,14 +65,14 @@ export default function RequestsPage() {
                                         <button
                                             type="button"
                                             onClick={() => setConfirmation({ action: "accept", request })}
-                                            className="w-full cursor-pointer rounded-full bg-azul py-0.5 text-xs text-white transition hover:bg-azul-claro"
+                                            className="w-full cursor-pointer rounded-[15px] bg-azul py-0.5 text-xs text-white transition hover:bg-azul-claro"
                                         >
                                             Aceptar
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => setConfirmation({ action: "deny", request })}
-                                            className="w-full cursor-pointer rounded-full border border-azul bg-white py-0.5 text-xs text-azul transition hover:bg-slate-100"
+                                            className="w-full cursor-pointer rounded-[15px] border-[1.5px] border-azul bg-white py-0.5 text-xs text-azul transition hover:bg-slate-100"
                                         >
                                             Denegar
                                         </button>

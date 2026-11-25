@@ -71,7 +71,7 @@ export default function LoginPage() {
             className="m-0 flex min-h-dvh flex-col items-center justify-center bg-cover bg-center px-4 py-10 font-sans text-oscuro"
             suppressHydrationWarning
             style={{
-                backgroundImage: "url('/img/fondo.webp'), linear-gradient(to bottom, #1e4a73, #2f78b8)",
+                backgroundImage: "url('/img/fondo.webp')", backgroundColor: "#1e4a73",
             }}
         >
             <Link href="/" aria-label="YipShare - inicio" className="mb-4">
@@ -88,9 +88,9 @@ export default function LoginPage() {
             <form
                 noValidate
                 onSubmit={handleSubmit}
-                className="w-full max-w-md rounded-3xl bg-white px-8 pb-4 pt-6 shadow-xl"
+                className="w-full max-w-md rounded-3xl bg-white px-8 pb-4 pt-6"
             >
-                <h1 className="m-0 text-center text-3xl font-black uppercase tracking-wide">Iniciar Sesión</h1>
+                <h1 className="m-0 text-center text-3xl font-semibold">Iniciar Sesión</h1>
                 {notice && (
                     <p
                         role="alert"
@@ -124,7 +124,7 @@ export default function LoginPage() {
                 <div className="mt-2 flex justify-center">
                     <button
                         type="submit"
-                        className="w-3/4 cursor-pointer rounded-lg bg-oscuro py-2 text-white shadow-md transition hover:bg-oscuro-hover"
+                        className="w-3/4 cursor-pointer rounded-lg bg-oscuro py-2 text-white transition hover:bg-oscuro-hover"
                     >
                         Entrar
                     </button>

@@ -22,7 +22,7 @@ const DOCUMENTS = [
 const MAX_PDF_BYTES = 50 * 1024 * 1024;
 
 const INPUT =
-    "w-full rounded-xl border border-slate-600 bg-gris px-4 " +
+    "w-full rounded-[15px] border-[1.5px] border-borde bg-gris px-4 " +
     "py-2 text-sm text-slate-700 outline-none placeholder:text-slate-500 " +
     "focus:border-azul";
 
@@ -83,9 +83,9 @@ export function CreateCondominiumModal({ onCreateAction, onCancelAction }) {
         <Modal label="Crear condominio" onCloseAction={onCancelAction}>
             <form
                 onSubmit={handleSubmit}
-                className="max-h-[90vh] w-[min(92vw,400px)] overflow-y-auto rounded-4xl bg-white px-8 py-8 shadow-xl"
+                className="max-h-[90vh] w-[min(92vw,400px)] overflow-y-auto rounded-4xl bg-white px-8 py-8"
             >
-                <h2 className="m-0 text-center text-xl font-extrabold uppercase tracking-wide text-black">
+                <h2 className="m-0 text-center text-xl font-semibold text-black">
                     Crear condominio
                 </h2>
                 <p className="mb-0 mt-2 text-center text-sm text-slate-500">
@@ -99,7 +99,7 @@ export function CreateCondominiumModal({ onCreateAction, onCancelAction }) {
                     className={`${INPUT} mt-6`}
                 />
 
-                <p className="mb-0 mt-5 text-sm font-bold uppercase text-azul">Dirección</p>
+                <p className="mb-0 mt-5 text-sm font-semibold text-azul">Dirección</p>
                 {ADDRESS.map(([fieldKey, label]) => (
                     <input
                         key={fieldKey}
@@ -123,7 +123,7 @@ export function CreateCondominiumModal({ onCreateAction, onCancelAction }) {
                     className={`${INPUT} mt-5`}
                 />
 
-                <p className="mb-0 mt-5 text-sm font-bold uppercase text-azul">Documentos (PDF)</p>
+                <p className="mb-0 mt-5 text-sm font-semibold text-azul">Documentos (PDF)</p>
                 {DOCUMENTS.map(([fieldKey, label]) => (
                     <div key={fieldKey} className="mt-3">
                         <span className="text-xs font-bold text-azul">{label}</span>

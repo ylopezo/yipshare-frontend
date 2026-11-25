@@ -56,7 +56,7 @@ const TEXT_FIELDS = [
 ];
 
 const INPUT_CLASS =
-    "w-full rounded-lg border border-slate-600 bg-gris py-2 pr-3 text-lg text-slate-700 placeholder:text-slate-500 outline-none focus:border-slate-900";
+    "w-full rounded-[15px] border-[1.5px] border-borde bg-gris py-2 pr-3 text-lg text-slate-700 placeholder:text-slate-500 outline-none focus:border-slate-900";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -178,7 +178,7 @@ export default function RegisterPage() {
                 className="hidden items-center justify-center bg-cover bg-center md:flex"
                 suppressHydrationWarning
                 style={{
-                    backgroundImage: "url('/img/fondo.webp'), linear-gradient(to bottom, #1e4a73, #2f78b8)",
+                    backgroundImage: "url('/img/fondo.webp')", backgroundColor: "#1e4a73",
                 }}
             >
                 <Link href="/" tabIndex={-1}>
@@ -198,7 +198,7 @@ export default function RegisterPage() {
                 </Link>
 
                 <form noValidate onSubmit={handleSubmit} className="w-full max-w-md">
-                    <h1 className="m-0 text-center text-3xl font-black uppercase tracking-wide">Registrarse</h1>
+                    <h1 className="m-0 text-center text-3xl font-semibold">Registrarse</h1>
 
                     <div className="mt-8">
                         {TEXT_FIELDS.map(({ name, placeholder, autoComplete, type = "text" }) => (
@@ -302,7 +302,7 @@ export default function RegisterPage() {
                         <button
                             type="submit"
                             disabled={sending}
-                            className="w-3/4 cursor-pointer rounded-lg bg-oscuro py-2 text-white shadow-md transition hover:bg-oscuro-hover disabled:cursor-wait disabled:opacity-60"
+                            className="w-3/4 cursor-pointer rounded-lg bg-oscuro py-2 text-white transition hover:bg-oscuro-hover disabled:cursor-wait disabled:opacity-60"
                         >
                             {sending ? "Creando cuenta..." : "Registrarse"}
                         </button>

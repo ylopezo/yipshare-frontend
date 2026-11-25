@@ -27,7 +27,7 @@ export const CONDITIONS = ["Excelente estado", "Buen estado", "Estado intermedio
 export const DURATIONS = Object.keys(DAYS);
 
 const INPUT =
-    "w-full rounded-xl border border-slate-600 bg-gris px-4 py-2 text-sm text-slate-700 outline-none focus:border-azul";
+    "w-full rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-2 text-sm text-slate-700 outline-none focus:border-azul";
 const LABEL = "mb-1 mt-4 block text-xs font-bold text-azul";
 
 export function ArticleModal({ article, onSaveAction, onCancelAction }) {
@@ -70,9 +70,9 @@ export function ArticleModal({ article, onSaveAction, onCancelAction }) {
                         file,
                     });
                 }}
-                className="max-h-[90vh] w-[min(94vw,760px)] overflow-y-auto rounded-[2rem] bg-white px-8 py-8 shadow-xl"
+                className="max-h-[90vh] w-[min(94vw,760px)] overflow-y-auto rounded-[2rem] bg-white px-8 py-8"
             >
-                <h2 className="m-0 text-center text-xl font-extrabold uppercase">{title}</h2>
+                <h2 className="m-0 text-center text-xl font-semibold">{title}</h2>
 
                 <div className="mt-6 grid gap-6 md:grid-cols-[240px_1fr]">
                     <div>

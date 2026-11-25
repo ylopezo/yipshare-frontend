@@ -146,7 +146,7 @@ export function AllLoansView({ loans, people = {}, me }) {
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full min-w-[900px] border-collapse text-left text-sm">
-                            <thead className="bg-zinc-100">
+                            <thead className="bg-oscuro">
                                 <tr>
                                     {visibleItems.map((c) => (
                                         <th key={c.id} className="border-b border-zinc-300 p-0 font-normal">
@@ -156,7 +156,7 @@ export function AllLoansView({ loans, people = {}, me }) {
                                                 aria-label={`Ocultar columna ${c.text}`}
                                                 disabled={visibleItems.length === 1}
                                                 onClick={() => setHiddenIds((prev) => [...prev, c.id])}
-                                                className={`group flex w-full cursor-pointer items-center gap-1.5 px-3 py-2 text-left text-xs font-bold text-zinc-700 hover:text-azul disabled:cursor-default disabled:hover:text-zinc-700 ${FOCUSABLE}`}
+                                                className={`group flex w-full cursor-pointer items-center gap-1.5 px-3 py-2 text-left text-xs font-medium text-white hover:text-celeste disabled:cursor-default disabled:hover:text-white ${FOCUSABLE}`}
                                             >
                                                 {c.text}
                                                 <span className="opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 group-disabled:hidden">

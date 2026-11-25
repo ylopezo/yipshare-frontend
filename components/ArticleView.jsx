@@ -13,7 +13,7 @@ const COLOR = {
 
 export function ArticleCard({ a, onViewAction, onEditAction }) {
     return (
-        <div className="flex w-48 flex-col overflow-hidden rounded-lg bg-white shadow-sm">
+        <div className="flex w-48 flex-col overflow-hidden rounded-lg bg-white">
             <button
                 type="button"
                 onClick={onViewAction}
@@ -25,7 +25,7 @@ export function ArticleCard({ a, onViewAction, onEditAction }) {
 
                 <div className="flex flex-col px-3 pb-3 pt-2">
                     <span
-                        className={`self-start rounded-full px-2 py-0.5 text-xs font-bold uppercase ${COLOR[a.status]}`}
+                        className={`self-start rounded-full px-2 py-0.5 text-xs font-semibold ${COLOR[a.status]}`}
                     >
                         {STATUSES[a.status]}
                     </span>
@@ -61,7 +61,7 @@ export function ArticleDetail({ a, onBackAction, onRequestAction, onDeleteAction
                 <Icon name="arrow" size={28} />
             </button>
 
-            <div className="mx-auto mt-2 w-full max-w-2xl rounded-[2.5rem] bg-white px-8 py-6 shadow-sm">
+            <div className="mx-auto mt-2 w-full max-w-2xl rounded-[2.5rem] bg-white px-8 py-6">
                 <div className="h-64 overflow-hidden rounded-2xl bg-gris-imagen">
                     {a.image && <img src={a.image} alt={a.name} className="h-full w-full object-cover" />}
                 </div>
@@ -70,7 +70,7 @@ export function ArticleDetail({ a, onBackAction, onRequestAction, onDeleteAction
                     {STATUSES[a.status]}
                 </span>
 
-                <h2 className="m-0 mt-2 break-words text-lg font-bold uppercase text-azul">{a.name}</h2>
+                <h2 className="m-0 mt-2 break-words text-lg font-semibold text-azul">{a.name}</h2>
                 <p className="m-0 text-xs font-bold">{a.category}</p>
 
                 <p className="mb-0 mt-3 break-words text-xs font-semibold">{a.description}</p>
@@ -137,7 +137,7 @@ export function ArticleDetail({ a, onBackAction, onRequestAction, onDeleteAction
                         type="button"
                         disabled={a.status !== "available"}
                         onClick={() => onRequestAction(duration)}
-                        className="mx-auto mt-4 block w-full max-w-xs cursor-pointer rounded-full bg-azul py-2 text-base font-bold text-white hover:bg-azul-claro disabled:cursor-not-allowed disabled:opacity-50"
+                        className="mx-auto mt-4 block w-full max-w-xs cursor-pointer rounded-[15px] bg-azul py-2 text-base font-bold text-white hover:bg-azul-claro disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         Solicitar Artículo
                     </button>

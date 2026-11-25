@@ -45,7 +45,7 @@ export function JoinCondominiumModal({ onJoinAction, onCancelAction }) {
     const show = (field) => (touched[field] ? errors[field] : "");
 
     const inputClass =
-        "w-full rounded-xl border border-slate-600 bg-gris px-4 py-2 text-sm text-slate-700 outline-none placeholder:text-slate-500 focus:border-azul aria-[invalid=true]:border-azul";
+        "w-full rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-2 text-sm text-slate-700 outline-none placeholder:text-slate-500 focus:border-azul aria-[invalid=true]:border-azul";
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -64,9 +64,9 @@ export function JoinCondominiumModal({ onJoinAction, onCancelAction }) {
             <form
                 noValidate
                 onSubmit={handleSubmit}
-                className="w-[min(92vw,400px)] rounded-[2rem] bg-white px-8 py-8 shadow-xl"
+                className="w-[min(92vw,400px)] rounded-[2rem] bg-white px-8 py-8"
             >
-                <h2 className="m-0 text-center text-xl font-extrabold uppercase tracking-wide text-black">
+                <h2 className="m-0 text-center text-xl font-semibold text-black">
                     Unirse a condominio
                 </h2>
 
@@ -85,7 +85,7 @@ export function JoinCondominiumModal({ onJoinAction, onCancelAction }) {
                 />
                 <ErrorMessage id="err-codigo" text={show("code")} />
 
-                <p className="mb-2 mt-5 text-sm font-bold uppercase text-azul">Dpto/Casa</p>
+                <p className="mb-2 mt-5 text-sm font-semibold text-azul">Dpto/Casa</p>
 
                 <input
                     type="text"

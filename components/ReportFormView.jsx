@@ -4,7 +4,7 @@ import { useState } from "react";
 import { DARK_BUTTON } from "./Modal";
 
 const INPUT =
-    "w-full rounded-full border border-slate-500 bg-gris px-4 py-2 text-sm text-slate-700 outline-none focus:border-azul";
+    "w-full rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-2 text-sm text-slate-700 outline-none focus:border-azul";
 
 const MAX_IMAGES = 5;
 
@@ -47,7 +47,7 @@ export function ReportFormView({ loans, user, onSubmitAction }) {
                         setImages([]);
                         setSent(true);
                     }}
-                    className="mt-4 w-full max-w-md rounded-4xl bg-white px-6 py-6 shadow-sm"
+                    className="mt-4 w-full max-w-md rounded-4xl bg-white px-6 py-6"
                 >
                     <label className="sr-only" htmlFor="reportar-prestamo">
                         Préstamo

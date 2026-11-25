@@ -55,7 +55,7 @@ export function ResidentProfileModal({ profile, received, onUpdateAction, onDele
                 value={data[name]}
                 readOnly={!editing}
                 onChange={(e) => setData({ ...data, [name]: e.target.value })}
-                className="mt-1 w-full rounded-full border border-slate-500 bg-gris px-4 py-1.5
+                className="mt-1 w-full rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-1.5
                 text-sm text-slate-700 outline-none read-only:cursor-default"
             />
         </div>
@@ -64,7 +64,7 @@ export function ResidentProfileModal({ profile, received, onUpdateAction, onDele
     return (
         <>
             <Modal label="Perfil" onCloseAction={onCloseAction}>
-                <div className="relative max-h-[90vh] w-[min(94vw,680px)] overflow-y-auto rounded-4xl border border-slate-400 bg-white px-8 py-8 shadow-xl">
+                <div className="relative max-h-[90vh] w-[min(94vw,680px)] overflow-y-auto rounded-4xl border border-slate-400 bg-white px-8 py-8">
                     <button
                         type="button"
                         aria-label="Cerrar perfil"
@@ -155,7 +155,7 @@ export function ResidentProfileModal({ profile, received, onUpdateAction, onDele
                                         id="perfil-unit"
                                         value={unit}
                                         readOnly
-                                        className="mt-1 w-full cursor-default rounded-full border border-slate-500 bg-gris px-4 py-1.5 text-sm text-slate-700 outline-none"
+                                        className="mt-1 w-full cursor-default rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-1.5 text-sm text-slate-700 outline-none"
                                     />
                                 </div>
                             )}
@@ -173,7 +173,7 @@ export function ResidentProfileModal({ profile, received, onUpdateAction, onDele
                                         value={data.dialCode ?? "MX"}
                                         disabled={!editing}
                                         onChange={(e) => setData({ ...data, dialCode: e.target.value })}
-                                        className="w-40 shrink-0 cursor-pointer rounded-full border border-slate-500 bg-gris px-3 py-1.5 text-sm text-slate-700 outline-none disabled:cursor-default disabled:opacity-100"
+                                        className="w-40 shrink-0 cursor-pointer rounded-[15px] border-[1.5px] border-borde bg-gris px-3 py-1.5 text-sm text-slate-700 outline-none disabled:cursor-default disabled:opacity-100"
                                     >
                                         {DIAL_CODES.map((l) => (
                                             <option key={l.value} value={l.value}>
@@ -196,7 +196,7 @@ export function ResidentProfileModal({ profile, received, onUpdateAction, onDele
                                                 phone: digitsOnly(e.target.value),
                                             })
                                         }
-                                        className="min-w-0 flex-1 rounded-full border border-slate-500 bg-gris px-4 py-1.5 text-sm text-slate-700 outline-none read-only:cursor-default"
+                                        className="min-w-0 flex-1 rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-1.5 text-sm text-slate-700 outline-none read-only:cursor-default"
                                     />
                                 </div>
                                 {editing && !phoneOk && (
@@ -215,7 +215,7 @@ export function ResidentProfileModal({ profile, received, onUpdateAction, onDele
                                 disabled={!isValid}
                                 onClick={() => setConfirm("save")}
                                 className="mx-auto mt-8 block w-3/5 max-w-xs cursor-pointer
-                                rounded-full bg-oscuro py-2 text-sm font-semibold
+                                rounded-[15px] bg-oscuro py-2 text-sm font-semibold
                                 text-white transition hover:bg-oscuro-hover disabled:opacity-50"
                             >
                                 Guardar cambios
@@ -223,7 +223,7 @@ export function ResidentProfileModal({ profile, received, onUpdateAction, onDele
                             <button
                                 type="button"
                                 onClick={cancelEdit}
-                                className="mx-auto mt-3 block w-3/5 max-w-xs cursor-pointer rounded-full border border-oscuro bg-white py-2 text-sm font-semibold text-oscuro transition hover:bg-slate-100"
+                                className="mx-auto mt-3 block w-3/5 max-w-xs cursor-pointer rounded-[15px] border-[1.5px] border-oscuro bg-white py-2 text-sm font-semibold text-oscuro transition hover:bg-slate-100"
                             >
                                 Cancelar
                             </button>
@@ -233,7 +233,7 @@ export function ResidentProfileModal({ profile, received, onUpdateAction, onDele
                             <button
                                 type="button"
                                 onClick={() => setEditing(true)}
-                                className="mx-auto mt-8 block w-3/5 max-w-xs cursor-pointer rounded-full bg-oscuro py-2 text-sm font-semibold text-white transition hover:bg-oscuro-hover"
+                                className="mx-auto mt-8 block w-3/5 max-w-xs cursor-pointer rounded-[15px] bg-oscuro py-2 text-sm font-semibold text-white transition hover:bg-oscuro-hover"
                             >
                                 Actualizar datos
                             </button>
@@ -251,8 +251,8 @@ export function ResidentProfileModal({ profile, received, onUpdateAction, onDele
 
             {showReceived && (
                 <Modal label="Calificaciones recibidas" onCloseAction={() => setShowReceived(false)}>
-                    <div className="max-h-[80vh] w-[min(92vw,420px)] overflow-y-auto rounded-[2rem] bg-white px-8 py-8 shadow-xl">
-                        <h2 className="m-0 text-center text-xl font-extrabold uppercase">Calificaciones recibidas</h2>
+                    <div className="max-h-[80vh] w-[min(92vw,420px)] overflow-y-auto rounded-[2rem] bg-white px-8 py-8">
+                        <h2 className="m-0 text-center text-xl font-semibold">Calificaciones recibidas</h2>
 
                         {received.length === 0 ? (
                             <p className="mb-0 mt-4 text-center text-sm text-slate-500">

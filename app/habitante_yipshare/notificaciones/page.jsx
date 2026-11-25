@@ -18,7 +18,7 @@ export default function NotificationsPage() {
 
     return (
         <div className="flex h-dvh flex-col overflow-hidden bg-fondo font-sans text-black">
-            <header className="flex h-25 shrink-0 items-center gap-4 bg-azul px-4 text-white md:px-6">
+            <header className="flex h-25 shrink-0 items-center gap-4 bg-azul border-b border-white/20 px-4 text-white md:px-6">
                 <LogoSessionMenu />
 
                 <h1 className="m-0 ml-2 min-w-0 truncate text-2xl font-bold md:ml-14 md:text-3xl">Notificaciones</h1>
@@ -42,7 +42,7 @@ export default function NotificationsPage() {
                             return (
                                 <li
                                     key={n.id}
-                                    className={`rounded-xl bg-white px-5 py-4 shadow-sm ${n.isRead ? "" : "border-l-4 border-azul-claro"}`}
+                                    className={`rounded-xl bg-white px-5 py-4 ${n.isRead ? "" : "border-l-4 border-azul-claro"}`}
                                 >
                                     {!n.isRead && (
                                         <span className="mr-2 rounded-full bg-azul-claro px-2 py-0.5 text-xs font-bold text-white">

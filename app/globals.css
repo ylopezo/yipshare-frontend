@@ -15,8 +15,17 @@
     --color-verde-suave: #b9f0c8;
     --color-amarillo-suave: #fde9a8;
     --color-rojo-suave: #fde2e2;
-    --color-degradado-inicio: #24557f;
-    --color-degradado-fin: #3b8bd9;
+    --color-borde: #736e6e;
+}
+
+@theme inline {
+    --font-sans: var(--font-encode), ui-sans-serif, system-ui, sans-serif;
+    --font-mono: var(--font-inconsolata), ui-monospace, monospace;
+}
+
+body {
+    font-family: var(--font-sans);
+    font-weight: 500;
 }
 
 :where(a, button, select, textarea, [tabindex]):focus-visible {
