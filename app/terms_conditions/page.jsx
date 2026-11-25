@@ -41,7 +41,7 @@ export default function TermsConditionsPage() {
 
                         <ul className="m-0 hidden list-none items-center gap-8 p-0 text-sm font-semibold md:flex">
                             <li>
-                                <Link href="/terms-and-conditions" className="text-white underline">
+                                <Link href="/terms_conditions" className="text-white underline">
                                     Términos y Condiciones
                                 </Link>
                             </li>
