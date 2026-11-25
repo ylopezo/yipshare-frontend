@@ -13,13 +13,13 @@ const ADDRESS_LABELS = [
     ["state", "Estado"],
 ];
 
-export function EditCondominiumModal({ condominium, onSaveAction, onCancelAction }) {
+export function EditCondominiumModal({ condominium, onSave, onCancel }) {
     const [name, setName] = useState(condominium.name);
     const [fields, setFields] = useState(condominium.fields);
 
     const isValid =
         name.trim() !== "" &&
-        Object.values(fields).every((v) => v.trim() !== "") &&
+        Object.values(fields).every((value) => value.trim() !== "") &&
         /^\d{5}$/.test(fields.postalCode.trim());
 
     function handleSubmit(e) {
@@ -29,28 +29,28 @@ export function EditCondominiumModal({ condominium, onSaveAction, onCancelAction
             return;
         }
 
-        onSaveAction({
+        onSave({
             ...condominium,
             name: name.trim(),
-            fields: Object.fromEntries(Object.entries(fields).map(([k, v]) => [k, v.trim()])),
+            fields: Object.fromEntries(Object.entries(fields).map(([key, value]) => [key, value.trim()])),
         });
     }
 
     const inputClass =
-        "mt-1 w-full rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-1.5 text-sm text-slate-700 outline-none focus:border-azul";
+        "mt-1 w-full rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-1.5 text-sm text-neutral-700 outline-none";
     const labelClass = "text-xs font-bold text-azul";
 
     return (
-        <Modal label="Editar condominio" onCloseAction={onCancelAction}>
+        <Modal label="Editar condominio" onClose={onCancel}>
             <form
                 onSubmit={handleSubmit}
-                className="relative max-h-[90vh] w-[min(90vw,360px)] overflow-y-auto rounded-[2rem] border border-slate-400 bg-white px-7 py-8"
+                className="relative max-h-[90vh] w-[min(90vw,360px)] overflow-y-auto rounded-[2rem] border border-neutral-400 bg-white px-7 py-8"
             >
                 <button
                     type="button"
                     aria-label="Cerrar"
-                    onClick={onCancelAction}
-                    className="absolute right-4 top-4 cursor-pointer rounded-full p-1 text-slate-500 transition hover:bg-slate-100"
+                    onClick={onCancel}
+                    className="absolute right-4 top-4 cursor-pointer rounded-full p-1 text-neutral-500 transition hover:bg-neutral-100"
                 >
                     <Icon name="close" size={18} />
                 </button>
@@ -92,8 +92,8 @@ export function EditCondominiumModal({ condominium, onSaveAction, onCancelAction
                 <div className="mt-6 flex gap-3">
                     <button
                         type="button"
-                        onClick={onCancelAction}
-                        className="flex-1 cursor-pointer rounded-[15px] border-[1.5px] border-azul bg-white py-2 text-sm font-semibold text-azul transition hover:bg-slate-100"
+                        onClick={onCancel}
+                        className="flex-1 cursor-pointer rounded-[15px] border-[1.5px] border-azul bg-white py-2 text-sm font-semibold text-azul transition hover:bg-neutral-100"
                     >
                         Cancelar
                     </button>

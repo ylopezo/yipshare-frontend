@@ -4,7 +4,8 @@ import Image from "next/image";
 import { signOut } from "@/lib/session";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useUrlState } from "@/lib/useUrlState";
 import { ArticleModal } from "@/components/ArticleModal";
 import { ArticleDetail, ArticleCard } from "@/components/ArticleView";
 import { CondominiumNotifications } from "@/components/CondominiumNotifications";
@@ -30,6 +31,8 @@ import {
     updateMyProfile,
     useCondominiumData,
 } from "@/lib/articles";
+import { showError } from "@/lib/errors";
+import { matchesSearch } from "@/lib/data";
 
 const ITEM = "flex w-full items-center gap-3 px-4 py-3 text-sm font-medium";
 const HEADER_ICON = "cursor-pointer rounded-full p-1 text-white hover:bg-white/10";
@@ -46,10 +49,11 @@ export default function CondominiumPage() {
     const [leaving, setLeaving] = useState(false);
     const [profileData, setProfileData] = useState({});
     const [modal, setModal] = useState(null);
-    const [detailId, setDetailId] = useState(null);
-    const [section, setSection] = useState("home");
-    const [previous, setPrevious] = useState("home");
-    const received = ratings.filter((c) => c.to === me);
+    const [detailId, setDetailId] = useUrlState("articulo", null);
+    const [section, setSection] = useUrlState("seccion", "home");
+    const [previous, setPrevious] = useUrlState("anterior", "home");
+    const openedNotificationsHere = useRef(false);
+    const received = ratings.filter((rating) => rating.to === me);
     const myRating = average(received);
 
     const { loading, condominium } = useCondominium(id);
@@ -72,7 +76,7 @@ export default function CondominiumPage() {
         const fresh = await getMyProfile();
 
         if (!fresh) {
-            return alert("No se pudo cargar tu perfil.");
+            return showError("No se pudo cargar tu perfil.");
         }
 
         const unit = await getMyUnit(id);
@@ -86,36 +90,42 @@ export default function CondominiumPage() {
         setPrevious(section);
         setSection("notifications");
         setDetailId(null);
+        openedNotificationsHere.current = true;
+    }
+
+    function closeNotifications() {
+        if (openedNotificationsHere.current) history.back();
+        else setSection(previous);
     }
 
     async function save(data) {
         if (await runAction(saveArticle(id, modal === "new" ? null : modal.id, data), refresh)) setModal(null);
     }
 
-    async function requestLoan(a, duration) {
-        if (!(await runAction(sendLoanRequest(a.id, duration), refresh))) return;
+    async function requestLoan(article, duration) {
+        if (!(await runAction(sendLoanRequest(article.id, duration), refresh))) return;
         setDetailId(null);
         setSection("loans");
     }
 
-    const respond = (p, accept) => runAction(respondLoan(p.id, accept), refresh);
+    const respond = (loan, accept) => runAction(respondLoan(loan.id, accept), refresh);
 
-    async function registerCode(p, code) {
-        const { status } = await confirmCode(p.id, code);
+    async function registerCode(loan, code) {
+        const { status } = await confirmCode(loan.id, code);
         await refresh();
         return status === 200;
     }
 
-    const rate = (c) => runAction(rateLoan({ loanId: c.loanId, stars: c.stars, comment: c.comment }), refresh);
+    const rate = (rating) => runAction(rateLoan({ loanId: rating.loanId, stars: rating.stars, comment: rating.comment }), refresh);
 
     const report = (data) => runAction(createReport({ loanId: data.loanId, text: data.details, images: data.images }));
 
-    const detail = articles.find((a) => a.id === detailId);
+    const detail = articles.find((article) => article.id === detailId);
 
-    const visibleItems = articles.filter((a) => a.name.toLowerCase().includes(searchQuery.toLowerCase()));
+    const visibleItems = articles.filter((article) => matchesSearch(searchQuery, article.name));
 
-    const mine = visibleItems.filter((a) => a.owner === me);
-    const fromOthers = visibleItems.filter((a) => a.owner !== me);
+    const mine = visibleItems.filter((article) => article.owner === me);
+    const fromOthers = visibleItems.filter((article) => article.owner !== me);
 
     const sections = [
         { id: "home", label: "Inicio", icon: "house" },
@@ -140,7 +150,7 @@ export default function CondominiumPage() {
                 <div className="ml-2 min-w-0 md:ml-14">
                     <h1 className="m-0 truncate text-2xl font-bold md:text-3xl">Hola, {user?.name}</h1>
 
-                    <p className="m-0 truncate text-sm font-semibold text-celeste">{condominium.name}</p>
+                    <p className="m-0 truncate text-sm font-semibold text-white">{condominium.name}</p>
                 </div>
 
                 <div className="ml-auto flex flex-col items-end gap-2">
@@ -177,7 +187,7 @@ export default function CondominiumPage() {
                                 setDetailId(null);
                             }}
                             placeholder="Buscar artículo..."
-                            className="w-72 rounded-[15px] border border-white/30 bg-transparent py-1.5 pl-4 pr-10 text-sm text-white outline-none placeholder:text-white/70 focus:border-white lg:w-80"
+                            className="w-72 rounded-md border border-white/30 bg-transparent py-1.5 pl-4 pr-10 text-sm text-white outline-none placeholder:text-white/70 lg:w-80"
                         />
 
                         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
@@ -228,27 +238,27 @@ export default function CondominiumPage() {
                     {section === "notifications" ? (
                         <CondominiumNotifications
                             condominiumId={id}
-                            loanIds={loans.map((l) => l.id)}
-                            onBackAction={() => setSection(previous)}
+                            loanIds={loans.map((loan) => loan.id)}
+                            onBack={closeNotifications}
                         />
                     ) : section === "loans" ? (
                         <LoansView
                             loans={loans}
                             user={me}
-                            onRespondAction={respond}
-                            onGenerateCodeAction={(p) => generateCode(p.id)}
-                            onCodeAction={registerCode}
+                            onRespond={respond}
+                            onGenerateCode={(loan) => generateCode(loan.id)}
+                            onCode={registerCode}
                             ratings={ratings}
-                            onRateAction={rate}
+                            onRate={rate}
                         />
                     ) : section === "reports" ? (
-                        <ReportFormView loans={loans} user={me} onSubmitAction={report} />
+                        <ReportFormView loans={loans} user={me} onSend={report} />
                     ) : detail ? (
                         <ArticleDetail
                             key={detail.id}
-                            a={detail}
-                            onBackAction={() => setDetailId(null)}
-                            onRequestAction={
+                            article={detail}
+                            onBack={() => setDetailId(null)}
+                            onRequest={
                                 detail.owner !== me ? (duration) => requestLoan(detail, duration) : undefined
                             }
                         />
@@ -256,15 +266,15 @@ export default function CondominiumPage() {
                         <>
                             <h2 className="m-0 text-base font-bold">Mis Artículos</h2>
 
-                            {mine.length === 0 && <p className="mb-0 mt-3 text-sm text-slate-500">No hay artículos.</p>}
+                            {mine.length === 0 && <p className="mb-0 mt-3 text-sm text-neutral-500">Aún no publicas artículos.</p>}
 
                             <div className="mt-4 flex flex-wrap items-center gap-4">
-                                {mine.map((a) => (
+                                {mine.map((article) => (
                                     <ArticleCard
-                                        key={a.id}
-                                        a={a}
-                                        onViewAction={() => setDetailId(a.id)}
-                                        onEditAction={() => setModal(a)}
+                                        key={article.id}
+                                        article={article}
+                                        onView={() => setDetailId(article.id)}
+                                        onEdit={() => setModal(article)}
                                     />
                                 ))}
 
@@ -281,12 +291,12 @@ export default function CondominiumPage() {
                             <h2 className="m-0 mt-10 text-base font-bold">Artículos Disponibles</h2>
 
                             {fromOthers.length === 0 && (
-                                <p className="mb-0 mt-3 text-sm text-slate-500">No hay artículos.</p>
+                                <p className="mb-0 mt-3 text-sm text-neutral-500">Tus vecinos todavía no publican artículos.</p>
                             )}
 
                             <div className="mt-4 flex flex-wrap gap-4">
-                                {fromOthers.map((a) => (
-                                    <ArticleCard key={a.id} a={a} onViewAction={() => setDetailId(a.id)} />
+                                {fromOthers.map((article) => (
+                                    <ArticleCard key={article.id} article={article} onView={() => setDetailId(article.id)} />
                                 ))}
                             </div>
                         </>
@@ -298,19 +308,19 @@ export default function CondominiumPage() {
                 <ResidentProfileModal
                     profile={{ ...profileData, rating: myRating }}
                     received={received}
-                    onUpdateAction={async (data) => {
+                    onUpdate={async (data) => {
                         if (await runAction(updateMyProfile(data))) {
                             setProfileData({ ...profileData, ...data });
                             setProfile(false);
                         }
                     }}
-                    onDeleteAction={async () => {
+                    onDelete={async () => {
                         if (await runAction(deleteMyAccount())) {
                             await signOut();
                             router.replace("/login");
                         }
                     }}
-                    onCloseAction={() => setProfile(false)}
+                    onClose={() => setProfile(false)}
                 />
             )}
 
@@ -318,8 +328,8 @@ export default function CondominiumPage() {
                 <ArticleModal
                     key={modal === "new" ? "new" : modal.id}
                     article={modal === "new" ? null : modal}
-                    onSaveAction={save}
-                    onCancelAction={() => setModal(null)}
+                    onSave={save}
+                    onCancel={() => setModal(null)}
                 />
             )}
 
@@ -327,11 +337,11 @@ export default function CondominiumPage() {
                 <ConfirmDialog
                     title="¿Estás seguro?"
                     message="Se cerrará tu sesión."
-                    onConfirmAction={async () => {
+                    onConfirm={async () => {
                         await signOut();
                         router.replace("/login");
                     }}
-                    onCancelAction={() => setLeaving(false)}
+                    onCancel={() => setLeaving(false)}
                 />
             )}
         </div>

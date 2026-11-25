@@ -1,6 +1,7 @@
 "use client";
 
-import Image from "next/image";
+const DOTS = 12;
+const DURATION_MS = 1200;
 
 export function LoadingScreen() {
     return (
@@ -9,14 +10,19 @@ export function LoadingScreen() {
             aria-live="polite"
             className="fixed inset-0 z-60 flex items-center justify-center bg-black/40"
         >
-            <Image
-                src="/img/logo_yipshare_icono.png"
-                alt=""
-                width={155}
-                height={135}
-                priority
-                className="h-24 w-auto animate-spin object-contain motion-reduce:animate-pulse"
-            />
+            <div aria-hidden="true" className="relative h-14 w-14">
+                {Array.from({ length: DOTS }, (_, index) => (
+                    <span
+                        key={index}
+                        className="loading-dot absolute left-1/2 top-0 -ml-1 h-2 w-2 rounded-full bg-white"
+                        style={{
+                            transform: `rotate(${(360 / DOTS) * index}deg)`,
+                            transformOrigin: "50% 28px",
+                            animationDelay: `${(DURATION_MS / DOTS) * index - DURATION_MS}ms`,
+                        }}
+                    />
+                ))}
+            </div>
             <span className="sr-only">Cargando…</span>
         </div>
     );

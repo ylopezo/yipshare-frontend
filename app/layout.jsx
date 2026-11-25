@@ -1,6 +1,7 @@
 import { Encode_Sans_Semi_Expanded, Inconsolata } from "next/font/google";
 import "./globals.css";
 import { SESSION_SCRIPT } from "@/lib/session";
+import { ErrorToast } from "@/components/ErrorToast";
 
 const encode = Encode_Sans_Semi_Expanded({
     subsets: ["latin"],
@@ -20,7 +21,10 @@ export default function RootLayout({ children }) {
             <head>
                 <script dangerouslySetInnerHTML={{ __html: SESSION_SCRIPT }} />
             </head>
-            <body suppressHydrationWarning>{children}</body>
+            <body suppressHydrationWarning>
+                {children}
+                <ErrorToast />
+            </body>
         </html>
     );
 }

@@ -9,6 +9,7 @@ import { DIAL_CODES, digitsOnly, isPhoneValid } from "@/lib/data";
 import { apiRequest, registerAction } from "@/lib/session";
 import { homePage } from "@/lib/session";
 import Image from "next/image";
+import { YipBackground } from "@/components/YipBackground";
 
 const ERROR_MESSAGES = {
     paternalSurname: "Ingresa tu apellido paterno.",
@@ -56,7 +57,7 @@ const TEXT_FIELDS = [
 ];
 
 const INPUT_CLASS =
-    "w-full rounded-[15px] border-[1.5px] border-borde bg-gris py-2 pr-3 text-lg text-slate-700 placeholder:text-slate-500 outline-none focus:border-slate-900";
+    "w-full rounded-md border-[1.5px] border-borde bg-gris py-2 pr-3 text-lg text-neutral-700 placeholder:text-neutral-500 outline-none";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -161,7 +162,7 @@ export default function RegisterPage() {
 
         const fields = Object.keys(response.errors?.fieldErrors ?? {});
         if (status === 400 && fields.length > 0) {
-            setErrors(Object.fromEntries(fields.map((c) => [BACKEND_FIELD[c] ?? c, "Revisa este campo."])));
+            setErrors(Object.fromEntries(fields.map((field) => [BACKEND_FIELD[field] ?? field, "Revisa este campo."])));
             return;
         }
 
@@ -175,13 +176,10 @@ export default function RegisterPage() {
         <div className="grid min-h-dvh font-sans text-oscuro md:grid-cols-2">
             <aside
                 aria-hidden="true"
-                className="hidden items-center justify-center bg-cover bg-center md:flex"
-                suppressHydrationWarning
-                style={{
-                    backgroundImage: "url('/img/fondo.webp')", backgroundColor: "#1e4a73",
-                }}
+                className="relative hidden items-center justify-center overflow-hidden bg-azul md:flex"
             >
-                <Link href="/" tabIndex={-1}>
+                <YipBackground />
+                <Link href="/" tabIndex={-1} className="relative">
                     <Image src="/img/logo_yipshare_icono.png" alt="" width={155} height={135} className="h-44 w-auto" />
                 </Link>
             </aside>
@@ -193,7 +191,7 @@ export default function RegisterPage() {
                         alt="Logo de YipShare"
                         width={155}
                         height={135}
-                        className="h-24 w-auto rounded-xl bg-azul p-2"
+                        className="h-24 w-auto rounded-lg bg-azul p-2"
                     />
                 </Link>
 
@@ -241,9 +239,9 @@ export default function RegisterPage() {
                                 onChange={handleChange}
                                 className={`${INPUT_CLASS.replace("w-full ", "")} w-44 shrink-0 cursor-pointer pl-3`}
                             >
-                                {DIAL_CODES.map((l) => (
-                                    <option key={l.value} value={l.value}>
-                                        {l.text}
+                                {DIAL_CODES.map((dialCode) => (
+                                    <option key={dialCode.value} value={dialCode.value}>
+                                        {dialCode.text}
                                     </option>
                                 ))}
                             </select>
@@ -293,7 +291,7 @@ export default function RegisterPage() {
                     />
 
                     {generalError && (
-                        <p role="alert" className="mb-0 mt-2 text-center text-sm text-azul">
+                        <p role="alert" className="mb-0 mt-2 text-center text-sm text-black">
                             {generalError}
                         </p>
                     )}
@@ -308,7 +306,7 @@ export default function RegisterPage() {
                         </button>
                     </div>
 
-                    <p className="mt-6 text-center text-xs text-slate-600">
+                    <p className="mt-6 text-center text-xs text-neutral-600">
                         ¿Ya tienes cuenta?
                         <Link href="/login" className="ml-1 font-bold text-azul-claro hover:underline">
                             Iniciar Sesión

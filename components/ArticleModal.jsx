@@ -5,12 +5,6 @@ import { DAYS } from "@/lib/loans";
 import { Icon } from "./Icon";
 import { Modal } from "./Modal";
 
-export const STATUSES = {
-    available: "Disponible",
-    pending: "Pendiente",
-    unavailable: "No disponible",
-};
-
 export const CATEGORIES = [
     "Herramientas",
     "Electrodomésticos",
@@ -27,10 +21,10 @@ export const CONDITIONS = ["Excelente estado", "Buen estado", "Estado intermedio
 export const DURATIONS = Object.keys(DAYS);
 
 const INPUT =
-    "w-full rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-2 text-sm text-slate-700 outline-none focus:border-azul";
+    "w-full rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-2 text-sm text-neutral-700 outline-none";
 const LABEL = "mb-1 mt-4 block text-xs font-bold text-azul";
 
-export function ArticleModal({ article, onSaveAction, onCancelAction }) {
+export function ArticleModal({ article, onSave, onCancel }) {
     const [name, setName] = useState(article?.name ?? "");
     const [category, setCategory] = useState(article?.category ?? "");
     const [description, setDescription] = useState(article?.description ?? "");
@@ -50,16 +44,16 @@ export function ArticleModal({ article, onSaveAction, onCancelAction }) {
         durations.length > 0 &&
         (article || file);
 
-    const toggleDuration = (t) =>
-        setDurations((prev) => DURATIONS.filter((x) => (x === t ? !prev.includes(x) : prev.includes(x))));
+    const toggleDuration = (toggled) =>
+        setDurations((prev) => DURATIONS.filter((duration) => (duration === toggled ? !prev.includes(duration) : prev.includes(duration))));
 
     return (
-        <Modal label={title} onCloseAction={onCancelAction}>
+        <Modal label={title} onClose={onCancel}>
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
                     if (!isValid || !category || !condition) return;
-                    onSaveAction({
+                    onSave({
                         name: name.trim(),
                         category,
                         description: description.trim(),
@@ -81,7 +75,7 @@ export function ArticleModal({ article, onSaveAction, onCancelAction }) {
                             onClick={() => selectedFile.current?.click()}
                             aria-label="Elegir imagen"
                             className="flex aspect-square w-full cursor-pointer items-center
-                            justify-center overflow-hidden rounded-xl bg-gris-imagen text-slate-500 hover:bg-[#d8d8d8]"
+                            justify-center overflow-hidden rounded-xl bg-gris-imagen text-neutral-500 hover:bg-[#d8d8d8]"
                         >
                             {image ? (
                                 <img
@@ -131,9 +125,9 @@ export function ArticleModal({ article, onSaveAction, onCancelAction }) {
                             <option value="" disabled>
                                 Elige una categoría
                             </option>
-                            {CATEGORIES.map((c) => (
-                                <option key={c} value={c}>
-                                    {c}
+                            {CATEGORIES.map((option) => (
+                                <option key={option} value={option}>
+                                    {option}
                                 </option>
                             ))}
                         </select>
@@ -161,30 +155,30 @@ export function ArticleModal({ article, onSaveAction, onCancelAction }) {
                             <option value="" disabled>
                                 Elige el estado físico
                             </option>
-                            {CONDITIONS.map((c) => (
-                                <option key={c} value={c}>
-                                    {c}
+                            {CONDITIONS.map((option) => (
+                                <option key={option} value={option}>
+                                    {option}
                                 </option>
                             ))}
                         </select>
 
                         <p className={LABEL}>Tiempo de préstamo (puedes elegir varios)</p>
                         <div className="flex flex-wrap gap-2">
-                            {DURATIONS.map((t) => {
-                                const active = durations.includes(t);
+                            {DURATIONS.map((duration) => {
+                                const active = durations.includes(duration);
                                 return (
                                     <button
-                                        key={t}
+                                        key={duration}
                                         type="button"
                                         aria-pressed={active}
-                                        onClick={() => toggleDuration(t)}
+                                        onClick={() => toggleDuration(duration)}
                                         className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-semibold transition ${
                                             active
                                                 ? "border-oscuro bg-oscuro text-white"
-                                                : "border-slate-500 bg-gris text-slate-700 hover:bg-[#e2e2e2]"
+                                                : "border-neutral-500 bg-gris text-neutral-700 hover:bg-[#e2e2e2]"
                                         }`}
                                     >
-                                        {t}
+                                        {duration}
                                     </button>
                                 );
                             })}
@@ -201,7 +195,7 @@ export function ArticleModal({ article, onSaveAction, onCancelAction }) {
                 </button>
                 <button
                     type="button"
-                    onClick={onCancelAction}
+                    onClick={onCancel}
                     className="mx-auto mt-3 block cursor-pointer text-sm font-bold text-azul-texto hover:underline"
                 >
                     Cancelar

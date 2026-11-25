@@ -21,13 +21,13 @@ function validateAddress(value, name) {
 
 function ErrorMessage({ id, text }) {
     return text ? (
-        <p id={id} role="alert" className="mb-0 mt-1 px-1 text-xs text-azul">
+        <p id={id} role="alert" className="mb-0 mt-1 px-1 text-xs text-black">
             {text}
         </p>
     ) : null;
 }
 
-export function JoinCondominiumModal({ onJoinAction, onCancelAction }) {
+export function JoinCondominiumModal({ onJoin, onCancel }) {
     const [code, setCode] = useState("");
     const [unit, setUnit] = useState("");
     const [touched, setTouched] = useState({});
@@ -45,14 +45,14 @@ export function JoinCondominiumModal({ onJoinAction, onCancelAction }) {
     const show = (field) => (touched[field] ? errors[field] : "");
 
     const inputClass =
-        "w-full rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-2 text-sm text-slate-700 outline-none placeholder:text-slate-500 focus:border-azul aria-[invalid=true]:border-azul";
+        "w-full rounded-[15px] border-[1.5px] border-borde bg-gris px-4 py-2 text-sm text-neutral-700 outline-none placeholder:text-neutral-500 aria-[invalid=true]:border-azul";
 
     function handleSubmit(e) {
         e.preventDefault();
         setTouched({ code: true, unit: true });
 
         if (isValid) {
-            onJoinAction({
+            onJoin({
                 code,
                 unit: unit.trim(),
             });
@@ -60,7 +60,7 @@ export function JoinCondominiumModal({ onJoinAction, onCancelAction }) {
     }
 
     return (
-        <Modal label="Unirse a condominio" onCloseAction={onCancelAction}>
+        <Modal label="Unirse a condominio" onClose={onCancel}>
             <form
                 noValidate
                 onSubmit={handleSubmit}
@@ -110,7 +110,7 @@ export function JoinCondominiumModal({ onJoinAction, onCancelAction }) {
 
                 <button
                     type="button"
-                    onClick={onCancelAction}
+                    onClick={onCancel}
                     className="mx-auto mt-3 block cursor-pointer text-sm font-bold text-azul-texto hover:underline"
                 >
                     Cancelar

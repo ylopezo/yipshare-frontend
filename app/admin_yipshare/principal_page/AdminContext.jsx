@@ -9,6 +9,7 @@ import {
     toCondominium,
     updateCondominium,
 } from "@/lib/condominiums";
+import { showError } from "@/lib/errors";
 
 const AdminContext = createContext(null);
 
@@ -20,26 +21,26 @@ export function AdminProvider({ children }) {
         getCondominiums().then(({ condominiums }) => setAll(condominiums));
     }, []);
 
-    const drop = (id) => setAll((prev) => prev.filter((c) => c.id !== id));
+    const drop = (id) => setAll((prev) => prev.filter((condominium) => condominium.id !== id));
 
     const remove = async (id) => {
         const { status } = await deleteCondominium(id);
-        if (status !== 204) return alert("No se pudo completar la acción. Intenta de nuevo.");
+        if (status !== 204) return showError("No se pudo completar la acción. Intenta de nuevo.");
         drop(id);
     };
 
     const value = {
-        condominiums: all.filter((c) => c.status === "approved"),
-        requests: all.filter((c) => c.status === "pending"),
+        condominiums: all.filter((condominium) => condominium.status === "approved"),
+        requests: all.filter((condominium) => condominium.status === "pending"),
         searchQuery,
         setSearchQuery,
 
         editCondominium: async (updated) => {
             const { status, data } = await updateCondominium(updated.id, updated);
-            if (status !== 200) return alert(data?.error ?? "No se pudieron guardar los cambios. Intenta de nuevo.");
+            if (status !== 200) return showError(data?.error ?? "No se pudieron guardar los cambios. Intenta de nuevo.");
             setAll((prev) =>
-                prev.map((c) =>
-                    c.id === updated.id ? toCondominium({ ...data, adminUsername: c.admin, unitCount: c.unitCount }) : c,
+                prev.map((condominium) =>
+                    condominium.id === updated.id ? toCondominium({ ...data, adminUsername: condominium.admin, unitCount: condominium.unitCount }) : condominium,
                 ),
             );
         },
@@ -48,13 +49,13 @@ export function AdminProvider({ children }) {
 
         acceptRequest: async (request) => {
             const { status } = await approveCondominium(request.id);
-            if (status !== 200) return alert("No se pudo aceptar la solicitud. Intenta de nuevo.");
-            setAll((prev) => prev.map((c) => (c.id === request.id ? { ...c, status: "approved" } : c)));
+            if (status !== 200) return showError("No se pudo aceptar la solicitud. Intenta de nuevo.");
+            setAll((prev) => prev.map((condominium) => (condominium.id === request.id ? { ...condominium, status: "approved" } : condominium)));
         },
 
         denyRequest: async (id) => {
             const { status } = await rejectCondominium(id);
-            if (status !== 204) return alert("No se pudo denegar la solicitud. Intenta de nuevo.");
+            if (status !== 204) return showError("No se pudo denegar la solicitud. Intenta de nuevo.");
             drop(id);
         },
     };

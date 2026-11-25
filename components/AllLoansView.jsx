@@ -1,21 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { LOAN_STATUS } from "./LoansView";
 import { DAYS } from "@/lib/loans";
 import { Icon } from "./Icon";
+import { matchesSearch } from "@/lib/data";
 
 const DAY_MS = 86_400_000;
 const TD = "whitespace-nowrap px-3 py-2.5 align-middle";
-const FOCUSABLE = "outline-none focus-visible:ring-2 focus-visible:ring-azul-claro";
 
-const STATUSES = {
-    pending: "Pendiente",
-    accepted: "Reservado",
-    in_progress: "En préstamo",
-    overdue: "Vencido",
-    finished: "Finalizado",
-    rejected: "Rechazado",
-};
+const FILTER_ORDER = ["pending", "accepted", "on_loan", "overdue", "returned", "rejected"];
+const statusText = (status) => (status === "overdue" ? "Vencido" : LOAN_STATUS[status].text);
 
 const COLUMNS = [
     { id: "article", text: "Artículo" },
@@ -40,10 +35,10 @@ export function AllLoansView({ loans, people = {}, me }) {
     const [now] = useState(() => Date.now());
     const [hiddenIds, setHiddenIds] = useState([]);
 
-    const visibleItems = COLUMNS.filter((c) => !hiddenIds.includes(c.id));
+    const visibleItems = COLUMNS.filter((column) => !hiddenIds.includes(column.id));
     const view = (id) => !hiddenIds.includes(id);
 
-    const statusOf = (p) => (p.status === "in_progress" && p.end !== null && p.end < now ? "overdue" : p.status);
+    const statusOf = (loan) => (loan.status === "on_loan" && loan.end !== null && loan.end < now ? "overdue" : loan.status);
     const nameOf = (user) => (user === me ? "Tú" : (people[user]?.name ?? user));
 
     const person = (user) => (
@@ -55,15 +50,15 @@ export function AllLoansView({ loans, people = {}, me }) {
 
     const q = searchQuery.trim().toLowerCase();
     const list = loans
-        .filter((p) => filterValue === "all" || statusOf(p) === filterValue)
-        .filter((p) => !q || [p.name, nameOf(p.owner), nameOf(p.borrower)].some((t) => t?.toLowerCase().includes(q)));
+        .filter((loan) => filterValue === "all" || statusOf(loan) === filterValue)
+        .filter((loan) => matchesSearch(q, loan.name, nameOf(loan.owner), nameOf(loan.borrower)));
 
     const filters = [
         { value: "all", text: "Todos", total: loans.length },
-        ...Object.entries(STATUSES).map(([e, text]) => ({
-            value: e,
-            text,
-            total: loans.filter((p) => statusOf(p) === e).length,
+        ...FILTER_ORDER.map((status) => ({
+            value: status,
+            text: statusText(status),
+            total: loans.filter((loan) => statusOf(loan) === status).length,
         })),
     ];
 
@@ -74,7 +69,7 @@ export function AllLoansView({ loans, people = {}, me }) {
                     <h2 className="m-0 text-lg font-bold">Todos los préstamos</h2>
                     <p className="mb-0 mt-1 text-sm text-zinc-600">Registro de los préstamos del condominio.</p>
                 </div>
-                <label className="flex w-full items-center gap-2 rounded-md border border-zinc-300 bg-white px-3 py-2 text-zinc-500 focus-within:border-azul sm:w-72">
+                <label className="flex w-full items-center gap-2 rounded-md border border-zinc-300 bg-white px-3 py-2 text-zinc-500 sm:w-72">
                     <Icon name="search" size={18} />
                     <span className="sr-only">Buscar préstamo</span>
                     <input
@@ -89,23 +84,23 @@ export function AllLoansView({ loans, people = {}, me }) {
 
             <div className="mt-5 overflow-hidden rounded-md border border-zinc-300 bg-white">
                 <div className="flex overflow-x-auto border-b border-zinc-300 px-2">
-                    {filters.map((f) => (
+                    {filters.map((filter) => (
                         <button
-                            key={f.value}
+                            key={filter.value}
                             type="button"
-                            aria-pressed={filterValue === f.value}
-                            onClick={() => setFilterValue(f.value)}
-                            className={`-mb-px shrink-0 cursor-pointer whitespace-nowrap border-b-2 px-3 py-2.5 text-sm font-semibold ${FOCUSABLE} ${
-                                filterValue === f.value
+                            aria-pressed={filterValue === filter.value}
+                            onClick={() => setFilterValue(filter.value)}
+                            className={`-mb-px shrink-0 cursor-pointer whitespace-nowrap border-b-2 px-3 py-2.5 text-sm font-semibold ${
+                                filterValue === filter.value
                                     ? "border-azul text-azul"
                                     : "border-transparent text-zinc-500 hover:text-zinc-800"
                             }`}
                         >
-                            {f.text}{" "}
+                            {filter.text}{" "}
                             <span
-                                className={`font-normal tabular-nums ${f.value === "overdue" && f.total > 0 ? "font-semibold text-azul" : "text-zinc-400"}`}
+                                className={`font-normal tabular-nums ${filter.value === "overdue" && filter.total > 0 ? "font-semibold text-azul" : "text-zinc-400"}`}
                             >
-                                ({f.total})
+                                ({filter.total})
                             </span>
                         </button>
                     ))}
@@ -114,15 +109,15 @@ export function AllLoansView({ loans, people = {}, me }) {
                 {hiddenIds.length > 0 && (
                     <div className="flex flex-wrap items-center gap-2 border-b border-zinc-300 bg-zinc-50 px-3 py-2 text-xs text-zinc-600">
                         Columnas ocultas:
-                        {COLUMNS.filter((c) => hiddenIds.includes(c.id)).map((c) => (
+                        {COLUMNS.filter((column) => hiddenIds.includes(column.id)).map((column) => (
                             <button
-                                key={c.id}
+                                key={column.id}
                                 type="button"
-                                onClick={() => setHiddenIds((prev) => prev.filter((x) => x !== c.id))}
-                                className={`flex cursor-pointer items-center gap-1 rounded border border-zinc-300 bg-white px-2 py-0.5 font-semibold text-zinc-700 hover:border-azul hover:text-azul ${FOCUSABLE}`}
+                                onClick={() => setHiddenIds((prev) => prev.filter((hiddenId) => hiddenId !== column.id))}
+                                className={`flex cursor-pointer items-center gap-1 rounded border border-zinc-300 bg-white px-2 py-0.5 font-semibold text-zinc-700 hover:border-azul hover:text-azul`}
                             >
                                 <Icon name="plus" size={12} />
-                                {c.text}
+                                {column.text}
                             </button>
                         ))}
                     </div>
@@ -137,7 +132,7 @@ export function AllLoansView({ loans, people = {}, me }) {
                             <button
                                 type="button"
                                 onClick={() => setSearchQuery("")}
-                                className={`cursor-pointer font-semibold text-azul underline ${FOCUSABLE}`}
+                                className={`cursor-pointer font-semibold text-azul underline`}
                             >
                                 Limpiar búsqueda
                             </button>
@@ -148,17 +143,17 @@ export function AllLoansView({ loans, people = {}, me }) {
                         <table className="w-full min-w-[900px] border-collapse text-left text-sm">
                             <thead className="bg-oscuro">
                                 <tr>
-                                    {visibleItems.map((c) => (
-                                        <th key={c.id} className="border-b border-zinc-300 p-0 font-normal">
+                                    {visibleItems.map((column) => (
+                                        <th key={column.id} className="border-b border-zinc-300 p-0 font-normal">
                                             <button
                                                 type="button"
                                                 title="Ocultar columna"
-                                                aria-label={`Ocultar columna ${c.text}`}
+                                                aria-label={`Ocultar columna ${column.text}`}
                                                 disabled={visibleItems.length === 1}
-                                                onClick={() => setHiddenIds((prev) => [...prev, c.id])}
-                                                className={`group flex w-full cursor-pointer items-center gap-1.5 px-3 py-2 text-left text-xs font-medium text-white hover:text-celeste disabled:cursor-default disabled:hover:text-white ${FOCUSABLE}`}
+                                                onClick={() => setHiddenIds((prev) => [...prev, column.id])}
+                                                className={`group flex w-full cursor-pointer items-center gap-1.5 px-3 py-2 text-left text-xs font-medium text-white disabled:cursor-default`}
                                             >
-                                                {c.text}
+                                                {column.text}
                                                 <span className="opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 group-disabled:hidden">
                                                     <Icon name="close" size={12} />
                                                 </span>
@@ -168,19 +163,19 @@ export function AllLoansView({ loans, people = {}, me }) {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-zinc-200">
-                                {list.map((p) => {
-                                    const status = statusOf(p);
+                                {list.map((loan) => {
+                                    const status = statusOf(loan);
                                     const overdue = status === "overdue";
-                                    const home = p.end !== null ? p.end - DAYS[p.duration] * DAY_MS : null;
+                                    const home = loan.end !== null ? loan.end - DAYS[loan.duration] * DAY_MS : null;
                                     return (
-                                        <tr key={p.id} className="hover:bg-zinc-50">
+                                        <tr key={loan.id} className="hover:bg-zinc-50">
                                             {view("article") && (
-                                                <td className={`${TD} max-w-56 truncate font-semibold`} title={p.name}>
-                                                    {p.name}
+                                                <td className={`${TD} max-w-56 truncate font-semibold`} title={loan.name}>
+                                                    {loan.name}
                                                 </td>
                                             )}
-                                            {view("lends") && <td className={TD}>{person(p.owner)}</td>}
-                                            {view("borrows") && <td className={TD}>{person(p.borrower)}</td>}
+                                            {view("lends") && <td className={TD}>{person(loan.owner)}</td>}
+                                            {view("borrows") && <td className={TD}>{person(loan.borrower)}</td>}
                                             {view("start") && (
                                                 <td className={`${TD} tabular-nums text-zinc-700`}>
                                                     {home !== null ? (
@@ -191,14 +186,14 @@ export function AllLoansView({ loans, people = {}, me }) {
                                                 </td>
                                             )}
                                             {view("duration") && (
-                                                <td className={`${TD} text-zinc-700`}>{p.duration}</td>
+                                                <td className={`${TD} text-zinc-700`}>{loan.duration}</td>
                                             )}
                                             {view("due") && (
                                                 <td
                                                     className={`${TD} tabular-nums ${overdue ? "font-semibold text-azul" : "text-zinc-700"}`}
                                                 >
-                                                    {p.end !== null ? (
-                                                        date(p.end)
+                                                    {loan.end !== null ? (
+                                                        date(loan.end)
                                                     ) : (
                                                         <span className="text-zinc-400">No definida</span>
                                                     )}
@@ -208,7 +203,7 @@ export function AllLoansView({ loans, people = {}, me }) {
                                                 <td
                                                     className={`${TD} ${overdue ? "font-semibold text-azul" : "text-zinc-700"}`}
                                                 >
-                                                    {STATUSES[status]}
+                                                    {statusText(status)}
                                                 </td>
                                             )}
                                         </tr>

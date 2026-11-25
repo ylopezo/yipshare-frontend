@@ -23,10 +23,9 @@ const MAX_PDF_BYTES = 50 * 1024 * 1024;
 
 const INPUT =
     "w-full rounded-[15px] border-[1.5px] border-borde bg-gris px-4 " +
-    "py-2 text-sm text-slate-700 outline-none placeholder:text-slate-500 " +
-    "focus:border-azul";
+    "py-2 text-sm text-neutral-700 outline-none placeholder:text-neutral-500";
 
-export function CreateCondominiumModal({ onCreateAction, onCancelAction }) {
+export function CreateCondominiumModal({ onCreate, onCancel }) {
     const [name, setName] = useState("");
     const [address, setAddress] = useState({
         street: "",
@@ -41,11 +40,11 @@ export function CreateCondominiumModal({ onCreateAction, onCancelAction }) {
     const [error, setError] = useState("");
 
     const unitCountNum = Number(unitCount);
-    const isComplete = (d) => DOCUMENTS.every(([fieldKey]) => d[fieldKey]);
+    const isComplete = (documents) => DOCUMENTS.every(([fieldKey]) => documents[fieldKey]);
 
     const isValid =
         name.trim() !== "" &&
-        Object.values(address).every((v) => v.trim() !== "") &&
+        Object.values(address).every((value) => value.trim() !== "") &&
         /^\d{5}$/.test(address.postalCode.trim()) &&
         Number.isInteger(unitCountNum) &&
         unitCountNum > 0 &&
@@ -71,7 +70,7 @@ export function CreateCondominiumModal({ onCreateAction, onCancelAction }) {
         e.preventDefault();
         if (!isValid || !isComplete(docs)) return;
 
-        onCreateAction({
+        onCreate({
             name: name.trim(),
             address,
             unitCount: unitCountNum,
@@ -80,7 +79,7 @@ export function CreateCondominiumModal({ onCreateAction, onCancelAction }) {
     }
 
     return (
-        <Modal label="Crear condominio" onCloseAction={onCancelAction}>
+        <Modal label="Crear condominio" onClose={onCancel}>
             <form
                 onSubmit={handleSubmit}
                 className="max-h-[90vh] w-[min(92vw,400px)] overflow-y-auto rounded-4xl bg-white px-8 py-8"
@@ -88,7 +87,7 @@ export function CreateCondominiumModal({ onCreateAction, onCancelAction }) {
                 <h2 className="m-0 text-center text-xl font-semibold text-black">
                     Crear condominio
                 </h2>
-                <p className="mb-0 mt-2 text-center text-sm text-slate-500">
+                <p className="mb-0 mt-2 text-center text-sm text-neutral-500">
                     Completa los siguientes campos para crear un nuevo condominio.
                 </p>
                 <input
@@ -129,7 +128,7 @@ export function CreateCondominiumModal({ onCreateAction, onCancelAction }) {
                         <span className="text-xs font-bold text-azul">{label}</span>
                         <label
                             className="mt-1 flex cursor-pointer items-center justify-between gap-2 rounded-xl
-                         border border-slate-600 bg-gris px-4 py-2 text-sm text-slate-700 hover:bg-[#e2e2e2]"
+                         border border-neutral-600 bg-gris px-4 py-2 text-sm text-neutral-700 hover:bg-[#e2e2e2]"
                         >
                             <span className="truncate">{docs[fieldKey]?.name ?? "Elegir PDF"}</span>
                             <input
@@ -143,7 +142,7 @@ export function CreateCondominiumModal({ onCreateAction, onCancelAction }) {
                 ))}
 
                 {error && (
-                    <p role="alert" className="mb-0 mt-3 text-sm text-azul">
+                    <p role="alert" className="mb-0 mt-3 text-sm text-black">
                         {error}
                     </p>
                 )}
@@ -158,7 +157,7 @@ export function CreateCondominiumModal({ onCreateAction, onCancelAction }) {
 
                 <button
                     type="button"
-                    onClick={onCancelAction}
+                    onClick={onCancel}
                     className="mx-auto mt-3 block cursor-pointer text-sm font-bold text-azul-texto hover:underline"
                 >
                     Cancelar

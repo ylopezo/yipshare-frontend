@@ -5,12 +5,10 @@
     --color-azul-claro: #2a6aa8;
     --color-oscuro: #1f2d47;
     --color-oscuro-hover: #2c4066;
-    --color-celeste: #78b0ea;
     --color-fondo: #e9eef3;
     --color-gris: #eeeeee;
     --color-azul-texto: #2a5a88;
     --color-azul-suave: #dbe7f5;
-    --color-azul-link: #5aa0e8;
     --color-gris-imagen: #e4e4e4;
     --color-verde-suave: #b9f0c8;
     --color-amarillo-suave: #fde9a8;
@@ -28,9 +26,8 @@ body {
     font-weight: 500;
 }
 
-:where(a, button, select, textarea, [tabindex]):focus-visible {
-    outline: 2px solid var(--color-celeste);
-    outline-offset: 2px;
+:where(a, button, input, select, textarea, [tabindex]):focus {
+    outline: none;
 }
 
 html[data-has-session] [data-public] {
@@ -39,4 +36,25 @@ html[data-has-session] [data-public] {
 
 html:not([data-has-session]) [data-private] {
     display: none !important;
+}
+
+@keyframes loading-dot {
+    0%,
+    100% {
+        opacity: 0.2;
+    }
+    10% {
+        opacity: 1;
+    }
+}
+
+.loading-dot {
+    animation: loading-dot 1.2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loading-dot {
+        animation: none;
+        opacity: 0.6;
+    }
 }

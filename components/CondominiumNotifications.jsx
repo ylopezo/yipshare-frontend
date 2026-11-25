@@ -2,18 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { Icon } from "./Icon";
+import { NotificationList } from "./NotificationList";
 import { getCondominiumNotifications, markAsRead } from "@/lib/notifications";
 
-export function CondominiumNotifications({ condominiumId, loanIds, onBackAction }) {
+export function CondominiumNotifications({ condominiumId, loanIds, onBack }) {
     const [notifications, setNotifications] = useState(null);
+    const loanKey = loanIds.join(",");
 
     useEffect(() => {
-        getCondominiumNotifications(condominiumId, loanIds).then((list) => {
+        getCondominiumNotifications(condominiumId, loanKey.split(",")).then((list) => {
             setNotifications(list);
             markAsRead(list);
         });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [condominiumId]);
+    }, [condominiumId, loanKey]);
 
     return (
         <>
@@ -21,7 +22,7 @@ export function CondominiumNotifications({ condominiumId, loanIds, onBackAction 
                 <button
                     type="button"
                     aria-label="Volver"
-                    onClick={onBackAction}
+                    onClick={onBack}
                     className="cursor-pointer rounded-full p-1 text-black transition hover:bg-white"
                 >
                     <Icon name="arrow" size={24} />
@@ -30,26 +31,11 @@ export function CondominiumNotifications({ condominiumId, loanIds, onBackAction 
             </div>
 
             {notifications === null ? null : notifications.length === 0 ? (
-                <p className="mt-24 text-center text-xl font-bold text-celeste">
-                    No tienes notificaciones por el momento
-                </p>
+                <p className="mb-0 mt-4 text-sm text-neutral-500">No tienes notificaciones.</p>
             ) : (
-                <ul className="m-0 mt-4 flex max-w-2xl list-none flex-col gap-3 p-0">
-                    {notifications.map((n) => (
-                        <li
-                            key={n.id}
-                            className={`rounded-xl bg-white px-5 py-4 ${n.isRead ? "" : "border-l-4 border-azul-claro"}`}
-                        >
-                            {!n.isRead && (
-                                <span className="rounded-full bg-azul-claro px-2 py-0.5 text-xs font-bold text-white">
-                                    Nueva
-                                </span>
-                            )}
-                            <p className="m-0 mt-2 font-bold text-azul-texto">{n.title}</p>
-                            <p className="m-0 mt-1 text-sm text-slate-600">{n.message}</p>
-                        </li>
-                    ))}
-                </ul>
+                <div className="mt-4">
+                    <NotificationList notifications={notifications} />
+                </div>
             )}
         </>
     );

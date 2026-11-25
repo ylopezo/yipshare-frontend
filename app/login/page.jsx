@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { signIn, homePage } from "@/lib/session";
 import Image from "next/image";
+import { YipBackground } from "@/components/YipBackground";
 
 const SESSION_NOTICES = {
     required: "Inicia sesión para continuar.",
@@ -67,14 +68,9 @@ export default function LoginPage() {
     }
 
     return (
-        <div
-            className="m-0 flex min-h-dvh flex-col items-center justify-center bg-cover bg-center px-4 py-10 font-sans text-oscuro"
-            suppressHydrationWarning
-            style={{
-                backgroundImage: "url('/img/fondo.webp')", backgroundColor: "#1e4a73",
-            }}
-        >
-            <Link href="/" aria-label="YipShare - inicio" className="mb-4">
+        <div className="relative m-0 flex min-h-dvh flex-col items-center justify-center overflow-hidden bg-azul px-4 py-10 font-sans text-oscuro">
+            <YipBackground />
+            <Link href="/" aria-label="YipShare - inicio" className="relative mb-4">
                 <Image
                     src="/img/logo_yipshare_icono.png"
                     alt="Logo de YipShare"
@@ -88,13 +84,13 @@ export default function LoginPage() {
             <form
                 noValidate
                 onSubmit={handleSubmit}
-                className="w-full max-w-md rounded-3xl bg-white px-8 pb-4 pt-6"
+                className="relative w-full max-w-md rounded-lg bg-white px-6 pb-4 pt-6"
             >
                 <h1 className="m-0 text-center text-3xl font-semibold">Iniciar Sesión</h1>
                 {notice && (
                     <p
                         role="alert"
-                        className="mb-0 mt-4 rounded-lg bg-azul-suave px-3 py-2 text-center text-sm text-azul"
+                        className="mb-0 mt-4 text-center text-sm text-black"
                     >
                         {notice}
                     </p>
@@ -130,7 +126,7 @@ export default function LoginPage() {
                     </button>
                 </div>
 
-                <p className="mt-4 text-center text-xs text-slate-600">
+                <p className="mt-4 text-center text-xs text-neutral-600">
                     ¿No tienes cuenta?
                     <Link href="/register_account" className="ml-1 font-bold text-azul-claro hover:underline">
                         Regístrate

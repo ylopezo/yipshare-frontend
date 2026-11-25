@@ -13,7 +13,7 @@ export function Field({ id, icon, placeholder, error, password = false, classNam
             </label>
 
             <div className="relative">
-                <span className="pointer-events-none absolute left-3 top-1/2 flex -translate-y-1/2 text-slate-500">
+                <span className="pointer-events-none absolute left-3 top-1/2 flex -translate-y-1/2 text-neutral-500">
                     <Icon name={icon} size={20} />
                 </span>
 
@@ -24,7 +24,7 @@ export function Field({ id, icon, placeholder, error, password = false, classNam
                     type={password && !visible ? "password" : "text"}
                     placeholder={placeholder}
                     required
-                    className={`w-full rounded-[15px] border-[1.5px] border-borde bg-gris py-2 pl-11 text-lg text-slate-700 outline-none placeholder:text-slate-500 focus:border-slate-900 ${password ? "pr-11" : "pr-3"}`}
+                    className={`w-full rounded-md border-[1.5px] border-borde bg-gris py-2 pl-11 text-lg text-neutral-700 outline-none placeholder:text-neutral-500 ${password ? "pr-11" : "pr-3"}`}
                 />
 
                 {password && (
@@ -32,15 +32,15 @@ export function Field({ id, icon, placeholder, error, password = false, classNam
                         type="button"
                         aria-label={visible ? "Ocultar contraseña" : "Mostrar contraseña"}
                         aria-pressed={visible}
-                        onClick={() => setVisible((v) => !v)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-slate-500 hover:text-azul-claro"
+                        onClick={() => setVisible((wasVisible) => !wasVisible)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-neutral-500 hover:text-azul-claro"
                     >
                         <Icon name={visible ? "eyeOff" : "eye"} size={20} />
                     </button>
                 )}
             </div>
 
-            <span className="mt-1 block min-h-5 text-sm text-azul">{error}</span>
+            <span className="mt-1 block min-h-5 text-sm text-black">{error}</span>
         </div>
     );
 }

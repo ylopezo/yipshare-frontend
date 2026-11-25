@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { apiRequest, signOut } from "@/lib/session";
+import { signOut } from "@/lib/session";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useUrlState } from "@/lib/useUrlState";
 import { ArticleModal } from "@/components/ArticleModal";
 import { ArticleDetail, ArticleCard } from "@/components/ArticleView";
 import { CondominiumNotifications } from "@/components/CondominiumNotifications";
@@ -45,6 +46,8 @@ import {
     updateMyProfile,
     useCondominiumData,
 } from "@/lib/articles";
+import { showError } from "@/lib/errors";
+import { matchesSearch } from "@/lib/data";
 
 const SECTIONS = [
     { id: "home", label: "Inicio", icon: "house" },
@@ -83,18 +86,19 @@ export default function CondominiumAdminPage() {
         Promise.all([getMembers(id).then(setNeighbors), getPendingMembers(id).then(setApplicants)]);
 
     const refresh = () => Promise.all([refreshMine(), getCondominiumLoans(id).then(setAllLoans)]);
-    const received = ratings.filter((c) => c.to === me);
+    const received = ratings.filter((rating) => rating.to === me);
     const myRating = average(received);
 
-    const [section, setSection] = useState("home");
-    const [previous, setPrevious] = useState("home");
-    const [tab, setTab] = useState("articles");
+    const [section, setSection] = useUrlState("seccion", "home");
+    const [previous, setPrevious] = useUrlState("anterior", "home");
+    const openedNotificationsHere = useRef(false);
+    const [tab, setTab] = useUrlState("pestana", "articles");
     const [searchQuery, setSearchQuery] = useState("");
     const [profile, setProfile] = useState(false);
     const [leaving, setLeaving] = useState(false);
     const [profileData, setProfileData] = useState({});
     const [modal, setModal] = useState(null);
-    const [detailId, setDetailId] = useState(null);
+    const [detailId, setDetailId] = useUrlState("articulo", null);
     const [confirm, setConfirm] = useState(null);
 
     const { loading, condominium } = useCondominium(id);
@@ -124,10 +128,16 @@ export default function CondominiumAdminPage() {
         setPrevious(section);
         setSection("notifications");
         setDetailId(null);
+        openedNotificationsHere.current = true;
     }
 
-    function changeTab(p) {
-        setTab(p);
+    function closeNotifications() {
+        if (openedNotificationsHere.current) history.back();
+        else setSection(previous);
+    }
+
+    function changeTab(nextTab) {
+        setTab(nextTab);
         setSearchQuery("");
         setDetailId(null);
     }
@@ -136,35 +146,35 @@ export default function CondominiumAdminPage() {
         if (await runAction(saveArticle(id, modal === "new" ? null : modal.id, data), refresh)) setModal(null);
     }
 
-    async function deleteArticle(a) {
-        if (await runAction(removeArticle(id, a.id), refresh)) setDetailId(null);
+    async function deleteArticle(article) {
+        if (await runAction(removeArticle(id, article.id), refresh)) setDetailId(null);
     }
 
-    async function requestLoan(a, duration) {
-        if (!(await runAction(sendLoanRequest(a.id, duration), refresh))) return;
+    async function requestLoan(article, duration) {
+        if (!(await runAction(sendLoanRequest(article.id, duration), refresh))) return;
         setDetailId(null);
         setSection("loans");
     }
 
-    const respond = (p, accept) => runAction(respondLoan(p.id, accept), refresh);
+    const respond = (loan, accept) => runAction(respondLoan(loan.id, accept), refresh);
 
-    async function registerCode(p, code) {
-        const { status } = await confirmCode(p.id, code);
+    async function registerCode(loan, code) {
+        const { status } = await confirmCode(loan.id, code);
         await refresh();
         return status === 200;
     }
 
-    const rate = (c) => runAction(rateLoan({ loanId: c.loanId, stars: c.stars, comment: c.comment }), refresh);
+    const rate = (rating) => runAction(rateLoan({ loanId: rating.loanId, stars: rating.stars, comment: rating.comment }), refresh);
 
-    const togglePermission = (v) => runAction(setLoanAccess(id, v.id, !v.upToDate), refreshMembers);
+    const togglePermission = (neighbor) => runAction(setLoanAccess(id, neighbor.id, !neighbor.upToDate), refreshMembers);
 
-    const kickOut = (v) => runAction(removeMember(id, v.id), refreshMembers);
+    const kickOut = (neighbor) => runAction(removeMember(id, neighbor.id), refreshMembers);
 
-    async function respondApplicant(a, accept, unitId) {
+    async function respondApplicant(applicant, accept, unitId) {
         if (accept) {
-            await runAction(approveMember(id, a, unitId), refreshMembers);
+            await runAction(approveMember(id, applicant, unitId), refreshMembers);
         } else {
-            await runAction(rejectMember(id, a.id), refreshMembers);
+            await runAction(rejectMember(id, applicant.id), refreshMembers);
         }
     }
 
@@ -172,7 +182,7 @@ export default function CondominiumAdminPage() {
         const fresh = await getMyProfile();
 
         if (!fresh) {
-            return alert("No se pudo cargar tu perfil.");
+            return showError("No se pudo cargar tu perfil.");
         }
 
         const unit = await getMyUnit(id);
@@ -183,8 +193,8 @@ export default function CondominiumAdminPage() {
 
     async function changeReportStatus(targetReportId, status) {
         const { status: httpStatus } = await saveReportStatus(id, targetReportId, status);
-        if (httpStatus !== 200) return alert("No se pudo cambiar el estado del reporte.");
-        setReports((prev) => prev.map((r) => (r.id === targetReportId ? { ...r, status } : r)));
+        if (httpStatus !== 200) return showError("No se pudo cambiar el estado del reporte.");
+        setReports((prev) => prev.map((report) => (report.id === targetReportId ? { ...report, status } : report)));
     }
 
     function handleConfirm() {
@@ -193,16 +203,15 @@ export default function CondominiumAdminPage() {
         setConfirm(null);
     }
 
-    const text = searchQuery.trim().toLowerCase();
 
-    const detail = articles.find((a) => a.id === detailId);
-    const visibleItems = articles.filter((a) => a.name.toLowerCase().includes(text));
-    const mine = visibleItems.filter((a) => a.owner === me);
-    const fromOthers = visibleItems.filter((a) => a.owner !== me);
+    const detail = articles.find((article) => article.id === detailId);
+    const visibleItems = articles.filter((article) => matchesSearch(searchQuery, article.name));
+    const mine = visibleItems.filter((article) => article.owner === me);
+    const fromOthers = visibleItems.filter((article) => article.owner !== me);
 
-    const visibleNeighbors = neighbors.filter((v) => `${v.name} ${v.user}`.toLowerCase().includes(text));
+    const visibleNeighbors = neighbors.filter((neighbor) => matchesSearch(searchQuery, neighbor.name, neighbor.user));
 
-    const inProgress = (articleId) => allLoans.some((p) => p.articleId === articleId && p.status === "in_progress");
+    const inProgress = (articleId) => allLoans.some((loan) => loan.articleId === articleId && loan.status === "on_loan");
 
     const itemClass = (active) =>
         `${ITEM} cursor-pointer ${active ? "text-white" : "text-white/40 hover:text-white/80"}`;
@@ -223,7 +232,7 @@ export default function CondominiumAdminPage() {
 
                 <div className="ml-2 min-w-0 md:ml-14">
                     <h1 className="m-0 truncate text-2xl font-bold md:text-3xl">Hola, {user?.name}</h1>
-                    <p className="m-0 truncate text-sm font-semibold text-celeste">{condominium.name}</p>
+                    <p className="m-0 truncate text-sm font-semibold text-white">{condominium.name}</p>
                 </div>
 
                 <div className="ml-auto flex flex-col items-end gap-2">
@@ -258,7 +267,7 @@ export default function CondominiumAdminPage() {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder={tab === "articles" ? "Buscar artículo..." : "Buscar vecino..."}
-                                className="w-72 rounded-[15px] border border-white/30 bg-transparent py-1.5 pl-4 pr-10 text-sm text-white outline-none placeholder:text-white/70 focus:border-white lg:w-80"
+                                className="w-72 rounded-md border border-white/30 bg-transparent py-1.5 pl-4 pr-10 text-sm text-white outline-none placeholder:text-white/70 lg:w-80"
                             />
                             <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
                                 <Icon name="search" size={18} />
@@ -303,7 +312,7 @@ export default function CondominiumAdminPage() {
                         </button>
 
                         {condominium.code && (
-                            <div className="hidden rounded-xl bg-white/10 px-3 py-2 text-white md:block">
+                            <div className="hidden rounded-lg bg-white/10 px-3 py-2 text-white md:block">
                                 <p className="m-0 text-xs">Código para unirse</p>
                                 <p className="m-0 select-all text-lg font-bold tracking-widest">{condominium.code}</p>
                             </div>
@@ -315,52 +324,52 @@ export default function CondominiumAdminPage() {
                     {section === "notifications" ? (
                         <CondominiumNotifications
                             condominiumId={id}
-                            loanIds={loans.map((l) => l.id)}
-                            onBackAction={() => setSection(previous)}
+                            loanIds={loans.map((loan) => loan.id)}
+                            onBack={closeNotifications}
                         />
                     ) : section === "requests" ? (
-                        <RequestsView applicants={applicants} units={units} onRespondAction={respondApplicant} />
+                        <RequestsView applicants={applicants} units={units} onRespond={respondApplicant} />
                     ) : section === "loans" ? (
                         <LoansView
                             loans={loans}
                             user={me}
-                            onRespondAction={respond}
-                            onGenerateCodeAction={(p) => generateCode(p.id)}
-                            onCodeAction={registerCode}
+                            onRespond={respond}
+                            onGenerateCode={(loan) => generateCode(loan.id)}
+                            onCode={registerCode}
                             ratings={ratings}
-                            onRateAction={rate}
+                            onRate={rate}
                         />
                     ) : section === "all" ? (
                         <AllLoansView loans={allLoans} me={me} />
                     ) : section === "reports" ? (
-                        <ReportsView reports={reports} onChangeStatusAction={changeReportStatus} />
+                        <ReportsView reports={reports} onChangeStatus={changeReportStatus} />
                     ) : detail ? (
                         <ArticleDetail
                             key={detail.id}
-                            a={detail}
-                            onBackAction={() => setDetailId(null)}
-                            onRequestAction={
+                            article={detail}
+                            onBack={() => setDetailId(null)}
+                            onRequest={
                                 detail.owner !== me ? (duration) => requestLoan(detail, duration) : undefined
                             }
-                            onDeleteAction={() => setConfirm({ type: "delete", article: detail })}
+                            onDelete={() => setConfirm({ type: "delete", article: detail })}
                             deleteBlocked={inProgress(detail.id)}
                         />
                     ) : (
                         <>
                             <div className="flex justify-center gap-6">
-                                {["articles", "neighbors"].map((p) => (
+                                {["articles", "neighbors"].map((tabName) => (
                                     <button
-                                        key={p}
+                                        key={tabName}
                                         type="button"
-                                        aria-pressed={tab === p}
-                                        onClick={() => changeTab(p)}
-                                        className={`w-32 cursor-pointer rounded-xl border px-4 py-1.5 text-sm font-bold transition ${
-                                            tab === p
+                                        aria-pressed={tab === tabName}
+                                        onClick={() => changeTab(tabName)}
+                                        className={`w-32 cursor-pointer rounded-lg border px-4 py-1.5 text-sm font-bold transition ${
+                                            tab === tabName
                                                 ? "border-azul bg-azul text-white"
-                                                : "border-slate-400 bg-[#d3d6da] text-slate-500 hover:bg-[#c5c9ce]"
+                                                : "border-neutral-400 bg-[#d3d6da] text-neutral-500 hover:bg-[#c5c9ce]"
                                         }`}
                                     >
-                                        {p === "articles" ? "Artículos" : "Vecinos"}
+                                        {tabName === "articles" ? "Artículos" : "Vecinos"}
                                     </button>
                                 ))}
                             </div>
@@ -369,8 +378,8 @@ export default function CondominiumAdminPage() {
                                 <div className="mt-6">
                                     <NeighborsView
                                         neighbors={visibleNeighbors}
-                                        onPermissionAction={togglePermission}
-                                        onKickOutAction={(v) => setConfirm({ type: "kickOut", neighbor: v })}
+                                        onPermission={togglePermission}
+                                        onKickOut={(neighbor) => setConfirm({ type: "kickOut", neighbor })}
                                     />
                                 </div>
                             ) : (
@@ -378,16 +387,16 @@ export default function CondominiumAdminPage() {
                                     <h2 className="m-0 mt-4 text-base font-bold">Mis Artículos</h2>
 
                                     {mine.length === 0 && (
-                                        <p className="mb-0 mt-3 text-sm text-slate-500">No hay artículos.</p>
+                                        <p className="mb-0 mt-3 text-sm text-neutral-500">Aún no publicas artículos.</p>
                                     )}
 
                                     <div className="mt-4 flex flex-wrap items-center gap-4">
-                                        {mine.map((a) => (
+                                        {mine.map((article) => (
                                             <ArticleCard
-                                                key={a.id}
-                                                a={a}
-                                                onViewAction={() => setDetailId(a.id)}
-                                                onEditAction={() => setModal(a)}
+                                                key={article.id}
+                                                article={article}
+                                                onView={() => setDetailId(article.id)}
+                                                onEdit={() => setModal(article)}
                                             />
                                         ))}
 
@@ -404,12 +413,12 @@ export default function CondominiumAdminPage() {
                                     <h2 className="m-0 mt-10 text-base font-bold">Artículos Disponibles</h2>
 
                                     {fromOthers.length === 0 && (
-                                        <p className="mb-0 mt-3 text-sm text-slate-500">No hay artículos.</p>
+                                        <p className="mb-0 mt-3 text-sm text-neutral-500">Tus vecinos todavía no publican artículos.</p>
                                     )}
 
                                     <div className="mt-4 flex flex-wrap gap-4">
-                                        {fromOthers.map((a) => (
-                                            <ArticleCard key={a.id} a={a} onViewAction={() => setDetailId(a.id)} />
+                                        {fromOthers.map((article) => (
+                                            <ArticleCard key={article.id} article={article} onView={() => setDetailId(article.id)} />
                                         ))}
                                     </div>
                                 </>
@@ -423,19 +432,19 @@ export default function CondominiumAdminPage() {
                 <ResidentProfileModal
                     profile={{ ...profileData, rating: myRating }}
                     received={received}
-                    onUpdateAction={async (data) => {
+                    onUpdate={async (data) => {
                         if (await runAction(updateMyProfile(data))) {
                             setProfileData({ ...profileData, ...data });
                             setProfile(false);
                         }
                     }}
-                    onDeleteAction={async () => {
+                    onDelete={async () => {
                         if (await runAction(deleteMyAccount())) {
                             await signOut();
                             router.replace("/login");
                         }
                     }}
-                    onCloseAction={() => setProfile(false)}
+                    onClose={() => setProfile(false)}
                 />
             )}
 
@@ -443,8 +452,8 @@ export default function CondominiumAdminPage() {
                 <ArticleModal
                     key={modal === "new" ? "new" : modal.id}
                     article={modal === "new" ? null : modal}
-                    onSaveAction={save}
-                    onCancelAction={() => setModal(null)}
+                    onSave={save}
+                    onCancel={() => setModal(null)}
                 />
             )}
 
@@ -456,8 +465,8 @@ export default function CondominiumAdminPage() {
                             ? `Se eliminará «${confirm.article.name}» de ${confirm.article.owner} y se cancelarán sus solicitudes pendientes.`
                             : `${confirm.neighbor.name} saldrá del condominio y se eliminarán sus artículos y préstamos pendientes.`
                     }
-                    onConfirmAction={handleConfirm}
-                    onCancelAction={() => setConfirm(null)}
+                    onConfirm={handleConfirm}
+                    onCancel={() => setConfirm(null)}
                 />
             )}
 
@@ -465,11 +474,11 @@ export default function CondominiumAdminPage() {
                 <ConfirmDialog
                     title="¿Estás seguro?"
                     message="Se cerrará tu sesión."
-                    onConfirmAction={async () => {
+                    onConfirm={async () => {
                         await signOut();
                         router.replace("/login");
                     }}
-                    onCancelAction={() => setLeaving(false)}
+                    onCancel={() => setLeaving(false)}
                 />
             )}
         </div>

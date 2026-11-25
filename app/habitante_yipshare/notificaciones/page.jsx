@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Icon } from "@/components/Icon";
 import { LogoSessionMenu } from "@/components/LogoSessionMenu";
-import { APPROVED, markAsRead, getNotifications } from "@/lib/notifications";
+import { NotificationList } from "@/components/NotificationList";
+import { markAsRead, getNotifications } from "@/lib/notifications";
 
 export default function NotificationsPage() {
     const [notifications, setNotifications] = useState(null);
@@ -34,44 +35,9 @@ export default function NotificationsPage() {
 
             <main className="min-h-0 flex-1 overflow-y-auto px-4 pb-8 pt-6 md:px-10">
                 {notifications === null ? null : notifications.length === 0 ? (
-                    <p className="m-0 text-sm text-slate-500">No tienes notificaciones.</p>
+                    <p className="m-0 text-sm text-neutral-500">No tienes notificaciones.</p>
                 ) : (
-                    <ul className="m-0 flex max-w-2xl list-none flex-col gap-3 p-0">
-                        {notifications.map((n) => {
-                            const accepted = n.type === APPROVED;
-                            return (
-                                <li
-                                    key={n.id}
-                                    className={`rounded-xl bg-white px-5 py-4 ${n.isRead ? "" : "border-l-4 border-azul-claro"}`}
-                                >
-                                    {!n.isRead && (
-                                        <span className="mr-2 rounded-full bg-azul-claro px-2 py-0.5 text-xs font-bold text-white">
-                                            Nueva
-                                        </span>
-                                    )}
-                                    <span
-                                        className={`rounded-full px-2 py-0.5 text-xs font-bold ${
-                                            accepted ? "bg-verde-suave text-green-900" : "bg-rojo-suave text-red-900"
-                                        }`}
-                                    >
-                                        {accepted ? "Aceptado" : "Rechazado"}
-                                    </span>
-
-                                    <p className="m-0 mt-2 font-bold text-azul-texto">{n.title}</p>
-                                    <p className="m-0 mt-1 text-sm text-slate-600">{n.message}</p>
-
-                                    {n.code && (
-                                        <p className="m-0 mt-3 text-sm text-slate-600">
-                                            Código para unirse:{" "}
-                                            <span className="rounded-lg bg-azul-suave px-3 py-1 font-mono text-lg font-bold tracking-widest text-azul select-all">
-                                                {n.code}
-                                            </span>
-                                        </p>
-                                    )}
-                                </li>
-                            );
-                        })}
-                    </ul>
+                    <NotificationList notifications={notifications} />
                 )}
             </main>
         </div>

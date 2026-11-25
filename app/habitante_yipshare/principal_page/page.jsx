@@ -16,6 +16,8 @@ import { ResidentProfileModal } from "@/components/ResidentProfileModal";
 import { signOut } from "@/lib/session";
 import { deleteMyAccount, getMyProfile, getMyReviews, runAction, updateMyProfile } from "@/lib/articles";
 import { average } from "@/lib/loans";
+import { showError } from "@/lib/errors";
+import { matchesSearch } from "@/lib/data";
 
 const JOIN_ERRORS = {
     404: "No existe un condominio aprobado con ese código.",
@@ -31,7 +33,7 @@ function Section({ title, empty, children }) {
         <section className="mb-8">
             <h2 className="m-0 text-base font-bold">{title}</h2>
             {empty ? (
-                <p className="mt-4 text-sm text-slate-500">Sin condominios por ahora.</p>
+                <p className="mt-4 text-sm text-neutral-500">Sin condominios por ahora.</p>
             ) : (
                 <div className="mt-4 flex flex-wrap gap-4">{children}</div>
             )}
@@ -46,17 +48,21 @@ export default function ResidentHomePage() {
     const [joined, setJoined] = useState([]);
     const [unread, setUnread] = useState(0);
     const [leaving, setLeaving] = useState(false);
+    const [modal, setModal] = useState(null);
 
     useEffect(() => {
         getMyCondominiums().then(({ registered, joined }) => {
             setRegistered(registered);
             setJoined(joined);
+            if (window.location.hash === "#crear") {
+                history.replaceState(null, "", window.location.pathname);
+                setModal("create");
+            }
         });
         countUnread().then(setUnread);
     }, []);
     const [searchQuery, setSearchQuery] = useState("");
     const [menuOpen, setMenuOpen] = useState(false);
-    const [modal, setModal] = useState(null);
     const [notice, setNotice] = useState(null);
     const [profile, setProfile] = useState(false);
     const [profileData, setProfileData] = useState({});
@@ -90,8 +96,7 @@ export default function ResidentHomePage() {
         };
     }, [menuOpen]);
 
-    const text = searchQuery.trim().toLowerCase();
-    const filterList = (list) => list.filter(({ name, admin }) => `${name} ${admin}`.toLowerCase().includes(text));
+    const filterList = (list) => list.filter((condominium) => matchesSearch(searchQuery, condominium.name, condominium.admin));
 
     const filteredRegistered = filterList(registered);
     const filteredJoined = filterList(joined);
@@ -132,7 +137,7 @@ export default function ResidentHomePage() {
         const fresh = await getMyProfile();
 
         if (!fresh) {
-            return alert("No se pudo cargar tu perfil.");
+            return showError("No se pudo cargar tu perfil.");
         }
 
         const reviews = await getMyReviews();
@@ -177,13 +182,13 @@ export default function ResidentHomePage() {
                             {menuOpen && (
                                 <div
                                     role="menu"
-                                    className="absolute right-0 top-full z-40 mt-2 w-48 overflow-hidden rounded-[15px] border-[1.5px] border-borde bg-white text-left"
+                                    className="absolute right-0 top-full z-40 mt-2 w-48 overflow-hidden rounded-md border-[1.5px] border-borde bg-white text-left"
                                 >
                                     <button
                                         type="button"
                                         role="menuitem"
                                         onClick={() => openModal("join")}
-                                        className="block w-full cursor-pointer border-b border-slate-300 px-3 py-2 text-left text-sm font-bold text-azul-texto hover:bg-slate-100"
+                                        className="block w-full cursor-pointer border-b border-neutral-300 px-3 py-2 text-left text-sm font-bold text-azul-texto hover:bg-neutral-100"
                                     >
                                         Unirse a Condominio
                                     </button>
@@ -192,7 +197,7 @@ export default function ResidentHomePage() {
                                         type="button"
                                         role="menuitem"
                                         onClick={() => openModal("create")}
-                                        className="block w-full cursor-pointer px-3 py-2 text-left text-sm font-bold text-azul-texto hover:bg-slate-100"
+                                        className="block w-full cursor-pointer px-3 py-2 text-left text-sm font-bold text-azul-texto hover:bg-neutral-100"
                                     >
                                         Crear Condominio
                                     </button>
@@ -238,7 +243,7 @@ export default function ResidentHomePage() {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Buscar condominio..."
-                            className="w-72 rounded-[15px] border border-white/30 bg-transparent py-1.5 pl-4 pr-10 text-sm text-white placeholder:text-white/70 outline-none transition focus:border-white lg:w-80"
+                            className="w-72 rounded-md border border-white/30 bg-transparent py-1.5 pl-4 pr-10 text-sm text-white placeholder:text-white/70 outline-none transition lg:w-80"
                         />
 
                         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white">
@@ -265,7 +270,7 @@ export default function ResidentHomePage() {
                     {notice && (
                         <div
                             role="status"
-                            className="mb-6 flex items-center justify-between gap-4 rounded-lg border border-celeste bg-azul-suave px-4 py-2 text-sm text-azul"
+                            className="mb-6 flex items-center justify-between gap-4 rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm text-black"
                         >
                             <span>{notice}</span>
 
@@ -273,7 +278,7 @@ export default function ResidentHomePage() {
                                 type="button"
                                 aria-label="Cerrar aviso"
                                 onClick={() => setNotice(null)}
-                                className="cursor-pointer rounded-full p-1 hover:bg-white/60"
+                                className="cursor-pointer rounded-full p-1 hover:bg-neutral-100"
                             >
                                 <Icon name="close" size={16} />
                             </button>
@@ -287,7 +292,7 @@ export default function ResidentHomePage() {
                             <h2 className="m-0 mt-6 text-base font-bold">Condominios Unidos</h2>
 
                             <div className="mt-12 flex flex-col items-center gap-3">
-                                <p className="m-0 text-xs font-bold text-celeste">No hay condominios disponibles</p>
+                                <p className="m-0 text-sm text-neutral-600">Todavía no estás en ningún condominio. Crea uno o únete con un código.</p>
 
                                 <button type="button" onClick={() => setModal("create")} className={primaryButton}>
                                     Crear Condominio
@@ -299,7 +304,7 @@ export default function ResidentHomePage() {
                             </div>
                         </>
                     ) : noResults ? (
-                        <p className="py-10 text-center text-sm text-slate-500">No se encontraron condominios.</p>
+                        <p className="py-10 text-center text-sm text-neutral-500">No se encontraron condominios.</p>
                     ) : (
                         <>
                             <Section title="Condominios Registrados" empty={filteredRegistered.length === 0}>
@@ -320,27 +325,27 @@ export default function ResidentHomePage() {
 
             {modal === "join" && (
                 <JoinCondominiumModal
-                    onJoinAction={(data) =>
+                    onJoin={(data) =>
                         setConfirmation({
                             title: "¿Enviar solicitud?",
                             message: `Se enviará tu solicitud para unirte al condominio con código ${data.code} como habitante de Dpto/Casa ${data.unit}.`,
                             run: () => handleJoin(data),
                         })
                     }
-                    onCancelAction={() => setModal(null)}
+                    onCancel={() => setModal(null)}
                 />
             )}
 
             {modal === "create" && (
                 <CreateCondominiumModal
-                    onCreateAction={(data) =>
+                    onCreate={(data) =>
                         setConfirmation({
                             title: "¿Enviar solicitud?",
                             message: `Se enviará la solicitud para registrar «${data.name}». Revisa que los datos y documentos sean correctos.`,
                             run: () => handleCreate(data),
                         })
                     }
-                    onCancelAction={() => setModal(null)}
+                    onCancel={() => setModal(null)}
                 />
             )}
 
@@ -348,11 +353,11 @@ export default function ResidentHomePage() {
                 <ConfirmDialog
                     title={confirmation.title}
                     message={confirmation.message}
-                    onConfirmAction={() => {
+                    onConfirm={() => {
                         confirmation.run();
                         setConfirmation(null);
                     }}
-                    onCancelAction={() => setConfirmation(null)}
+                    onCancel={() => setConfirmation(null)}
                 />
             )}
 
@@ -360,11 +365,11 @@ export default function ResidentHomePage() {
                 <ConfirmDialog
                     title="¿Estás seguro?"
                     message="Se cerrará tu sesión."
-                    onConfirmAction={async () => {
+                    onConfirm={async () => {
                         await signOut();
                         router.replace("/login");
                     }}
-                    onCancelAction={() => setLeaving(false)}
+                    onCancel={() => setLeaving(false)}
                 />
             )}
 
@@ -372,19 +377,19 @@ export default function ResidentHomePage() {
                 <ResidentProfileModal
                     profile={{ ...profileData, rating: average(received) }}
                     received={received}
-                    onUpdateAction={async (data) => {
+                    onUpdate={async (data) => {
                         if (await runAction(updateMyProfile(data))) {
                             setProfileData({ ...profileData, ...data });
                             setProfile(false);
                         }
                     }}
-                    onDeleteAction={async () => {
+                    onDelete={async () => {
                         if (await runAction(deleteMyAccount())) {
                             await signOut();
                             router.replace("/login");
                         }
                     }}
-                    onCloseAction={() => setProfile(false)}
+                    onClose={() => setProfile(false)}
                 />
             )}
         </div>

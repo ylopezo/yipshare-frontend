@@ -40,7 +40,7 @@ function AdminShell({ children }) {
 
                 <div className="ml-2 min-w-0 md:ml-14">
                     <h1 className="m-0 truncate text-2xl font-bold md:text-3xl">Hola, Administrador</h1>
-                    <p className="m-0 truncate text-sm font-semibold text-celeste">Administrador Global</p>
+                    <p className="m-0 truncate text-sm font-semibold text-white">Administrador Global</p>
                 </div>
 
                 <div className="ml-auto flex flex-col items-end gap-2">
@@ -75,7 +75,7 @@ function AdminShell({ children }) {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder={searchPlaceholder}
-                            className="w-72 rounded-[15px] border border-white/30 bg-transparent py-1.5 pl-4 pr-10 text-sm text-white outline-none transition lg:w-80"
+                            className="w-72 rounded-md border border-white/30 bg-transparent py-1.5 pl-4 pr-10 text-sm text-white outline-none transition lg:w-80"
                         />
                         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white">
                             <Icon name="search" size={18} />
@@ -117,18 +117,18 @@ function AdminShell({ children }) {
                 <main className="flex min-w-0 flex-1 flex-col px-4 pb-6 pt-6 md:px-10">{children}</main>
             </div>
 
-            {profileOpen && <ProfileModal onCloseAction={() => setProfileOpen(false)} />}
+            {profileOpen && <ProfileModal onClose={() => setProfileOpen(false)} />}
 
             {signOutOpen && (
                 <ConfirmDialog
                     title="¿Estás seguro?"
                     message="Se cerrará tu sesión de administrador."
-                    onConfirmAction={async () => {
+                    onConfirm={async () => {
                         setSignOutOpen(false);
                         await signOut();
                         router.replace("/login");
                     }}
-                    onCancelAction={() => setSignOutOpen(false)}
+                    onCancel={() => setSignOutOpen(false)}
                 />
             )}
         </div>
