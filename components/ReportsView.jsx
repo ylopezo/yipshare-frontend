@@ -75,6 +75,20 @@ export function ReportsView({ reports, onChangeStatusAction }) {
                         className="mt-3 w-full resize-none rounded-2xl border border-slate-500 bg-gris px-4 py-2 text-sm text-slate-700 outline-none read-only:cursor-default"
                     />
 
+                    {selected?.images.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                            {selected.images.map((src, i) => (
+                                <a key={src} href={src} target="_blank" rel="noreferrer">
+                                    <img
+                                        src={src}
+                                        alt={`Evidencia ${i + 1} del reporte`}
+                                        className="h-20 w-20 rounded-xl object-cover"
+                                    />
+                                </a>
+                            ))}
+                        </div>
+                    )}
+
                     <p className="mb-2 mt-4 text-xs font-bold text-azul">Estado del reporte</p>
                     <div className="flex flex-wrap gap-2">
                         {REPORT_STATUSES.map((e) => (
