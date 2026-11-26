@@ -38,7 +38,7 @@ export function ArticleModal({ article, onSave, onCancel }) {
     const title = article ? "Editar artículo" : "Agregar artículo";
     const isValid =
         name.trim() !== "" &&
-        description.trim() !== "" &&
+        description.trim().length >= 10 &&
         category &&
         condition &&
         durations.length > 0 &&
@@ -142,6 +142,7 @@ export function ArticleModal({ article, onSave, onCancel }) {
                             onChange={(e) => setDescription(e.target.value)}
                             className={`${INPUT} resize-none`}
                         />
+                        <p className="mt-1 text-xs text-neutral-500">Mínimo 10 caracteres.</p>
 
                         <label htmlFor="articulo-condicion" className={LABEL}>
                             Estado físico
