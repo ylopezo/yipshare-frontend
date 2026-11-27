@@ -1,5 +1,11 @@
 # YipShare (frontend)
 
+## Integrantes del Equipo
+Amaro López Jonathan Israel
+Fuentes Moreno Luis Antonio
+García Delgado Jesús Xavier
+López Ortega Yehoshua Leopoldo
+
 Plataforma para que vecinos de un condominio se presten artículos: publican, solicitan, entregan y devuelven con códigos de verificación, y se califican.
 
 ## Roles
